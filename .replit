@@ -1,0 +1,14 @@
+modules = ["nodejs-18", "web", "bash"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+NODE_ENV = "development"
+PORT = "5000"
+JWT_SECRET = "replit-wai-sdk-jwt-secret-generated-min-32-characters-secure-key"
+EMAIL_ENCRYPTION_KEY = "replit-wai-sdk-encryption-key32"
