@@ -7494,7 +7494,8 @@ export const documentEmbeddings = pgTable("document_embeddings", {
   assistantIdIdx: index("embeddings_assistant_idx").on(table.assistantId),
   textHashIdx: index("embeddings_text_hash_idx").on(table.textHash),
   // Vector similarity index using HNSW (Hierarchical Navigable Small World) for fast approximate search
-  embeddingIdx: index("embeddings_vector_idx").using('hnsw', table.embedding.op("vector_cosine_ops")),
+  // Temporarily commented out for drizzle-kit 0.20.x compatibility - will be added manually
+  // embeddingIdx: index("embeddings_vector_idx").using('hnsw', table.embedding.op("vector_cosine_ops")),
 }));
 
 // Schema exports for document parsing
