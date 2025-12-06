@@ -132,7 +132,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       openai:
-        specifier: ^4.24.1
+        specifier: ^4.104.0
         version: 4.104.0(ws@8.18.3)(zod@3.25.76)
       passport:
         specifier: ^0.7.0
