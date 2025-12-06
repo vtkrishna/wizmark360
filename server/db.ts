@@ -3,6 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 import * as freightSchema from "@shared/freight-schema";
 import * as securitySchema from "./db/schema/security-audit-schema";
+import * as market360Schema from "@shared/market360-schema";
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -54,8 +55,8 @@ pool.on('error', (err, client) => {
   console.error('[DB Pool] Unexpected error on idle client:', err);
 });
 
-// Initialize Drizzle ORM with connection pool (includes security audit schema)
-export const db = drizzle(pool, { schema: { ...schema, ...freightSchema, ...securitySchema } });
+// Initialize Drizzle ORM with connection pool (includes security audit and Market360 schemas)
+export const db = drizzle(pool, { schema: { ...schema, ...freightSchema, ...securitySchema, ...market360Schema } });
 
 // Export pool stats helper for monitoring
 export function getPoolStats() {

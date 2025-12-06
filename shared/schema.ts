@@ -8324,3 +8324,6 @@ export type InsertLLMModel = z.infer<typeof insertLLMModelSchema>;
 // SDLC 100% Automation Schema - WAI SDK v1.0 as Single Source of Truth
 export * from './sdlc-schema';
 
+// Market360 - Self-Driving Agency Platform Schema
+export * from './market360-schema';
+
