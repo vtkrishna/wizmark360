@@ -3,6 +3,8 @@ import { Router, Route, Switch, useLocation } from 'wouter';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import Market360Dashboard from './pages/market360-dashboard';
+import BrandOnboarding from './pages/brand-onboarding';
+import VerticalDashboard from './pages/vertical-dashboard';
 import OrchestrationDashboard from './pages/orchestration-dashboard';
 import NotFound from './pages/not-found';
 
@@ -49,12 +51,20 @@ function Market360Landing() {
           ))}
         </div>
         
-        <a 
-          href="/market360" 
-          className="inline-block px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-lg font-semibold transition shadow-lg"
-        >
-          Enter God Mode Dashboard
-        </a>
+        <div className="flex gap-4 justify-center">
+          <a 
+            href="/onboarding" 
+            className="inline-block px-8 py-4 bg-green-600 hover:bg-green-700 rounded-lg text-lg font-semibold transition shadow-lg"
+          >
+            Add New Brand
+          </a>
+          <a 
+            href="/market360" 
+            className="inline-block px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-lg font-semibold transition shadow-lg"
+          >
+            Enter Dashboard
+          </a>
+        </div>
       </main>
       
       <footer className="text-center py-8 text-gray-400 text-sm">
@@ -72,6 +82,10 @@ export default function App() {
           <Switch>
             <Route path="/" component={Market360Landing} />
             <Route path="/market360" component={Market360Dashboard} />
+            <Route path="/market360/:vertical">
+              {(params) => <VerticalDashboard vertical={params.vertical} />}
+            </Route>
+            <Route path="/onboarding" component={BrandOnboarding} />
             <Route path="/orchestration" component={OrchestrationDashboard} />
             <Route component={NotFound} />
           </Switch>

@@ -25,7 +25,8 @@
 - [x] API routes for 7 verticals (server/routes/market360.ts)
 - [x] Frontend routing and navigation (client/src/App.tsx)
 - [x] "God Mode" Dashboard with AG-UI (client/src/pages/market360-dashboard.tsx)
-- [ ] Brand onboarding wizard
+- [x] Brand onboarding wizard (client/src/pages/brand-onboarding.tsx)
+- [x] Vertical-specific dashboards (client/src/pages/vertical-dashboard.tsx)
 
 ### Phase 2: Agent Integration
 - [ ] Configure agents for each vertical

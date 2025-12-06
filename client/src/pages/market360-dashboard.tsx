@@ -13,17 +13,25 @@ const verticals = [
 
 function VerticalCard({ vertical, onClick, isActive }: { vertical: typeof verticals[0]; onClick: () => void; isActive: boolean }) {
   return (
-    <button
-      onClick={onClick}
-      className={`p-4 rounded-lg border-2 transition-all ${
-        isActive
-          ? `${vertical.color} text-white border-transparent shadow-lg scale-105`
-          : "bg-white border-gray-200 hover:border-gray-300 hover:shadow"
-      }`}
-    >
-      <div className="text-3xl mb-2">{vertical.icon}</div>
-      <div className="font-semibold text-sm">{vertical.name}</div>
-    </button>
+    <div className="flex flex-col gap-1">
+      <button
+        onClick={onClick}
+        className={`p-4 rounded-lg border-2 transition-all ${
+          isActive
+            ? `${vertical.color} text-white border-transparent shadow-lg scale-105`
+            : "bg-white border-gray-200 hover:border-gray-300 hover:shadow"
+        }`}
+      >
+        <div className="text-3xl mb-2">{vertical.icon}</div>
+        <div className="font-semibold text-sm">{vertical.name}</div>
+      </button>
+      <a 
+        href={`/market360/${vertical.id}`} 
+        className="text-xs text-center text-blue-600 hover:underline"
+      >
+        Open Dashboard
+      </a>
+    </div>
   );
 }
 
