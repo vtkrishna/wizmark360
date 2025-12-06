@@ -105,6 +105,9 @@ server/
 - 2025-12-06: Integrated Market360 schema into WAI SDK backbone
 - 2025-12-06: Created database tables with market360_ prefix
 - 2025-12-06: Wired frontend to live API data with React Query
+- 2025-12-06: Added Brand Onboarding Wizard (client/src/pages/brand-onboarding.tsx)
+- 2025-12-06: Added Vertical-specific dashboards (client/src/pages/vertical-dashboard.tsx)
+- 2025-12-06: Full CRUD operations for social posts, leads, and campaigns
 
 ## Known Limitations
 This appears to be a partial/incomplete GitHub import. The application cannot start without the missing modules being either:
