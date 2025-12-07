@@ -258,4 +258,158 @@ router.get("/brands", async (_req: Request, res: Response) => {
   }
 });
 
+router.post("/seed-demo-data", async (_req: Request, res: Response) => {
+  try {
+    await db.insert(campaigns).values({
+      name: "Winter Social Campaign",
+      vertical: "social",
+      status: "active",
+      budget: "5000",
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+
+    await db.insert(campaigns).values({
+      name: "Q1 SEO Boost",
+      vertical: "seo",
+      status: "active",
+      budget: "3000",
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+    });
+
+    await db.insert(campaigns).values({
+      name: "LinkedIn Thought Leadership",
+      vertical: "linkedin",
+      status: "active",
+      budget: "2000",
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+    });
+
+    const socialPostsData = [
+      { platform: "twitter", content: "Excited to announce our new AI-powered marketing platform! Transform your marketing with 267+ autonomous agents. #MarketingAI #Automation", status: "scheduled" },
+      { platform: "linkedin", content: "The future of marketing is autonomous. Our self-driving agency platform is now live, featuring real-time optimization across 7 marketing verticals.", status: "published" },
+      { platform: "instagram", content: "Behind the scenes of our AI marketing revolution! Watch our autonomous agents work their magic.", status: "scheduled" },
+      { platform: "facebook", content: "Ready to scale your marketing without scaling your team? Our AI platform handles everything from content creation to lead generation.", status: "draft" },
+    ];
+    await db.insert(socialPosts).values(socialPostsData);
+
+    const leadsData = [
+      { name: "Sarah Johnson", email: "sarah.j@techcorp.com", company: "TechCorp Inc", source: "linkedin", status: "new", score: 85 },
+      { name: "Michael Chen", email: "m.chen@innovate.io", company: "Innovate.io", source: "website", status: "contacted", score: 72 },
+      { name: "Emily Williams", email: "ewilliams@startup.co", company: "StartupCo", source: "referral", status: "qualified", score: 91 },
+      { name: "David Brown", email: "dbrown@enterprise.com", company: "Enterprise Solutions", source: "cold_outreach", status: "new", score: 65 },
+      { name: "Lisa Anderson", email: "l.anderson@growth.io", company: "Growth.io", source: "linkedin", status: "meeting_scheduled", score: 88 },
+    ];
+    await db.insert(leads).values(leadsData);
+
+    const adsData = [
+      { name: "Brand Awareness Q1", platform: "google", status: "active", spend: "1234.50", impressions: 125000, clicks: 3750, conversions: 145 },
+      { name: "Retargeting Campaign", platform: "meta", status: "active", spend: "890.25", impressions: 45000, clicks: 1350, conversions: 67 },
+      { name: "LinkedIn B2B Outreach", platform: "linkedin", status: "active", spend: "567.80", impressions: 15000, clicks: 450, conversions: 23 },
+    ];
+    await db.insert(performanceAds).values(adsData);
+
+    await db.insert(whatsappConversations).values([
+      { phoneNumber: "+1234567890", status: "active", lastMessageAt: new Date(), messages: [{ from: "customer", text: "Hello!" }] },
+      { phoneNumber: "+0987654321", status: "resolved", lastMessageAt: new Date(Date.now() - 3600000), messages: [{ from: "customer", text: "Thank you!" }] },
+    ]);
+
+    await db.insert(linkedinActivities).values([
+      { activityType: "post", content: "Thought leadership article on AI marketing trends", engagement: { likes: 145, comments: 23, shares: 12 } },
+      { activityType: "connection", content: "Connected with 25 industry leaders", engagement: { acceptRate: 0.68 } },
+    ]);
+
+    res.json({
+      success: true,
+      seeded: {
+        campaigns: 3,
+        socialPosts: socialPostsData.length,
+        leads: leadsData.length,
+        ads: adsData.length,
+        whatsappConversations: 2,
+        linkedinActivities: 2
+      }
+    });
+  } catch (error) {
+    console.error("Error seeding demo data:", error);
+    res.status(500).json({ error: "Failed to seed demo data" });
+  }
+});
+
+router.get("/agents", async (_req: Request, res: Response) => {
+  const agentsByVertical = {
+    social: [
+      { id: "trend-watcher", name: "Trend Watcher", status: "active", tasksCompleted: 156, accuracy: 0.94 },
+      { id: "content-ideation", name: "Content Ideation", status: "active", tasksCompleted: 234, accuracy: 0.89 },
+      { id: "visual-production", name: "Visual Production", status: "active", tasksCompleted: 89, accuracy: 0.92 },
+      { id: "scheduling-optimizer", name: "Scheduling Optimizer", status: "active", tasksCompleted: 312, accuracy: 0.97 }
+    ],
+    seo: [
+      { id: "geo-auditor", name: "GEO Auditor", status: "active", tasksCompleted: 45, accuracy: 0.91 },
+      { id: "authority-architect", name: "Authority Architect", status: "active", tasksCompleted: 78, accuracy: 0.88 },
+      { id: "programmatic-seo", name: "Programmatic SEO", status: "active", tasksCompleted: 123, accuracy: 0.93 }
+    ],
+    web: [
+      { id: "ux-designer", name: "UX Designer", status: "active", tasksCompleted: 34, accuracy: 0.95 },
+      { id: "frontend-dev", name: "Frontend Dev", status: "active", tasksCompleted: 67, accuracy: 0.91 },
+      { id: "qa-bot", name: "QA Bot", status: "active", tasksCompleted: 189, accuracy: 0.98 }
+    ],
+    sales: [
+      { id: "prospector", name: "Prospector", status: "active", tasksCompleted: 567, accuracy: 0.86 },
+      { id: "personalizer", name: "Personalizer", status: "active", tasksCompleted: 234, accuracy: 0.90 },
+      { id: "outreach-manager", name: "Outreach Manager", status: "active", tasksCompleted: 345, accuracy: 0.88 }
+    ],
+    whatsapp: [
+      { id: "community-manager", name: "Community Manager", status: "active", tasksCompleted: 456, accuracy: 0.94 },
+      { id: "gamification-engine", name: "Gamification Engine", status: "active", tasksCompleted: 123, accuracy: 0.89 },
+      { id: "support-concierge", name: "Support Concierge", status: "active", tasksCompleted: 789, accuracy: 0.96 }
+    ],
+    linkedin: [
+      { id: "voice-cloner", name: "Voice Cloner", status: "active", tasksCompleted: 67, accuracy: 0.92 },
+      { id: "engagement-rig", name: "Engagement Rig", status: "active", tasksCompleted: 234, accuracy: 0.87 },
+      { id: "networker", name: "Networker", status: "active", tasksCompleted: 345, accuracy: 0.91 }
+    ],
+    performance: [
+      { id: "data-analyst", name: "Data Analyst", status: "active", tasksCompleted: 890, accuracy: 0.95 },
+      { id: "bid-adjuster", name: "Bid Adjuster", status: "active", tasksCompleted: 1234, accuracy: 0.93 },
+      { id: "creative-iterator", name: "Creative Iterator", status: "active", tasksCompleted: 234, accuracy: 0.88 }
+    ]
+  };
+
+  const totalAgents = Object.values(agentsByVertical).flat().length;
+  const activeAgents = Object.values(agentsByVertical).flat().filter(a => a.status === "active").length;
+  
+  res.json({
+    byVertical: agentsByVertical,
+    summary: {
+      total: totalAgents,
+      active: activeAgents,
+      idle: 0,
+      error: 0
+    }
+  });
+});
+
+router.get("/orchestration/status", async (_req: Request, res: Response) => {
+  const romaLevels = {
+    L0: { name: "Foundation", status: "active", agents: 15, health: 100 },
+    L1: { name: "Coordination", status: "active", agents: 12, health: 98 },
+    L2: { name: "Specialization", status: "active", agents: 8, health: 100 },
+    L3: { name: "Intelligence", status: "active", agents: 5, health: 97 },
+    L4: { name: "Autonomy", status: "active", agents: 3, health: 100 }
+  };
+
+  res.json({
+    romaLevels,
+    waiSdkVersion: "9.0.0",
+    orchestratorStatus: "running",
+    lastHeartbeat: new Date().toISOString(),
+    activeTasks: 23,
+    queuedTasks: 8,
+    completedToday: 156
+  });
+});
+
 export default router;

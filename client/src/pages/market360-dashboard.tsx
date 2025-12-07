@@ -163,6 +163,7 @@ function ChiefOfStaffChat() {
     { role: "assistant", content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, analyze performance, generate content, and orchestrate your 267+ marketing agents. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
+  const [provider, setProvider] = useState<"openai" | "anthropic" | "gemini">("openai");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -178,12 +179,13 @@ function ChiefOfStaffChat() {
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, provider }),
       });
       return response.json();
     },
     onSuccess: (data) => {
-      setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
+      const providerLabel = provider === "openai" ? "GPT-5" : provider === "anthropic" ? "Claude" : "Gemini";
+      setMessages(prev => [...prev, { role: "assistant", content: `[${providerLabel}] ${data.response}` }]);
     },
     onError: () => {
       setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I encountered an error. Please try again." }]);
@@ -201,11 +203,24 @@ function ChiefOfStaffChat() {
   return (
     <div className="bg-white rounded-lg border border-gray-200 flex flex-col h-96">
       <div className="px-4 py-3 border-b bg-gradient-to-r from-indigo-500 to-purple-600 rounded-t-lg">
-        <h3 className="font-bold text-white flex items-center gap-2">
-          <span className="text-lg">Chief of Staff AI</span>
-          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        </h3>
-        <p className="text-xs text-indigo-100">Powered by GPT-5 + Claude + Gemini</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-white flex items-center gap-2">
+              <span className="text-lg">Chief of Staff AI</span>
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            </h3>
+            <p className="text-xs text-indigo-100">Select AI Provider</p>
+          </div>
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as "openai" | "anthropic" | "gemini")}
+            className="text-xs px-2 py-1 rounded bg-white/20 text-white border border-white/30 focus:outline-none"
+          >
+            <option value="openai" className="text-gray-900">GPT-5</option>
+            <option value="anthropic" className="text-gray-900">Claude</option>
+            <option value="gemini" className="text-gray-900">Gemini</option>
+          </select>
+        </div>
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -256,28 +271,21 @@ function ChiefOfStaffChat() {
 
 function QuickActions() {
   const queryClient = useQueryClient();
+  const [seedResult, setSeedResult] = useState<string | null>(null);
   
-  const createTestData = useMutation({
+  const seedDemoData = useMutation({
     mutationFn: async () => {
-      await fetch("/api/market360/campaigns", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "Q4 Social Campaign", vertical: "social" }),
-      });
-      await fetch("/api/market360/campaigns", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "SEO Optimization Drive", vertical: "seo" }),
-      });
-      await fetch("/api/market360/sales/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "John Smith", email: "john@example.com", source: "linkedin", company: "Acme Corp" }),
-      });
+      const res = await fetch("/api/market360/seed-demo-data", { method: "POST" });
+      return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       queryClient.invalidateQueries({ queryKey: ["market360-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["social-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["performance-ads"] });
+      setSeedResult(`Seeded: ${data.seeded?.campaigns || 0} campaigns, ${data.seeded?.leads || 0} leads, ${data.seeded?.socialPosts || 0} posts`);
+      setTimeout(() => setSeedResult(null), 5000);
     },
   });
 
@@ -286,18 +294,23 @@ function QuickActions() {
       <h3 className="font-semibold text-sm mb-3">Quick Actions</h3>
       <div className="space-y-2">
         <button
-          onClick={() => createTestData.mutate()}
-          disabled={createTestData.isPending}
+          onClick={() => seedDemoData.mutate()}
+          disabled={seedDemoData.isPending}
           className="w-full text-left px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded text-sm text-blue-700"
         >
-          {createTestData.isPending ? "Creating..." : "Seed Demo Data"}
+          {seedDemoData.isPending ? "Seeding..." : "Seed Demo Data"}
         </button>
-        <button className="w-full text-left px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm">
-          Export Analytics
-        </button>
-        <button className="w-full text-left px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm">
+        {seedResult && (
+          <div className="px-3 py-2 bg-green-50 text-green-700 rounded text-xs">
+            {seedResult}
+          </div>
+        )}
+        <a href="/market360/sales" className="block w-full text-left px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm">
           View All Leads
-        </button>
+        </a>
+        <a href="/market360/performance" className="block w-full text-left px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded text-sm">
+          Performance Dashboard
+        </a>
       </div>
     </div>
   );
