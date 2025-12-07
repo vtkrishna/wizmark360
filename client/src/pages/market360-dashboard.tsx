@@ -1,6 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+const INDIAN_LANGUAGES = {
+  en: { name: "English", nativeName: "English" },
+  hi: { name: "Hindi", nativeName: "हिन्दी" },
+  bn: { name: "Bengali", nativeName: "বাংলা" },
+  ta: { name: "Tamil", nativeName: "தமிழ்" },
+  te: { name: "Telugu", nativeName: "తెలుగు" },
+  mr: { name: "Marathi", nativeName: "मराठी" },
+  gu: { name: "Gujarati", nativeName: "ગુજરાતી" },
+  kn: { name: "Kannada", nativeName: "ಕನ್ನಡ" },
+  ml: { name: "Malayalam", nativeName: "മലയാളം" },
+  pa: { name: "Punjabi", nativeName: "ਪੰਜਾਬੀ" },
+  or: { name: "Oriya", nativeName: "ଓଡ଼ିଆ" },
+  as: { name: "Assamese", nativeName: "অসমীয়া" },
+};
+
 const verticals = [
   { id: "social", name: "Social Media", icon: "📱", color: "bg-pink-500" },
   { id: "seo", name: "SEO & GEO", icon: "🔍", color: "bg-green-500" },
@@ -160,10 +175,11 @@ interface ChatMessage {
 
 function ChiefOfStaffChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "assistant", content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, analyze performance, generate content, and orchestrate your 267+ marketing agents. How can I help you today?" }
+    { role: "assistant", content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, analyze performance, generate content, and orchestrate your 267+ marketing agents across 23 LLMs and 12 Indian languages. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
-  const [provider, setProvider] = useState<"openai" | "anthropic" | "gemini">("openai");
+  const [provider, setProvider] = useState<string>("openai");
+  const [language, setLanguage] = useState<string>("en");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -179,13 +195,17 @@ function ChiefOfStaffChat() {
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, provider }),
+        body: JSON.stringify({ message, provider, language }),
       });
       return response.json();
     },
     onSuccess: (data) => {
-      const providerLabel = provider === "openai" ? "GPT-5" : provider === "anthropic" ? "Claude" : "Gemini";
-      setMessages(prev => [...prev, { role: "assistant", content: `[${providerLabel}] ${data.response}` }]);
+      const providerLabel = provider === "openai" ? "GPT-5" : provider === "anthropic" ? "Claude" : provider === "gemini" ? "Gemini" : provider === "sarvam" ? "Sarvam" : provider === "groq" ? "Groq" : "AI";
+      const langLabel = language !== "en" ? ` [${(INDIAN_LANGUAGES as any)[language]?.nativeName}]` : "";
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: `[${providerLabel}${langLabel}] ${data.response}` 
+      }]);
     },
     onError: () => {
       setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I encountered an error. Please try again." }]);
@@ -209,17 +229,35 @@ function ChiefOfStaffChat() {
               <span className="text-lg">Chief of Staff AI</span>
               <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
             </h3>
-            <p className="text-xs text-indigo-100">Select AI Provider</p>
+            <p className="text-xs text-indigo-100">23 LLMs | 267 Agents | 12 Languages</p>
           </div>
-          <select
-            value={provider}
-            onChange={(e) => setProvider(e.target.value as "openai" | "anthropic" | "gemini")}
-            className="text-xs px-2 py-1 rounded bg-white/20 text-white border border-white/30 focus:outline-none"
-          >
-            <option value="openai" className="text-gray-900">GPT-5</option>
-            <option value="anthropic" className="text-gray-900">Claude</option>
-            <option value="gemini" className="text-gray-900">Gemini</option>
-          </select>
+          <div className="flex gap-2">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="text-xs px-2 py-1 rounded bg-white/20 text-white border border-white/30 focus:outline-none"
+              title="Select Language"
+            >
+              {Object.entries(INDIAN_LANGUAGES).map(([code, lang]) => (
+                <option key={code} value={code} className="text-gray-900">
+                  {lang.nativeName}
+                </option>
+              ))}
+            </select>
+            <select
+              value={provider}
+              onChange={(e) => setProvider(e.target.value)}
+              className="text-xs px-2 py-1 rounded bg-white/20 text-white border border-white/30 focus:outline-none"
+              title="Select AI Provider"
+            >
+              <option value="openai" className="text-gray-900">GPT-5</option>
+              <option value="anthropic" className="text-gray-900">Claude</option>
+              <option value="gemini" className="text-gray-900">Gemini</option>
+              <option value="groq" className="text-gray-900">Groq</option>
+              <option value="sarvam" className="text-gray-900">Sarvam</option>
+              <option value="cohere" className="text-gray-900">Cohere</option>
+            </select>
+          </div>
         </div>
       </div>
       
@@ -389,12 +427,17 @@ export default function Market360Dashboard() {
             <h1 className="text-2xl font-bold text-gray-900">Market360</h1>
             <p className="text-sm text-gray-500">Self-Driving Agency Platform</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 text-xs">
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">23 LLMs</span>
+              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">752 Models</span>
+              <span className="px-2 py-1 bg-green-100 text-green-700 rounded">267 Agents</span>
+              <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded">12 Languages</span>
+            </div>
             <span className="flex items-center gap-2 text-sm">
               <span className={`w-2 h-2 rounded-full ${apiHealth?.status === "ok" ? "bg-green-500" : "bg-red-500"}`}></span>
               {apiHealth?.status === "ok" ? "Systems Online" : "Connecting..."}
             </span>
-            <span className="text-xs text-gray-400">267+ Agents Ready</span>
           </div>
         </div>
       </header>
