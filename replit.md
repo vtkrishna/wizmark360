@@ -108,6 +108,12 @@ server/
 - 2025-12-06: Added Brand Onboarding Wizard (client/src/pages/brand-onboarding.tsx)
 - 2025-12-06: Added Vertical-specific dashboards (client/src/pages/vertical-dashboard.tsx)
 - 2025-12-06: Full CRUD operations for social posts, leads, and campaigns
+- 2025-12-07: **Integrated all LLM providers from Replit vault**
+- 2025-12-07: Created AI service layer (server/services/ai-service.ts) with OpenAI, Anthropic, Gemini
+- 2025-12-07: Added AI API routes (server/routes/ai.ts) for chat, content generation, lead scoring
+- 2025-12-07: Built Chief of Staff AI chat interface in God Mode dashboard
+- 2025-12-07: Added AI content generator to Social Media vertical
+- 2025-12-07: Added AI-powered lead scoring to Sales SDR vertical
 
 ## Known Limitations
 This appears to be a partial/incomplete GitHub import. The application cannot start without the missing modules being either:

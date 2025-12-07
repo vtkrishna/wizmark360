@@ -56,6 +56,8 @@ const verticalConfig: Record<string, { name: string; icon: string; color: string
 function SocialDashboard() {
   const queryClient = useQueryClient();
   const [newPost, setNewPost] = useState({ platform: "twitter", content: "" });
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [showAiGenerator, setShowAiGenerator] = useState(false);
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["social-posts"],
@@ -76,10 +78,65 @@ function SocialDashboard() {
     },
   });
 
+  const generateContent = useMutation({
+    mutationFn: async (topic: string) => {
+      const res = await fetch("/api/ai/generate-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "social_post",
+          brand: "Your Brand",
+          industry: "technology",
+          targetAudience: "professionals",
+          tone: "engaging",
+          topic,
+          platform: newPost.platform
+        }),
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setNewPost({ ...newPost, content: data.content });
+      setShowAiGenerator(false);
+      setAiPrompt("");
+    },
+  });
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg border p-4">
-        <h3 className="font-semibold mb-3">Create Social Post</h3>
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-semibold">Create Social Post</h3>
+          <button
+            onClick={() => setShowAiGenerator(!showAiGenerator)}
+            className="text-sm px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:opacity-90"
+          >
+            {showAiGenerator ? "Manual" : "AI Generate"}
+          </button>
+        </div>
+        
+        {showAiGenerator && (
+          <div className="mb-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+            <h4 className="text-sm font-medium text-purple-800 mb-2">AI Content Generator</h4>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="Describe what you want to post about..."
+                className="flex-1 p-2 border rounded text-sm"
+              />
+              <button
+                onClick={() => aiPrompt && generateContent.mutate(aiPrompt)}
+                disabled={!aiPrompt || generateContent.isPending}
+                className="px-4 py-2 bg-purple-600 text-white rounded text-sm hover:bg-purple-700 disabled:opacity-50"
+              >
+                {generateContent.isPending ? "Generating..." : "Generate"}
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="space-y-3">
           <select
             value={newPost.platform}
@@ -136,6 +193,8 @@ function SocialDashboard() {
 function SalesDashboard() {
   const queryClient = useQueryClient();
   const [newLead, setNewLead] = useState({ name: "", email: "", company: "", source: "linkedin" });
+  const [scoringLead, setScoringLead] = useState<number | null>(null);
+  const [leadScores, setLeadScores] = useState<Record<number, any>>({});
 
   const { data: leads, isLoading } = useQuery({
     queryKey: ["leads"],
@@ -155,6 +214,40 @@ function SalesDashboard() {
       setNewLead({ name: "", email: "", company: "", source: "linkedin" });
     },
   });
+
+  const scoreLead = useMutation({
+    mutationFn: async (lead: any) => {
+      setScoringLead(lead.id);
+      const res = await fetch("/api/ai/score-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          leadId: lead.id,
+          name: lead.name,
+          email: lead.email,
+          company: lead.company,
+          source: lead.source,
+        }),
+      });
+      return res.json();
+    },
+    onSuccess: (data, lead) => {
+      setLeadScores(prev => ({ ...prev, [lead.id]: data }));
+      setScoringLead(null);
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+    },
+    onError: () => {
+      setScoringLead(null);
+    }
+  });
+
+  const getQualificationColor = (qual: string) => {
+    switch (qual) {
+      case "hot": return "bg-red-100 text-red-800";
+      case "warm": return "bg-yellow-100 text-yellow-800";
+      default: return "bg-blue-100 text-blue-800";
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -207,16 +300,45 @@ function SalesDashboard() {
         {isLoading ? (
           <p className="text-gray-500">Loading...</p>
         ) : leads?.length > 0 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {leads.map((lead: any) => (
-              <div key={lead.id} className="p-3 bg-gray-50 rounded flex justify-between items-center">
-                <div>
-                  <p className="font-medium">{lead.name}</p>
-                  <p className="text-xs text-gray-500">{lead.company} - {lead.email}</p>
+              <div key={lead.id} className="p-3 bg-gray-50 rounded">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">{lead.name}</p>
+                    <p className="text-xs text-gray-500">{lead.company} - {lead.email}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {leadScores[lead.id] ? (
+                      <span className={`text-xs px-2 py-0.5 rounded ${getQualificationColor(leadScores[lead.id].qualification)}`}>
+                        {leadScores[lead.id].qualification.toUpperCase()} ({leadScores[lead.id].score}/100)
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => scoreLead.mutate(lead)}
+                        disabled={scoringLead === lead.id}
+                        className="text-xs px-2 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded hover:opacity-90 disabled:opacity-50"
+                      >
+                        {scoringLead === lead.id ? "Scoring..." : "AI Score"}
+                      </button>
+                    )}
+                    <span className={`text-xs px-2 py-0.5 rounded ${
+                      lead.status === 'new' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    }`}>{lead.status}</span>
+                  </div>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded ${
-                  lead.status === 'new' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                }`}>{lead.status}</span>
+                {leadScores[lead.id] && (
+                  <div className="mt-2 p-2 bg-white rounded border text-xs">
+                    <p className="text-gray-600 mb-1">{leadScores[lead.id].reasoning}</p>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {leadScores[lead.id].suggestedActions?.map((action: string, idx: number) => (
+                        <span key={idx} className="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded">
+                          {action}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

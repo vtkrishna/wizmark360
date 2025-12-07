@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const verticals = [
@@ -149,6 +149,107 @@ function CampaignManager() {
           No campaigns yet. Create your first campaign to get started.
         </div>
       )}
+    </div>
+  );
+}
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+function ChiefOfStaffChat() {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: "assistant", content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, analyze performance, generate content, and orchestrate your 267+ marketing agents. How can I help you today?" }
+  ]);
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const chatMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
+    },
+    onError: () => {
+      setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I encountered an error. Please try again." }]);
+    }
+  });
+
+  const handleSend = () => {
+    if (!input.trim() || chatMutation.isPending) return;
+    
+    setMessages(prev => [...prev, { role: "user", content: input }]);
+    chatMutation.mutate(input);
+    setInput("");
+  };
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 flex flex-col h-96">
+      <div className="px-4 py-3 border-b bg-gradient-to-r from-indigo-500 to-purple-600 rounded-t-lg">
+        <h3 className="font-bold text-white flex items-center gap-2">
+          <span className="text-lg">Chief of Staff AI</span>
+          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        </h3>
+        <p className="text-xs text-indigo-100">Powered by GPT-5 + Claude + Gemini</p>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+              msg.role === "user" 
+                ? "bg-indigo-500 text-white" 
+                : "bg-gray-100 text-gray-800"
+            }`}>
+              {msg.content}
+            </div>
+          </div>
+        ))}
+        {chatMutation.isPending && (
+          <div className="flex justify-start">
+            <div className="bg-gray-100 rounded-lg px-3 py-2 text-sm text-gray-500">
+              <span className="animate-pulse">Thinking...</span>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+      
+      <div className="p-3 border-t">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Ask about campaigns, leads, content..."
+            className="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            disabled={chatMutation.isPending}
+          />
+          <button
+            onClick={handleSend}
+            disabled={chatMutation.isPending || !input.trim()}
+            className="px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm hover:bg-indigo-600 disabled:opacity-50"
+          >
+            Send
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -329,7 +430,10 @@ export default function Market360Dashboard() {
 
         <div className="grid grid-cols-3 gap-6">
           <div className="col-span-2">
-            <CampaignManager />
+            <ChiefOfStaffChat />
+            <div className="mt-4">
+              <CampaignManager />
+            </div>
             {activeVertical && (
               <div className="mt-4">
                 <VerticalPanel vertical={activeVertical} />
