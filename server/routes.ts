@@ -322,6 +322,11 @@ app.use('/api/auth', oauthRoutes);
 
 // 2FA Routes - Two-Factor Authentication with TOTP
 app.use('/api/2fa', twoFactorRoutes);
+
+// Chief of Staff Chat API - Main AI orchestration endpoint for Agency ERP
+import chatApiRoutes from './routes/chat-api';
+app.use('/api', chatApiRoutes);
+
 app.use('/api/orchestration', strictApiLimiter);
 
 // Wizards Incubator Platform - Orchestration endpoints rate limiting

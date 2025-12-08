@@ -248,7 +248,7 @@ export default function VerticalPage({ vertical }: VerticalPageProps) {
         {/* Content */}
         <div className="flex-1 overflow-hidden">
           {activeTab === "workspace" ? (
-            <ChatWorkspace />
+            <ChatWorkspace vertical={vertical} brandId={1} />
           ) : activeTab === "analytics" ? (
             <div className="p-6 bg-gray-50 dark:bg-gray-900 h-full overflow-auto">
               <div className="max-w-6xl mx-auto space-y-6">
