@@ -3,55 +3,69 @@ import { useState } from "react";
 import { FlowBuilder } from "@/components/flow-builder";
 import { ContentLibrary } from "@/components/content-library";
 
-const verticalConfig: Record<string, { name: string; icon: string; color: string; agents: string[]; kpis: string[] }> = {
+const verticalConfig: Record<string, { name: string; icon: string; color: string; agentCount: number; keyAgents: string[]; kpis: string[]; workflowSteps: string[] }> = {
   social: {
     name: "Social Media",
     icon: "📱",
     color: "bg-pink-500",
-    agents: ["Trend Watcher", "Content Ideation", "Visual Production", "Scheduling"],
-    kpis: ["Viral Velocity", "Engagement Rate", "Sentiment Score"]
+    agentCount: 45,
+    keyAgents: ["Social Director (L4)", "Content Orchestrator (L3)", "Trend Spotter (L2)", "Copywriter (L2)", "Visual Producer (L2)", "Scheduler (L2)", "Engagement Coordinator (L2)", "Analytics Engine (L2)"],
+    kpis: ["Viral Velocity", "Engagement Rate", "Sentiment Score", "Follower Growth", "Share of Voice"],
+    workflowSteps: ["Trend Analysis", "Content Ideation", "Content Creation", "Visual Production", "Content Review", "Schedule Optimization", "Publication", "Engagement Monitoring", "Performance Analytics"]
   },
   seo: {
     name: "SEO & GEO",
     icon: "🔍",
     color: "bg-green-500",
-    agents: ["GEO Auditor", "Authority Architect", "Programmatic SEO"],
-    kpis: ["Share of Model", "Organic Traffic", "Domain Authority"]
+    agentCount: 38,
+    keyAgents: ["SEO Director (L4)", "Technical SEO Auditor (L2)", "GEO Optimizer (L3)", "Keyword Intelligence (L2)", "Content Gap Analyzer (L2)", "Backlink Strategist (L2)", "Local SEO Manager (L2)"],
+    kpis: ["Share of Model", "Organic Traffic", "Domain Authority", "Keyword Rankings", "Backlink Quality"],
+    workflowSteps: ["Technical SEO Audit", "Keyword Research", "Content Gap Analysis", "On-Page Optimization", "Backlink Analysis", "GEO Optimization", "Local SEO", "Rank Tracking", "SEO Reporting"]
   },
   web: {
     name: "Web Dev",
     icon: "🌐",
     color: "bg-blue-500",
-    agents: ["UX Designer", "Frontend Dev", "QA Bot"],
-    kpis: ["Page Load Speed", "Conversion Rate", "Time-to-Deploy"]
+    agentCount: 32,
+    keyAgents: ["Web Director (L4)", "UX Researcher (L2)", "UI Generator (L3)", "Aura.build Integrator (L3)", "Performance Optimizer (L2)", "A/B Testing Manager (L2)", "QA Automation (L2)"],
+    kpis: ["Page Load Speed", "Conversion Rate", "Core Web Vitals", "Bounce Rate", "Time-to-Deploy"],
+    workflowSteps: ["Design Brief Analysis", "UX Research", "UI Component Generation", "Aura.build Integration", "Responsive Design", "Performance Optimization", "A/B Testing Setup", "QA Automation", "Deployment"]
   },
   sales: {
     name: "Sales SDR",
     icon: "💼",
     color: "bg-purple-500",
-    agents: ["Prospector", "Personalizer", "Outreach Manager"],
-    kpis: ["Meeting Booked Rate", "Response Rate", "Pipeline Value"]
+    agentCount: 52,
+    keyAgents: ["Sales Director (L4)", "Lead Intelligence (L2)", "Prospect Researcher (L2)", "ICP Matcher (L2)", "Email Personalizer (L2)", "Sequence Builder (L2)", "Pipeline Manager (L2)"],
+    kpis: ["Meeting Booked Rate", "Response Rate", "Pipeline Value", "Win Rate", "Sales Velocity"],
+    workflowSteps: ["Lead Intelligence", "Prospect Research", "ICP Matching", "Email Personalization", "Sequence Building", "Meeting Booking", "CRM Sync", "Pipeline Management", "Sales Analytics"]
   },
   whatsapp: {
     name: "WhatsApp",
     icon: "💬",
     color: "bg-emerald-500",
-    agents: ["Community Manager", "Gamification Engine", "Support Concierge"],
-    kpis: ["Response Time", "Retention Rate", "Commerce Conversion"]
+    agentCount: 28,
+    keyAgents: ["WhatsApp Director (L4)", "Flow Designer (L2)", "Template Manager (L2)", "Broadcast Coordinator (L2)", "Chatbot Trainer (L2)", "Commerce Integrator (L2)", "Community Manager (L2)"],
+    kpis: ["Response Time", "Retention Rate", "Commerce Conversion", "Message Open Rate", "CSAT Score"],
+    workflowSteps: ["Flow Design", "Message Templates", "Broadcast Setup", "Chatbot Configuration", "Commerce Integration", "Community Management", "Support Automation", "Analytics Dashboard"]
   },
   linkedin: {
-    name: "LinkedIn",
+    name: "LinkedIn B2B",
     icon: "🔗",
     color: "bg-sky-600",
-    agents: ["Voice Cloner", "Engagement Rig", "Networker"],
-    kpis: ["Profile Views", "Connection Rate", "SSI Score"]
+    agentCount: 35,
+    keyAgents: ["LinkedIn Director (L4)", "Profile Optimizer (L2)", "Content Creator (L2)", "Network Analyzer (L2)", "Connection Strategist (L2)", "InMail Specialist (L2)", "SSI Improver (L2)"],
+    kpis: ["Profile Views", "Connection Rate", "SSI Score", "Content Reach", "Lead Quality"],
+    workflowSteps: ["Profile Optimization", "Content Creation", "Network Analysis", "Connection Strategy", "Engagement Automation", "InMail Campaigns", "Company Page Management", "SSI Improvement", "LinkedIn Analytics"]
   },
   performance: {
     name: "Performance Ads",
     icon: "📊",
     color: "bg-orange-500",
-    agents: ["Data Analyst", "Bid Adjuster", "Creative Iterator"],
-    kpis: ["ROAS", "CPA", "CAC"]
+    agentCount: 37,
+    keyAgents: ["Performance Director (L4)", "Campaign Planner (L2)", "Audience Builder (L2)", "Creative Generator (L2)", "Bid Strategist (L3)", "Real-time Optimizer (L3)", "Attribution Analyst (L3)"],
+    kpis: ["ROAS", "CPA", "CAC", "CTR", "Conversion Rate"],
+    workflowSteps: ["Campaign Planning", "Audience Building", "Creative Generation", "Multi-Platform Setup", "Bid Strategy", "A/B Testing", "Conversion Tracking", "Real-time Optimization", "Cross-Channel Attribution", "ROAS Reporting"]
   }
 };
 
@@ -1148,13 +1162,27 @@ export default function VerticalDashboard({ vertical }: { vertical: string }) {
 
       <div className="p-6">
         <div className="mb-6 p-4 bg-white rounded-lg border">
-          <h3 className="font-semibold mb-2">Active Agents</h3>
-          <div className="flex flex-wrap gap-2">
-            {config.agents.map((agent) => (
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold">Active Agents</h3>
+            <span className="text-sm text-gray-500">{config.agentCount} agents total</span>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {config.keyAgents.map((agent: string) => (
               <span key={agent} className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-full text-sm border border-indigo-100">
-                🤖 {agent}
+                {agent}
               </span>
             ))}
+          </div>
+          <div className="mt-4 pt-4 border-t">
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Workflow Steps</h4>
+            <div className="flex flex-wrap gap-1">
+              {config.workflowSteps.map((step: string, index: number) => (
+                <span key={step} className="inline-flex items-center text-xs text-gray-600">
+                  {index > 0 && <span className="mx-1 text-gray-400">→</span>}
+                  {step}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
