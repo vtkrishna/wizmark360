@@ -171,7 +171,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-3">
               <Button variant="ghost" onClick={() => setLocation('/login')}>Sign In</Button>
               <Button 
-                onClick={() => setLocation('/market360')} 
+                onClick={() => setLocation('/dashboard')} 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 Launch Platform <ArrowRight className="ml-2 h-4 w-4" />
@@ -224,7 +224,7 @@ export default function LandingPage() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  onClick={() => setLocation('/market360')}
+                  onClick={() => setLocation('/dashboard')}
                   className="text-lg px-8 py-6 border-gray-300 hover:bg-gray-50"
                 >
                   <Play className="mr-2 h-5 w-5" />
@@ -422,7 +422,7 @@ export default function LandingPage() {
                   </div>
                   <Button 
                     className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600"
-                    onClick={() => setLocation(`/market360/${activeVertical.id}`)}
+                    onClick={() => setLocation(`/vertical/${activeVertical.id}`)}
                   >
                     Open {activeVertical.name} Dashboard <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -580,7 +580,7 @@ export default function LandingPage() {
             <Button 
               size="lg"
               variant="outline"
-              onClick={() => setLocation('/market360')}
+              onClick={() => setLocation('/dashboard')}
               className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
             >
               <Play className="mr-2 h-5 w-5" />
@@ -608,7 +608,7 @@ export default function LandingPage() {
               <h4 className="font-semibold mb-4">Marketing Verticals</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
                 {verticals.map((v) => (
-                  <li key={v.id}><a href={`/market360/${v.id}`} className="hover:text-white">{v.name}</a></li>
+                  <li key={v.id}><a href={`/vertical/${v.id}`} className="hover:text-white">{v.name}</a></li>
                 ))}
               </ul>
             </div>
