@@ -340,4 +340,55 @@ router.get("/registry/full", async (_req: Request, res: Response) => {
   });
 });
 
+router.get("/tiers", async (_req: Request, res: Response) => {
+  const tiers = enhancedAIService.getModelTiers();
+  res.json(tiers);
+});
+
+router.post("/analyze-task", async (req: Request, res: Response) => {
+  try {
+    const { task, requirements } = req.body;
+    
+    if (!task) {
+      return res.status(400).json({ error: "Task description is required" });
+    }
+    
+    const analysis = enhancedAIService.analyzeTaskComplexity(task, requirements);
+    res.json({
+      task,
+      analysis,
+      tierInfo: enhancedAIService.getModelTiers()[analysis.recommendedTier],
+    });
+  } catch (error) {
+    console.error("Task analysis error:", error);
+    res.status(500).json({ error: "Failed to analyze task" });
+  }
+});
+
+router.post("/smart-route", async (req: Request, res: Response) => {
+  try {
+    const { message, taskDescription, requirements } = req.body;
+    
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+    
+    const result = await enhancedAIService.smartRoute(
+      [{ role: "user", content: message }],
+      taskDescription,
+      requirements
+    );
+    
+    res.json({
+      response: result.content,
+      provider: result.provider,
+      model: result.model,
+      tokensUsed: result.tokensUsed,
+    });
+  } catch (error) {
+    console.error("Smart route error:", error);
+    res.status(500).json({ error: "Failed to process smart route" });
+  }
+});
+
 export default router;

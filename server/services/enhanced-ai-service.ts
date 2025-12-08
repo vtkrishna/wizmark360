@@ -43,25 +43,82 @@ export interface LLMModel {
   supportsVoice: boolean;
 }
 
+export type ModelTier = "tier1" | "tier2" | "tier3" | "tier4";
+export type TaskComplexity = "high" | "medium" | "low" | "specialized";
+
+export interface ModelTierConfig {
+  tier: ModelTier;
+  name: string;
+  description: string;
+  useCases: string[];
+  providers: AIProvider[];
+}
+
+export const MODEL_TIERS: Record<ModelTier, ModelTierConfig> = {
+  tier1: {
+    tier: "tier1",
+    name: "Premium Intelligence",
+    description: "High complexity/reasoning tasks",
+    useCases: ["complex-reasoning", "code-generation", "strategic-planning", "advanced-analysis"],
+    providers: ["openai", "anthropic", "gemini"]
+  },
+  tier2: {
+    tier: "tier2",
+    name: "Fast Inference",
+    description: "Speed/standard tasks",
+    useCases: ["quick-responses", "chat", "simple-generation", "real-time"],
+    providers: ["groq", "together", "fireworks"]
+  },
+  tier3: {
+    tier: "tier3",
+    name: "Specialized & Local",
+    description: "Localization/niche tasks",
+    useCases: ["indian-languages", "search", "rag", "translation", "voice"],
+    providers: ["sarvam", "cohere", "perplexity", "deepseek", "mistral"]
+  },
+  tier4: {
+    tier: "tier4",
+    name: "Aggregators",
+    description: "Long tail/experimental",
+    useCases: ["experimental", "niche-models", "cost-optimization"],
+    providers: ["openrouter", "replicate", "huggingface"]
+  }
+};
+
 export const LLM_REGISTRY: LLMModel[] = [
   { id: "gpt-5", name: "GPT-5", provider: "openai", contextWindow: 128000, maxOutput: 32768, inputCostPer1M: 5, outputCostPer1M: 15, capabilities: ["text", "vision", "reasoning", "code"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   { id: "gpt-4o", name: "GPT-4o", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: true },
+  { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "vision"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "o3", name: "o3 Reasoning", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 15, outputCostPer1M: 60, capabilities: ["advanced-reasoning", "code", "math"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "o3-mini", name: "o3 Mini", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 1.1, outputCostPer1M: 4.4, capabilities: ["reasoning", "code", "math"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   { id: "claude-sonnet-4-20250514", name: "Claude 4 Sonnet", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "claude-opus-4-20250514", name: "Claude 4 Opus", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-3-haiku", name: "Claude 3 Haiku", provider: "anthropic", contextWindow: 200000, maxOutput: 4096, inputCostPer1M: 0.25, outputCostPer1M: 1.25, capabilities: ["text", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "gemini", contextWindow: 2000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "advanced-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "llama-3.3-70b", name: "Llama 3.3 70B", provider: "groq", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.59, outputCostPer1M: 0.79, capabilities: ["text", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "mixtral-8x7b", name: "Mixtral 8x7B", provider: "groq", contextWindow: 32768, maxOutput: 8192, inputCostPer1M: 0.24, outputCostPer1M: 0.24, capabilities: ["text", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gemini-3-pro-image", name: "Gemini 3 Pro (Nano Banana)", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "image-generation", "4k"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "llama-3.3-70b", name: "Llama 3.3 70B", provider: "groq", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.59, outputCostPer1M: 0.79, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "llama-3.3-8b", name: "Llama 3.3 8B", provider: "groq", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.05, outputCostPer1M: 0.08, capabilities: ["text", "ultra-fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "mixtral-8x7b", name: "Mixtral 8x7B", provider: "groq", contextWindow: 32768, maxOutput: 8192, inputCostPer1M: 0.24, outputCostPer1M: 0.24, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "command-r-plus", name: "Command R+", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-r", name: "Command R", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 0.5, outputCostPer1M: 1.5, capabilities: ["text", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "embed-v3", name: "Embed V3", provider: "cohere", contextWindow: 512, maxOutput: 1024, inputCostPer1M: 0.1, outputCostPer1M: 0, capabilities: ["embedding", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "sarvam-m", name: "Sarvam M (24B)", provider: "sarvam", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages", "reasoning"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
   { id: "sarvam-1", name: "Sarvam 1 (2B)", provider: "sarvam", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
   { id: "sarvam-translate", name: "Sarvam Translate", provider: "sarvam", contextWindow: 8192, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["translation", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: false },
+  { id: "sarvam-bulbul", name: "Sarvam Bulbul v1 (TTS)", provider: "sarvam", contextWindow: 4096, maxOutput: 0, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["tts", "voice", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: true },
+  { id: "sarvam-saarika", name: "Sarvam Saarika v2 (STT)", provider: "sarvam", contextWindow: 0, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["stt", "voice", "indian-languages", "transcription"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: true },
   { id: "deepseek-v3", name: "DeepSeek V3", provider: "deepseek", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.27, outputCostPer1M: 1.1, capabilities: ["text", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "deepseek-r1", name: "DeepSeek R1", provider: "deepseek", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.55, outputCostPer1M: 2.19, capabilities: ["text", "code", "advanced-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "mistral-large", name: "Mistral Large", provider: "mistral", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 6, capabilities: ["text", "code", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "mistral-medium", name: "Mistral Medium", provider: "mistral", contextWindow: 32000, maxOutput: 8192, inputCostPer1M: 2.7, outputCostPer1M: 8.1, capabilities: ["text", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "codestral", name: "Codestral", provider: "mistral", contextWindow: 32000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 3, capabilities: ["code", "fill-in-middle"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "perplexity", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "search", "real-time"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "sonar", name: "Perplexity Sonar", provider: "perplexity", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 1, capabilities: ["text", "search"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "llama-3.2-90b-vision", name: "Llama 3.2 90B Vision", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1.2, outputCostPer1M: 1.2, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "qwen-2.5-72b", name: "Qwen 2.5 72B", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code", "multilingual"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "grok-2", name: "Grok-2", provider: "xai", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 10, capabilities: ["text", "real-time", "humor"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "grok-2-mini", name: "Grok-2 Mini", provider: "xai", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.5, capabilities: ["text", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
 ];
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -154,6 +211,41 @@ export class EnhancedAIService {
 
   setLanguage(lang: SupportedLanguage): void {
     this.currentLanguage = lang;
+  }
+
+  getModelTiers(): typeof MODEL_TIERS {
+    return MODEL_TIERS;
+  }
+
+  analyzeTaskComplexity(task: string, requirements?: { needsReasoning?: boolean; needsSpeed?: boolean; needsIndianLanguage?: boolean; needsSearch?: boolean; needsCode?: boolean }): { complexity: TaskComplexity; recommendedTier: ModelTier; recommendedProvider: AIProvider; recommendedModel: string } {
+    const taskLower = task.toLowerCase();
+    
+    if (requirements?.needsIndianLanguage || Object.keys(INDIAN_LANGUAGES).some(lang => lang !== 'en' && taskLower.includes(lang))) {
+      return { complexity: "specialized", recommendedTier: "tier3", recommendedProvider: "sarvam", recommendedModel: "sarvam-m" };
+    }
+    
+    if (requirements?.needsSearch || taskLower.includes('search') || taskLower.includes('find') || taskLower.includes('lookup')) {
+      return { complexity: "specialized", recommendedTier: "tier3", recommendedProvider: "perplexity", recommendedModel: "sonar-pro" };
+    }
+    
+    if (requirements?.needsReasoning || taskLower.includes('analyze') || taskLower.includes('strategic') || taskLower.includes('complex') || taskLower.includes('reason')) {
+      return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "anthropic", recommendedModel: "claude-sonnet-4-20250514" };
+    }
+    
+    if (requirements?.needsCode || taskLower.includes('code') || taskLower.includes('programming') || taskLower.includes('develop')) {
+      return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "openai", recommendedModel: "gpt-5" };
+    }
+    
+    if (requirements?.needsSpeed || taskLower.includes('quick') || taskLower.includes('fast') || taskLower.includes('simple')) {
+      return { complexity: "low", recommendedTier: "tier2", recommendedProvider: "groq", recommendedModel: "llama-3.3-70b" };
+    }
+    
+    return { complexity: "medium", recommendedTier: "tier1", recommendedProvider: "gemini", recommendedModel: "gemini-2.5-flash" };
+  }
+
+  async smartRoute(messages: ChatMessage[], taskDescription?: string, requirements?: { needsReasoning?: boolean; needsSpeed?: boolean; needsIndianLanguage?: boolean; needsSearch?: boolean; needsCode?: boolean }): Promise<EnhancedAIResponse> {
+    const analysis = this.analyzeTaskComplexity(taskDescription || messages[messages.length - 1]?.content || "", requirements);
+    return this.chat(messages, analysis.recommendedProvider, analysis.recommendedModel);
   }
 
   async chat(messages: ChatMessage[], provider?: AIProvider, model?: string): Promise<EnhancedAIResponse> {
@@ -271,9 +363,13 @@ export class EnhancedAIService {
     });
 
     const content = response.message?.content;
-    const textContent = Array.isArray(content) 
-      ? content.find((c: any) => c.type === "text")?.text || ""
-      : typeof content === "string" ? content : "";
+    let textContent = "";
+    if (Array.isArray(content)) {
+      const textItem = content.find((c: { type: string }) => c.type === "text");
+      textContent = textItem && "text" in textItem ? (textItem as { type: string; text: string }).text : "";
+    } else if (typeof content === "string") {
+      textContent = content;
+    }
 
     return {
       content: textContent,
@@ -382,7 +478,8 @@ export class EnhancedAIService {
 
     try {
       const formData = new FormData();
-      formData.append("file", new Blob([audioData]), "audio.wav");
+      const uint8Array = new Uint8Array(audioData);
+      formData.append("file", new Blob([uint8Array]), "audio.wav");
       formData.append("model", "saarika:v2");
       formData.append("language_code", language ? INDIAN_LANGUAGES[language].sarvamCode : "unknown");
 
