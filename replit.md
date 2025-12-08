@@ -189,8 +189,34 @@
 - `POST /api/ai/analyze-task` - Analyze task complexity and get recommended tier/model
 - `POST /api/ai/smart-route` - Auto-route request to best-fit model based on task
 
+### WAI SDK Orchestration API Endpoints
+- `GET /api/ai/wai-sdk/agents` - List all 203 agents with metadata
+- `GET /api/ai/wai-sdk/agents/:agentId` - Get agent details with full system prompt
+- `GET /api/ai/wai-sdk/agents/category/:category` - Get agents by vertical
+- `GET /api/ai/wai-sdk/stats` - Orchestration statistics
+- `POST /api/ai/wai-sdk/execute` - Execute task through orchestration layer
+- `POST /api/ai/wai-sdk/generate-content` - Generate content via agents
+- `POST /api/ai/wai-sdk/analyze` - Analyze performance via agents
+- `POST /api/ai/wai-sdk/support` - Handle support via WhatsApp agents
+- `GET /api/ai/wai-sdk/tiers` - Get model and agent tier configurations
+- `GET /api/ai/wai-sdk/system-prompt/:agentId` - Get full system prompt
+
+## Agent System Prompt Structure (6-Part Format)
+
+All 203 agents follow standardized system prompts with:
+1. **IDENTITY & ROLE**: Agent ID, name, category, tier, mission, objectives
+2. **CAPABILITIES & EXPERTISE**: Skills, jurisdictions, languages (12 Indian languages)
+3. **TOOLS & RESOURCES**: Available tools, database access, external APIs
+4. **RESPONSE FORMAT**: Structured output schemas with confidence scoring
+5. **COORDINATION PROTOCOL**: Collaboration, escalation paths, handoff procedures
+6. **GUARDRAILS & CONSTRAINTS**: Legal boundaries, ethical constraints, jurisdiction limits
+
 ## Recent Changes
-- 2025-12-08: **Implemented 4-Tier Model Architecture with Smart Router**
+- 2025-12-08: **Implemented 6-part agent system prompt structure for all 203 agents**
+- 2025-12-08: **Created WAI-SDK orchestration layer as single source of truth**
+- 2025-12-08: **Added full agent registry with 203 agents across 7 verticals**
+- 2025-12-08: Added jurisdiction-aware guardrails (India, UAE, Saudi, Singapore, Global)
+- 2025-12-08: Implemented 4-Tier Model Architecture with Smart Router
 - 2025-12-08: Added 34 core models to LLM registry (from 17 to 34)
 - 2025-12-08: Created task complexity analyzer for intelligent model selection
 - 2025-12-08: Added Smart Route API endpoints for auto-routing

@@ -1,5 +1,7 @@
 import { Router, Request, Response } from "express";
-import { enhancedAIService, AIProvider, SupportedLanguage, INDIAN_LANGUAGES, LLM_REGISTRY } from "../services/enhanced-ai-service";
+import { enhancedAIService, AIProvider, SupportedLanguage, INDIAN_LANGUAGES, LLM_REGISTRY, MODEL_TIERS } from "../services/enhanced-ai-service";
+import { waiOrchestration } from "../services/wai-sdk-orchestration";
+import { ALL_AGENTS, TIER_DEFINITIONS, JURISDICTION_REGULATIONS, getAgentsByCategory, getAgentsByTier, getAgentById, generateSystemPrompt } from "../services/agent-system-prompts";
 import { db } from "../db";
 import { campaigns, leads, socialPosts, performanceAds } from "@shared/schema";
 import { desc, eq, sql } from "drizzle-orm";
@@ -388,6 +390,197 @@ router.post("/smart-route", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Smart route error:", error);
     res.status(500).json({ error: "Failed to process smart route" });
+  }
+});
+
+router.get("/wai-sdk/agents", async (_req: Request, res: Response) => {
+  try {
+    const registry = waiOrchestration.getAgentRegistry();
+    res.json({
+      totalAgents: ALL_AGENTS.length,
+      agents: ALL_AGENTS.map(a => ({
+        id: a.identity.id,
+        name: a.identity.name,
+        category: a.identity.category,
+        tier: a.identity.tier,
+        mission: a.identity.mission
+      })),
+      categories: registry.categories,
+      tiers: registry.tiers
+    });
+  } catch (error) {
+    console.error("WAI agents error:", error);
+    res.status(500).json({ error: "Failed to get agents" });
+  }
+});
+
+router.get("/wai-sdk/agents/:agentId", async (req: Request, res: Response) => {
+  try {
+    const { agentId } = req.params;
+    const agent = getAgentById(agentId);
+    
+    if (!agent) {
+      return res.status(404).json({ error: "Agent not found" });
+    }
+    
+    res.json({
+      agent,
+      systemPrompt: generateSystemPrompt(agent)
+    });
+  } catch (error) {
+    console.error("WAI agent error:", error);
+    res.status(500).json({ error: "Failed to get agent" });
+  }
+});
+
+router.get("/wai-sdk/agents/category/:category", async (req: Request, res: Response) => {
+  try {
+    const { category } = req.params;
+    const agents = getAgentsByCategory(category as any);
+    
+    res.json({
+      category,
+      count: agents.length,
+      agents: agents.map(a => ({
+        id: a.identity.id,
+        name: a.identity.name,
+        tier: a.identity.tier,
+        mission: a.identity.mission,
+        skills: a.capabilities.skills
+      }))
+    });
+  } catch (error) {
+    console.error("WAI category agents error:", error);
+    res.status(500).json({ error: "Failed to get agents by category" });
+  }
+});
+
+router.get("/wai-sdk/stats", async (_req: Request, res: Response) => {
+  try {
+    const stats = waiOrchestration.getOrchestrationStats();
+    res.json(stats);
+  } catch (error) {
+    console.error("WAI stats error:", error);
+    res.status(500).json({ error: "Failed to get orchestration stats" });
+  }
+});
+
+router.post("/wai-sdk/execute", async (req: Request, res: Response) => {
+  try {
+    const { type, vertical, description, priority, capabilities, jurisdictions, language, context, constraints } = req.body;
+    
+    if (!vertical || !description) {
+      return res.status(400).json({ error: "Vertical and description are required" });
+    }
+    
+    const task = {
+      id: `task-${Date.now()}`,
+      type: type || "generation",
+      vertical,
+      description,
+      priority: priority || "medium",
+      requiredCapabilities: capabilities || [],
+      targetJurisdictions: jurisdictions || ["global"],
+      language: language || "en",
+      context: context || {},
+      constraints
+    };
+    
+    const result = await waiOrchestration.executeTask(task);
+    res.json(result);
+  } catch (error) {
+    console.error("WAI execute error:", error);
+    res.status(500).json({ error: "Failed to execute task" });
+  }
+});
+
+router.post("/wai-sdk/generate-content", async (req: Request, res: Response) => {
+  try {
+    const { vertical, contentType, context, language, jurisdiction } = req.body;
+    
+    if (!vertical || !contentType) {
+      return res.status(400).json({ error: "Vertical and content type are required" });
+    }
+    
+    const result = await waiOrchestration.generateContent(
+      vertical,
+      contentType,
+      context || {},
+      language || "en",
+      jurisdiction || "global"
+    );
+    
+    res.json(result);
+  } catch (error) {
+    console.error("WAI generate content error:", error);
+    res.status(500).json({ error: "Failed to generate content" });
+  }
+});
+
+router.post("/wai-sdk/analyze", async (req: Request, res: Response) => {
+  try {
+    const { vertical, metrics, jurisdiction } = req.body;
+    
+    if (!vertical || !metrics) {
+      return res.status(400).json({ error: "Vertical and metrics are required" });
+    }
+    
+    const result = await waiOrchestration.analyzePerformance(
+      vertical,
+      metrics,
+      jurisdiction || "global"
+    );
+    
+    res.json(result);
+  } catch (error) {
+    console.error("WAI analyze error:", error);
+    res.status(500).json({ error: "Failed to analyze performance" });
+  }
+});
+
+router.post("/wai-sdk/support", async (req: Request, res: Response) => {
+  try {
+    const { message, language, customerId, jurisdiction } = req.body;
+    
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+    
+    const result = await waiOrchestration.handleSupport(
+      message,
+      language || "en",
+      customerId,
+      jurisdiction || "india"
+    );
+    
+    res.json(result);
+  } catch (error) {
+    console.error("WAI support error:", error);
+    res.status(500).json({ error: "Failed to handle support request" });
+  }
+});
+
+router.get("/wai-sdk/tiers", async (_req: Request, res: Response) => {
+  res.json({
+    modelTiers: MODEL_TIERS,
+    agentTiers: TIER_DEFINITIONS,
+    jurisdictions: JURISDICTION_REGULATIONS
+  });
+});
+
+router.get("/wai-sdk/system-prompt/:agentId", async (req: Request, res: Response) => {
+  try {
+    const { agentId } = req.params;
+    const systemPrompt = waiOrchestration.getAgentSystemPrompt(agentId);
+    
+    if (!systemPrompt) {
+      return res.status(404).json({ error: "Agent not found" });
+    }
+    
+    res.json({ agentId, systemPrompt });
+  } catch (error) {
+    console.error("WAI system prompt error:", error);
+    res.status(500).json({ error: "Failed to get system prompt" });
   }
 });
 
