@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CommandCenter } from "@/components/command-center";
+import { ContentLibrary } from "@/components/content-library";
 
 const INDIAN_LANGUAGES = {
   en: { name: "English", nativeName: "English" },
@@ -423,19 +425,27 @@ export default function Market360Dashboard() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Market360</h1>
-            <p className="text-sm text-gray-500">Self-Driving Agency Platform</p>
+          <div className="flex items-center gap-4">
+            <a href="/" className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                <span className="text-white text-lg">M</span>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Market360</h1>
+                <p className="text-xs text-gray-500">Self-Driving Agency</p>
+              </div>
+            </a>
+            <CommandCenter className="ml-4" />
           </div>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4 text-xs">
-              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">23 LLMs</span>
-              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">752 Models</span>
-              <span className="px-2 py-1 bg-green-100 text-green-700 rounded">267 Agents</span>
-              <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded">12 Languages</span>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">23 LLMs</span>
+              <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded font-medium">752 Models</span>
+              <span className="px-2 py-1 bg-green-100 text-green-700 rounded font-medium">267 Agents</span>
+              <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded font-medium">12 Languages</span>
             </div>
             <span className="flex items-center gap-2 text-sm">
-              <span className={`w-2 h-2 rounded-full ${apiHealth?.status === "ok" ? "bg-green-500" : "bg-red-500"}`}></span>
+              <span className={`w-2 h-2 rounded-full ${apiHealth?.status === "ok" ? "bg-green-500 animate-pulse" : "bg-red-500"}`}></span>
               {apiHealth?.status === "ok" ? "Systems Online" : "Connecting..."}
             </span>
           </div>
@@ -484,24 +494,27 @@ export default function Market360Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2">
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-5">
             <ChiefOfStaffChat />
             <div className="mt-4">
               <CampaignManager />
             </div>
-            {activeVertical && (
-              <div className="mt-4">
-                <VerticalPanel vertical={activeVertical} />
-              </div>
-            )}
           </div>
-          <div>
+          <div className="col-span-4">
+            <ContentLibrary vertical={activeVertical || undefined} />
+          </div>
+          <div className="col-span-3">
             <AgentActivityFeed />
             <div className="mt-4">
               <QuickActions />
             </div>
           </div>
+          {activeVertical && (
+            <div className="col-span-12">
+              <VerticalPanel vertical={activeVertical} />
+            </div>
+          )}
         </div>
       </div>
     </div>

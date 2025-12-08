@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { FlowBuilder } from "@/components/flow-builder";
+import { ContentLibrary } from "@/components/content-library";
 
 const verticalConfig: Record<string, { name: string; icon: string; color: string; agents: string[]; kpis: string[] }> = {
   social: {
@@ -832,6 +834,11 @@ function WhatsAppDashboard() {
             <span className="text-xs text-gray-400">Resolved</span>
           </div>
         </div>
+      </div>
+
+      <div className="bg-white rounded-lg border p-4">
+        <h3 className="font-semibold mb-4">Automation Flows</h3>
+        <FlowBuilder vertical="whatsapp" />
       </div>
     </div>
   );
