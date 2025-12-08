@@ -175,6 +175,12 @@ import sarvamTranslationRoutes from "./routes/sarvam-translation-routes";
 // Sarvam AI Voice Routes - STT (Saarika v2) and TTS (Bulbul v1)
 import sarvamVoiceRoutes from "./routes/sarvam-voice-routes";
 
+// Social Media Vertical Routes - Full workflow (Ideation -> Creation -> Scheduling -> Engagement -> Analytics)
+import socialMediaVerticalRoutes from "./routes/social-media-vertical-routes";
+
+// Market360 Vertical Workflow Routes - All 7 verticals with unified workflow execution
+import market360VerticalRoutes from "./routes/market360-vertical-routes";
+
 // LLM Model Updater Routes - Automated model registry updates
 import llmModelUpdaterRoutes from "./routes/llm-model-updater-routes";
 
@@ -717,6 +723,12 @@ app.use('/api/translations', sarvamTranslationRoutes);
 
 // Sarvam AI Voice API - STT (Saarika v2) and TTS (Bulbul v1)
 app.use('/api/voice', sarvamVoiceRoutes);
+
+// Social Media Vertical API - Full workflow (Ideation -> Creation -> Scheduling -> Engagement -> Analytics)
+app.use('/api/market360/social', socialMediaVerticalRoutes);
+
+// Market360 Vertical Workflow API - All 7 verticals with unified workflow execution
+app.use('/api/market360/verticals', market360VerticalRoutes);
 
 // LLM Model Updater API - Automated model registry system
 app.use('/api/llm-models', llmModelUpdaterRoutes);
