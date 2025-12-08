@@ -172,6 +172,9 @@ import multiLanguageSandboxRoutes from "./routes/multi-language-sandbox-routes";
 // Sarvam AI Translation Routes - All 22 Indian Languages + English
 import sarvamTranslationRoutes from "./routes/sarvam-translation-routes";
 
+// Sarvam AI Voice Routes - STT (Saarika v2) and TTS (Bulbul v1)
+import sarvamVoiceRoutes from "./routes/sarvam-voice-routes";
+
 // LLM Model Updater Routes - Automated model registry updates
 import llmModelUpdaterRoutes from "./routes/llm-model-updater-routes";
 
@@ -711,6 +714,9 @@ app.use('/api/language-switching', advancedLanguageSwitchingRoutes);
 
 // Sarvam AI Translation API - All 22 Indian Languages + English
 app.use('/api/translations', sarvamTranslationRoutes);
+
+// Sarvam AI Voice API - STT (Saarika v2) and TTS (Bulbul v1)
+app.use('/api/voice', sarvamVoiceRoutes);
 
 // LLM Model Updater API - Automated model registry system
 app.use('/api/llm-models', llmModelUpdaterRoutes);
