@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppShell from "../components/layout/app-shell";
 import ChatWorkspace from "../components/chat/chat-workspace";
 import KPICard from "../components/dashboard/kpi-card";
@@ -200,10 +200,65 @@ const verticalConfig: Record<string, {
   }
 };
 
+interface MarketingAgent {
+  id: string;
+  name: string;
+  tier: string;
+  description: string;
+  mission: string;
+  skills: string[];
+  tools: string[];
+}
+
 export default function VerticalPage({ vertical }: VerticalPageProps) {
   const [activeTab, setActiveTab] = useState<"workspace" | "analytics" | "agents">("workspace");
+  const [marketingAgents, setMarketingAgents] = useState<MarketingAgent[]>([]);
+  const [agentStats, setAgentStats] = useState<any>(null);
+  const [loadingAgents, setLoadingAgents] = useState(false);
   const config = verticalConfig[vertical] || verticalConfig.social;
   const Icon = config.icon;
+
+  useEffect(() => {
+    if (activeTab === "agents") {
+      fetchMarketingAgents();
+    }
+  }, [activeTab, vertical]);
+
+  const fetchMarketingAgents = async () => {
+    setLoadingAgents(true);
+    try {
+      const response = await fetch(`/api/marketing-agents/category/${vertical}`);
+      if (response.ok) {
+        const data = await response.json();
+        setMarketingAgents(data.agents || []);
+      }
+      const statsResponse = await fetch('/api/marketing-agents/stats');
+      if (statsResponse.ok) {
+        const stats = await statsResponse.json();
+        setAgentStats(stats);
+      }
+    } catch (error) {
+      console.error("Failed to fetch agents:", error);
+    } finally {
+      setLoadingAgents(false);
+    }
+  };
+
+  const tierColors: Record<string, string> = {
+    L0: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+    L1: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+    L2: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300",
+    L3: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+    L4: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300"
+  };
+
+  const tierLabels: Record<string, string> = {
+    L0: "Reactive",
+    L1: "Proactive",
+    L2: "Autonomous",
+    L3: "Collaborative",
+    L4: "Self-Evolving"
+  };
 
   return (
     <AppShell>
@@ -288,48 +343,92 @@ export default function VerticalPage({ vertical }: VerticalPageProps) {
             </div>
           ) : (
             <div className="p-6 bg-gray-50 dark:bg-gray-900 h-full overflow-auto">
-              <div className="max-w-4xl mx-auto">
+              <div className="max-w-6xl mx-auto space-y-6">
+                {agentStats && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                      <div className="text-3xl font-bold text-gray-900 dark:text-white">{agentStats.totalAgents}</div>
+                      <div className="text-sm text-gray-500">Total Agents</div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                      <div className="text-3xl font-bold text-emerald-600">{marketingAgents.length}</div>
+                      <div className="text-sm text-gray-500">{config.name} Agents</div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                      <div className="text-3xl font-bold text-blue-600">{agentStats.tierCounts?.L2 || 0}</div>
+                      <div className="text-sm text-gray-500">Autonomous (L2)</div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                      <div className="text-3xl font-bold text-purple-600">{agentStats.tierCounts?.L3 || 0}</div>
+                      <div className="text-sm text-gray-500">Collaborative (L3)</div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">{config.name} Agents</h3>
-                    <p className="text-sm text-gray-500 mt-1">AI agents specialized for {config.name.toLowerCase()} tasks</p>
+                  <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{config.name} Marketing Agents</h3>
+                      <p className="text-sm text-gray-500 mt-1">{marketingAgents.length} AI agents specialized for {config.name.toLowerCase()} marketing</p>
+                    </div>
+                    <div className="flex gap-2">
+                      {Object.entries(tierLabels).map(([tier, label]) => (
+                        <span key={tier} className={`px-2 py-1 text-xs font-medium rounded-full ${tierColors[tier]}`}>
+                          {tier}: {label}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   
-                  <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {config.agents.map((agent, i) => (
-                      <div key={i} className="px-5 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${config.bgGradient} flex items-center justify-center`}>
-                            <Bot className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{agent.name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className={`w-2 h-2 rounded-full ${
-                                agent.status === "active" ? "bg-emerald-500" :
-                                agent.status === "working" ? "bg-blue-500 animate-pulse" :
-                                "bg-gray-400"
-                              }`} />
-                              <span className="text-sm text-gray-500 capitalize">{agent.status}</span>
+                  {loadingAgents ? (
+                    <div className="px-5 py-12 text-center">
+                      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                      <p className="text-gray-500">Loading agents...</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-100 dark:divide-gray-700 max-h-[500px] overflow-auto">
+                      {marketingAgents.map((agent) => (
+                        <div key={agent.id} className="px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-4">
+                              <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${config.bgGradient} flex items-center justify-center flex-shrink-0`}>
+                                <Bot className="w-5 h-5 text-white" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <p className="font-medium text-gray-900 dark:text-white">{agent.name}</p>
+                                  <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${tierColors[agent.tier]}`}>
+                                    {agent.tier}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-gray-500 mt-0.5">{agent.mission}</p>
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {agent.skills.slice(0, 3).map((skill, i) => (
+                                    <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+                                      {skill}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <div className="flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                                <span className="text-xs text-gray-500">Ready</span>
+                              </div>
+                              <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                <Play className="w-4 h-4 text-gray-500" />
+                              </button>
+                              <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                <Settings className="w-4 h-4 text-gray-500" />
+                              </button>
                             </div>
                           </div>
                         </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                            {agent.status === "active" ? (
-                              <Pause className="w-4 h-4 text-gray-500" />
-                            ) : (
-                              <Play className="w-4 h-4 text-gray-500" />
-                            )}
-                          </button>
-                          <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                            <Settings className="w-4 h-4 text-gray-500" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
