@@ -119,7 +119,7 @@ const features = [
 
 const testimonials = [
   {
-    quote: "Market360 transformed our marketing operations. We now run campaigns in 8 languages with a single AI command.",
+    quote: "Wizards Tech transformed our marketing operations. We now run campaigns in 8 languages with a single AI command.",
     author: "Rajesh Kumar",
     company: "TechMahindra Digital",
     role: "VP Marketing",
@@ -141,36 +141,6 @@ const testimonials = [
   },
 ];
 
-const pricing = [
-  {
-    name: 'Starter',
-    price: '₹9,999',
-    period: '/month',
-    description: 'Perfect for small businesses',
-    features: ['50 AI agents', '3 verticals', '2 languages', '10K messages/month', 'Email support'],
-    cta: 'Start Free Trial',
-    popular: false
-  },
-  {
-    name: 'Growth',
-    price: '₹29,999',
-    period: '/month',
-    description: 'For scaling marketing teams',
-    features: ['150 AI agents', 'All 7 verticals', 'All 12 languages', '100K messages/month', 'Priority support', 'Custom workflows'],
-    cta: 'Start Free Trial',
-    popular: true
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For large organizations',
-    features: ['267 AI agents', 'All verticals + custom', 'White-label option', 'Unlimited messages', 'Dedicated CSM', 'SLA guarantee', 'API access'],
-    cta: 'Contact Sales',
-    popular: false
-  },
-];
-
 export default function LandingPage() {
   const [, setLocation] = useLocation();
   const [activeVertical, setActiveVertical] = useState(verticals[0]);
@@ -185,18 +155,18 @@ export default function LandingPage() {
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold">
-                <span className="text-blue-600">Market</span>
-                <span className="text-purple-600">360</span>
+                <span className="text-blue-600">Wizards</span>
+                <span className="text-purple-600">Tech</span>
               </span>
               <Badge className="ml-2 bg-green-100 text-green-700 border-green-200">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
-                267 Agents Active
+                Internal Platform
               </Badge>
             </div>
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium">Features</a>
               <a href="#verticals" className="text-gray-600 hover:text-gray-900 font-medium">Verticals</a>
-              <a href="#pricing" className="text-gray-600 hover:text-gray-900 font-medium">Pricing</a>
+              <a href="#brands" className="text-gray-600 hover:text-gray-900 font-medium">Brands</a>
             </div>
             <div className="flex items-center gap-3">
               <Button variant="ghost" onClick={() => setLocation('/login')}>Sign In</Button>
@@ -223,7 +193,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
             >
               <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200 text-sm px-4 py-2">
-                India's #1 AI-Powered Marketing Platform
+                Wizards Tech Global - Internal Agency Platform
               </Badge>
               
               <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
@@ -233,7 +203,7 @@ export default function LandingPage() {
                   Marketing Agency
                 </span>
                 <br />
-                for India
+                for Your Brands
               </h1>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
@@ -245,34 +215,35 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button 
                   size="lg"
-                  onClick={() => setLocation('/market360')}
+                  onClick={() => setLocation('/brand-onboarding')}
                   className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
                   <Zap className="mr-2 h-5 w-5" />
-                  Start Free Trial
+                  Onboard New Brand
                 </Button>
                 <Button 
                   size="lg"
                   variant="outline"
+                  onClick={() => setLocation('/market360')}
                   className="text-lg px-8 py-6 border-gray-300 hover:bg-gray-50"
                 >
                   <Play className="mr-2 h-5 w-5" />
-                  Watch Demo
+                  Go to Dashboard
                 </Button>
               </div>
 
               <div className="flex items-center gap-6 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500" />
-                  No credit card required
+                  Brand Management
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500" />
-                  14-day free trial
+                  Full Service Marketing
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500" />
-                  Cancel anytime
+                  Invoicing & Payments
                 </div>
               </div>
             </motion.div>
@@ -540,52 +511,51 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section id="brands" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-orange-100 text-orange-700 border-orange-200">Simple Pricing</Badge>
-            <h2 className="text-4xl font-bold mb-4">Plans That Scale With You</h2>
-            <p className="text-xl text-gray-600">Start free. Upgrade as you grow.</p>
+            <Badge className="mb-4 bg-orange-100 text-orange-700 border-orange-200">Agency ERP</Badge>
+            <h2 className="text-4xl font-bold mb-4">Complete Brand Management</h2>
+            <p className="text-xl text-gray-600">Onboard brands, manage services, track invoices, and deliver results.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {pricing.map((plan) => (
-              <Card 
-                key={plan.name} 
-                className={`relative border-2 ${plan.popular ? 'border-blue-500 shadow-xl' : 'border-gray-200'}`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-blue-600 text-white">Most Popular</Badge>
-                  </div>
-                )}
-                <CardContent className="p-8">
-                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-gray-500 text-sm mb-4">{plan.description}</p>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-gray-500">{plan.period}</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2">
-                        <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className={`w-full ${plan.popular 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600' 
-                      : 'bg-gray-900 hover:bg-gray-800'
-                    }`}
-                    onClick={() => setLocation('/market360')}
-                  >
-                    {plan.cta}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="grid md:grid-cols-4 gap-6">
+            <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
+                <h3 className="font-bold mb-2">Brand Onboarding</h3>
+                <p className="text-gray-600 text-sm">Wizard-based onboarding with guidelines, assets, and service selection</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="h-6 w-6 text-purple-600" />
+                </div>
+                <h3 className="font-bold mb-2">Service Packages</h3>
+                <p className="text-gray-600 text-sm">Full or partial marketing services across 7 verticals</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center mx-auto mb-4">
+                  <LineChart className="h-6 w-6 text-green-600" />
+                </div>
+                <h3 className="font-bold mb-2">Finance & Invoicing</h3>
+                <p className="text-gray-600 text-sm">Invoices, payments, receivables, and GST compliance</p>
+              </CardContent>
+            </Card>
+            <Card className="border-gray-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-6 w-6 text-orange-600" />
+                </div>
+                <h3 className="font-bold mb-2">Analytics Studio</h3>
+                <p className="text-gray-600 text-sm">Per-brand dashboards, cross-brand rollups, custom reports</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
@@ -593,27 +563,28 @@ export default function LandingPage() {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to Transform Your Marketing?
+            Ready to Onboard a New Brand?
           </h2>
           <p className="text-xl text-white/80 mb-8">
-            Join 1000+ Indian brands using Market360 to automate marketing across 7 verticals.
+            Start the brand onboarding process to configure services, upload assets, and begin marketing operations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
-              onClick={() => setLocation('/market360')}
+              onClick={() => setLocation('/brand-onboarding')}
               className="text-lg px-8 py-6 bg-white text-blue-600 hover:bg-gray-100"
             >
               <Zap className="mr-2 h-5 w-5" />
-              Start Free Trial
+              Onboard New Brand
             </Button>
             <Button 
               size="lg"
               variant="outline"
+              onClick={() => setLocation('/market360')}
               className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
             >
-              <Phone className="mr-2 h-5 w-5" />
-              Schedule Demo
+              <Play className="mr-2 h-5 w-5" />
+              View Dashboard
             </Button>
           </div>
         </div>
@@ -627,14 +598,14 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-xl font-bold">Market360</span>
+                <span className="text-xl font-bold">Wizards Tech Global</span>
               </div>
               <p className="text-gray-400 text-sm">
-                India's first AI-powered self-driving marketing agency platform.
+                AI-powered self-driving marketing agency platform for brand management and marketing operations.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Verticals</h4>
+              <h4 className="font-semibold mb-4">Marketing Verticals</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
                 {verticals.map((v) => (
                   <li key={v.id}><a href={`/market360/${v.id}`} className="hover:text-white">{v.name}</a></li>
@@ -642,25 +613,25 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
+              <h4 className="font-semibold mb-4">Platform</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#" className="hover:text-white">About Us</a></li>
-                <li><a href="#" className="hover:text-white">Careers</a></li>
-                <li><a href="#" className="hover:text-white">Blog</a></li>
-                <li><a href="#" className="hover:text-white">Contact</a></li>
+                <li><a href="/brand-onboarding" className="hover:text-white">Brand Onboarding</a></li>
+                <li><a href="/market360" className="hover:text-white">Dashboard</a></li>
+                <li><a href="/market360" className="hover:text-white">Analytics</a></li>
+                <li><a href="/market360" className="hover:text-white">Invoicing</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> hello@market360.in</li>
-                <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> +91 80 4567 8900</li>
-                <li className="flex items-center gap-2"><Globe className="h-4 w-4" /> Bangalore, India</li>
+                <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> info@wizardstechglobal.com</li>
+                <li className="flex items-center gap-2"><Globe className="h-4 w-4" /> www.wizardstechglobal.com</li>
+                <li className="flex items-center gap-2"><Globe className="h-4 w-4" /> India | UAE | Global</li>
               </ul>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-            © 2024 Market360. All rights reserved. | Privacy Policy | Terms of Service
+            © 2024 Wizards Tech Global. All rights reserved. | Internal Platform
           </div>
         </div>
       </footer>

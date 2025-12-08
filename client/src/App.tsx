@@ -29,6 +29,7 @@ export default function App() {
               {(params) => <VerticalDashboard vertical={params.vertical} />}
             </Route>
             <Route path="/onboarding" component={BrandOnboarding} />
+            <Route path="/brand-onboarding" component={BrandOnboarding} />
             <Route path="/orchestration" component={OrchestrationDashboard} />
             <Route component={NotFound} />
           </Switch>

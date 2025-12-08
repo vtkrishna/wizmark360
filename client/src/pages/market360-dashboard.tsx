@@ -428,11 +428,14 @@ export default function Market360Dashboard() {
           <div className="flex items-center gap-4">
             <a href="/" className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                <span className="text-white text-lg">M</span>
+                <span className="text-white text-lg">W</span>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Market360</h1>
-                <p className="text-xs text-gray-500">Self-Driving Agency</p>
+                <h1 className="text-xl font-bold text-gray-900">
+                  <span className="text-blue-600">Wizards</span>
+                  <span className="text-purple-600">Tech</span>
+                </h1>
+                <p className="text-xs text-gray-500">Self-Driving Agency Platform</p>
               </div>
             </a>
             <CommandCenter className="ml-4" />

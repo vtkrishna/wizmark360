@@ -1137,7 +1137,7 @@ export default function VerticalDashboard({ vertical }: { vertical: string }) {
             <span className="text-3xl">{config.icon}</span>
             <div>
               <h1 className="text-2xl font-bold">{config.name}</h1>
-              <p className="text-sm opacity-80">Market360 Vertical Dashboard</p>
+              <p className="text-sm opacity-80">Wizards Tech Vertical Dashboard</p>
             </div>
           </div>
           <a href="/market360" className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
