@@ -58,6 +58,25 @@ The application is built with React for the frontend and Express for the backend
 - **Build System**: Vite for development and production bundling.
 - **Replit-Specific Configuration**: Vite configured for Replit proxy support (`allowedHosts: true`), server binding to `0.0.0.0:5000`, and HMR for WSS on port 443.
 
+## Recent Updates
+
+### Vertical Workflow Implementation (December 2024)
+- **Social Media Vertical Service**: Full 9-step workflow (Trend Analysis → Content Ideation → Content Creation → Visual Production → Content Review → Schedule Optimization → Publication → Engagement Monitoring → Performance Analytics)
+- **Unified Vertical Workflow Service**: All 7 verticals now have complete workflow definitions with step-by-step execution and ROMA-aware agent selection
+- **MCP Tool Catalog**: 156 tools registered with proper vertical distribution, ROMA level requirements, and standardized schemas
+- **Sarvam Voice Integration**: STT (Saarika v2) and TTS (Bulbul v1) with 24 voices across 12 Indian languages
+
+### API Endpoints
+- `/api/voice/*` - Sarvam Voice API (STT/TTS)
+- `/api/market360/social/*` - Social Media vertical endpoints
+- `/api/market360/verticals/*` - Unified vertical workflow API for all 7 verticals
+
+### Frontend Dashboards
+- Updated vertical dashboards with correct agent counts per vertical
+- Key agents displayed with ROMA levels (L1-L4)
+- Workflow step visualization for each vertical
+- KPI tracking for vertical-specific metrics
+
 ## External Dependencies
 
 -   **LLM Providers**: OpenAI, Anthropic, Gemini, Groq, Cohere, Sarvam AI, DeepSeek, Mistral, Perplexity, Together, OpenRouter, xAI, Replicate, Fireworks, Anyscale, HuggingFace, AWS Bedrock, Azure OpenAI, VertexAI, Ollama.
