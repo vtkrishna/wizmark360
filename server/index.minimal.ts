@@ -13,6 +13,7 @@ import helmet from 'helmet';
 import { log, setupVite, serveStatic } from "./vite";
 import market360Router from "./routes/market360";
 import aiRouter from "./routes/ai";
+import brandsRouter from "./routes/brands";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -74,6 +75,9 @@ app.use('/api/market360', market360Router);
 
 // AI API routes
 app.use('/api/ai', aiRouter);
+
+// Brands/ERP API routes
+app.use('/api/brands', brandsRouter);
 
 async function startServer() {
   try {

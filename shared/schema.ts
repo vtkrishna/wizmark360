@@ -7463,8 +7463,8 @@ export const documentEmbeddings = pgTable("document_embeddings", {
   text: text("text").notNull(), // The text that was embedded
   textHash: text("text_hash").notNull(), // Hash for deduplication
   
-  // Vector embedding
-  embedding: vector("embedding").notNull(), // 1536-dimensional vector for text-embedding-3-small
+  // Vector embedding (stored as JSON array for compatibility without pgvector)
+  embedding: jsonb("embedding").notNull(), // 1536-dimensional vector as JSON array
   
   // Embedding metadata
   model: text("model").notNull().default("text-embedding-3-small"),

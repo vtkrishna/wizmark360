@@ -6,7 +6,7 @@ if (!process.env.DATABASE_URL) {
 
 export default defineConfig({
   out: "./migrations",
-  schema: "./shared/schema.ts",
+  schema: ["./shared/schema.ts", "./shared/agency-erp-schema.ts"],
   driver: "pg",
   dbCredentials: {
     connectionString: process.env.DATABASE_URL,
