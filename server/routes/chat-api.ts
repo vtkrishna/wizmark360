@@ -1,6 +1,20 @@
 import { Router, Request, Response } from "express";
 import { chiefOfStaffService, ChatRequest, Vertical } from "../services/chief-of-staff-service";
 import { ALL_MARKETING_AGENTS, getAgentsByCategory, getAgentById, getAgentsByTier, AGENT_COUNTS } from "../agents/marketing-agents-catalog";
+import { 
+  ALL_HIERARCHICAL_AGENTS, 
+  AGENT_STATS as HIERARCHICAL_STATS,
+  getAgentById as getHierarchicalAgentById,
+  getAgentsByCategory as getHierarchicalAgentsByCategory,
+  getAgentsByRole,
+  getAgentsByTier as getHierarchicalAgentsByTier,
+  getVerticalHierarchy,
+  PLATFORM_AGENTS,
+  BRAND_AGENTS,
+  VERTICAL_AGENTS,
+  AgentCategory,
+  AgentRole
+} from "../agents/hierarchical-agent-catalog";
 
 const router = Router();
 
@@ -209,6 +223,168 @@ router.get("/marketing-agents/stats", async (_req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Agent stats API error:", error);
     res.status(500).json({ error: "Failed to get agent stats" });
+  }
+});
+
+router.get("/hierarchical-agents", async (req: Request, res: Response) => {
+  try {
+    const includePrompt = req.query.includePrompt === 'true';
+    res.json({
+      stats: HIERARCHICAL_STATS,
+      platform: PLATFORM_AGENTS.map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+      brand: BRAND_AGENTS.map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+      verticals: {
+        social: getHierarchicalAgentsByCategory("social").map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+        seo: getHierarchicalAgentsByCategory("seo").map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+        web: getHierarchicalAgentsByCategory("web").map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+        sales: getHierarchicalAgentsByCategory("sales").map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+        whatsapp: getHierarchicalAgentsByCategory("whatsapp").map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+        linkedin: getHierarchicalAgentsByCategory("linkedin").map(a => includePrompt ? a : { ...a, systemPrompt: undefined }),
+        performance: getHierarchicalAgentsByCategory("performance").map(a => includePrompt ? a : { ...a, systemPrompt: undefined })
+      }
+    });
+  } catch (error: any) {
+    console.error("Hierarchical agents API error:", error);
+    res.status(500).json({ error: "Failed to get hierarchical agents" });
+  }
+});
+
+router.get("/hierarchical-agents/stats", async (_req: Request, res: Response) => {
+  try {
+    res.json({
+      ...HIERARCHICAL_STATS,
+      hierarchy: {
+        platform: {
+          chiefOfStaff: 1,
+          qualityAssurance: 1,
+          compliance: 1
+        },
+        brand: {
+          brandOrchestrator: 1,
+          brandContextManager: 1
+        },
+        perVertical: {
+          director: 1,
+          orchestrator: 1,
+          manager: 1,
+          reviewer: 1,
+          approver: 1
+        }
+      },
+      romaLevels: {
+        L1: { name: "Proactive", description: "Pattern-Based Suggestions", count: HIERARCHICAL_STATS.byTier.L1 },
+        L2: { name: "Autonomous", description: "Approved Strategy Execution", count: HIERARCHICAL_STATS.byTier.L2 },
+        L3: { name: "Collaborative", description: "Multi-Agent Coordination", count: HIERARCHICAL_STATS.byTier.L3 },
+        L4: { name: "Self-Evolving", description: "Full Autonomous Operation", count: HIERARCHICAL_STATS.byTier.L4 }
+      }
+    });
+  } catch (error: any) {
+    console.error("Hierarchical stats API error:", error);
+    res.status(500).json({ error: "Failed to get hierarchical stats" });
+  }
+});
+
+router.get("/hierarchical-agents/vertical/:vertical", async (req: Request, res: Response) => {
+  try {
+    const { vertical } = req.params;
+    const validVerticals = ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance"];
+    
+    if (!validVerticals.includes(vertical)) {
+      return res.status(400).json({ error: "Invalid vertical", validVerticals });
+    }
+    
+    const hierarchy = getVerticalHierarchy(vertical as AgentCategory);
+    res.json({
+      vertical,
+      hierarchy: {
+        director: {
+          id: hierarchy.director.id,
+          name: hierarchy.director.name,
+          tier: hierarchy.director.tier,
+          mission: hierarchy.director.mission
+        },
+        orchestrator: {
+          id: hierarchy.orchestrator.id,
+          name: hierarchy.orchestrator.name,
+          tier: hierarchy.orchestrator.tier,
+          mission: hierarchy.orchestrator.mission
+        },
+        manager: {
+          id: hierarchy.manager.id,
+          name: hierarchy.manager.name,
+          tier: hierarchy.manager.tier,
+          mission: hierarchy.manager.mission
+        },
+        reviewer: {
+          id: hierarchy.reviewer.id,
+          name: hierarchy.reviewer.name,
+          tier: hierarchy.reviewer.tier,
+          mission: hierarchy.reviewer.mission
+        },
+        approver: {
+          id: hierarchy.approver.id,
+          name: hierarchy.approver.name,
+          tier: hierarchy.approver.tier,
+          mission: hierarchy.approver.mission
+        }
+      },
+      workflowPath: [
+        "Task arrives at Orchestrator",
+        "Orchestrator routes to Manager for execution",
+        "Manager creates content/campaign",
+        "Reviewer validates quality and compliance",
+        "Approver authorizes publication/launch",
+        "Director handles escalations and strategy"
+      ]
+    });
+  } catch (error: any) {
+    console.error("Vertical hierarchy API error:", error);
+    res.status(500).json({ error: "Failed to get vertical hierarchy" });
+  }
+});
+
+router.get("/hierarchical-agents/agent/:agentId", async (req: Request, res: Response) => {
+  try {
+    const { agentId } = req.params;
+    const agent = getHierarchicalAgentById(agentId);
+    
+    if (!agent) {
+      return res.status(404).json({ error: "Agent not found" });
+    }
+    
+    res.json(agent);
+  } catch (error: any) {
+    console.error("Hierarchical agent detail API error:", error);
+    res.status(500).json({ error: "Failed to get agent details" });
+  }
+});
+
+router.get("/hierarchical-agents/role/:role", async (req: Request, res: Response) => {
+  try {
+    const { role } = req.params;
+    const validRoles = ["director", "orchestrator", "manager", "reviewer", "approver", 
+                        "chief_of_staff", "quality_assurance", "compliance", 
+                        "brand_orchestrator", "brand_context_manager"];
+    
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ error: "Invalid role", validRoles });
+    }
+    
+    const agents = getAgentsByRole(role as any);
+    res.json({
+      role,
+      total: agents.length,
+      agents: agents.map(a => ({
+        id: a.id,
+        name: a.name,
+        category: a.category,
+        tier: a.tier,
+        mission: a.mission
+      }))
+    });
+  } catch (error: any) {
+    console.error("Role agents API error:", error);
+    res.status(500).json({ error: "Failed to get role agents" });
   }
 });
 

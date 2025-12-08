@@ -1,11 +1,11 @@
 import { 
   AgentSystemPrompt, 
-  AgentCategory, 
-  AgentTier, 
-  ALL_AGENTS, 
-  getAgentsByCategory, 
-  getAgentsByTier, 
-  getAgentById, 
+  AgentCategory as LegacyAgentCategory, 
+  AgentTier as LegacyAgentTier, 
+  ALL_AGENTS as LEGACY_AGENTS, 
+  getAgentsByCategory as getLegacyAgentsByCategory, 
+  getAgentsByTier as getLegacyAgentsByTier, 
+  getAgentById as getLegacyAgentById, 
   generateSystemPrompt,
   TIER_DEFINITIONS,
   JURISDICTION_REGULATIONS,
@@ -19,6 +19,34 @@ import {
   ModelTier,
   LLM_REGISTRY 
 } from "./enhanced-ai-service";
+import {
+  ALL_HIERARCHICAL_AGENTS,
+  HierarchicalAgent,
+  getAgentsByCategory as getHierarchicalAgentsByCategory,
+  getAgentsByRole,
+  getVerticalHierarchy,
+  AGENT_STATS as HIERARCHICAL_STATS,
+  AgentCategory,
+  AgentRole,
+  AgentTier
+} from "../agents/hierarchical-agent-catalog";
+import {
+  ALL_MARKET360_AGENTS,
+  Market360Agent,
+  getAgentsByVertical,
+  getAgentsByROMALevel,
+  getAgentById as getMarket360AgentById,
+  getAgentStats as getMarket360Stats,
+  Vertical,
+  ROMALevel
+} from "../agents/market360-agent-catalog";
+import {
+  PROVIDER_MANIFESTS,
+  PROVIDER_STATS,
+  getProviderById,
+  selectOptimalModel,
+  ModelTier as ProviderModelTier
+} from "./llm-provider-manifest";
 
 export interface WAITask {
   id: string;
@@ -76,11 +104,128 @@ export class WAISDKOrchestration {
     this.aiService = new EnhancedAIService();
   }
 
+  selectBestHierarchicalAgent(task: WAITask, targetRole: AgentRole = "manager"): HierarchicalAgent | null {
+    const validVerticals = ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance"];
+    if (!validVerticals.includes(task.vertical)) {
+      return getAgentsByRole("chief_of_staff")[0] || null;
+    }
+
+    const hierarchy = getVerticalHierarchy(task.vertical as AgentCategory);
+    
+    switch (task.type) {
+      case "analysis":
+      case "optimization":
+        return hierarchy.director;
+      case "content":
+      case "generation":
+        return hierarchy.manager;
+      case "automation":
+        return hierarchy.orchestrator;
+      case "support":
+        return hierarchy.manager;
+      default:
+        return hierarchy[targetRole] || hierarchy.manager;
+    }
+  }
+
+  selectMarket360Agent(task: WAITask): Market360Agent | null {
+    const validVerticals: Vertical[] = ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance"];
+    if (!validVerticals.includes(task.vertical as Vertical)) {
+      return null;
+    }
+    
+    const verticalAgents = getAgentsByVertical(task.vertical as Vertical);
+    if (verticalAgents.length === 0) {
+      return null;
+    }
+
+    let bestAgent: Market360Agent | null = null;
+    let bestScore = 0;
+
+    for (const agent of verticalAgents) {
+      let score = 0;
+
+      const capabilityMatch = agent.capabilities.filter(
+        (cap: string) => task.requiredCapabilities.some(
+          reqCap => cap.toLowerCase().includes(reqCap.toLowerCase()) ||
+                   reqCap.toLowerCase().includes(cap.toLowerCase())
+        )
+      ).length;
+      score += capabilityMatch * 25;
+
+      const romaWeight: Record<ROMALevel, number> = {
+        "L0": 5,
+        "L1": 10,
+        "L2": 20,
+        "L3": 30,
+        "L4": 40
+      };
+      score += romaWeight[agent.romaLevel];
+
+      if (agent.languages.includes(task.language as any)) {
+        score += 30;
+      }
+
+      const jurisdictionMatch = agent.jurisdictions.filter(
+        (j: string) => task.targetJurisdictions.includes(j as Jurisdiction) || j === "global"
+      ).length;
+      score += jurisdictionMatch * 15;
+
+      if (task.type === "analysis" || task.type === "optimization") {
+        if (agent.romaLevel === "L4" || agent.romaLevel === "L3") score += 20;
+        if (agent.id.includes("director") || agent.id.includes("orchestrator")) score += 15;
+      }
+      if (task.type === "generation" || task.type === "content") {
+        if (agent.romaLevel === "L2") score += 15;
+        if (agent.id.includes("writer") || agent.id.includes("creator") || agent.id.includes("generator")) score += 20;
+      }
+      if (task.type === "automation") {
+        if (agent.id.includes("automation") || agent.id.includes("bot")) score += 20;
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestAgent = agent;
+      }
+    }
+
+    return bestAgent;
+  }
+
+  selectOptimalModelFromManifest(task: WAITask): { provider: ProviderManifest; model: any } | null {
+    return selectOptimalModel({
+      type: task.type,
+      requiresSpeed: task.constraints?.maxLatency ? task.constraints.maxLatency < 2000 : false,
+      requiresIndianLanguages: task.language !== "en",
+      requiresVision: task.requiredCapabilities.includes("vision") || task.requiredCapabilities.includes("image"),
+      requiresReasoning: task.type === "analysis" || task.type === "optimization"
+    });
+  }
+
+  getPlatformStats(): { agents: ReturnType<typeof getMarket360Stats>; providers: typeof PROVIDER_STATS } {
+    return {
+      agents: getMarket360Stats(),
+      providers: PROVIDER_STATS
+    };
+  }
+
+  getMarket360AgentRegistry(): {
+    agents: Market360Agent[];
+    stats: ReturnType<typeof getMarket360Stats>;
+    providers: typeof PROVIDER_STATS;
+  } {
+    return {
+      agents: ALL_MARKET360_AGENTS,
+      stats: getMarket360Stats(),
+      providers: PROVIDER_STATS
+    };
+  }
+
   selectBestAgent(task: WAITask): AgentSystemPrompt | null {
-    const categoryAgents = getAgentsByCategory(task.vertical);
+    const categoryAgents = getLegacyAgentsByCategory(task.vertical as LegacyAgentCategory);
     
     if (categoryAgents.length === 0) {
-      return ALL_AGENTS[0];
+      return LEGACY_AGENTS[0];
     }
 
     let bestAgent: AgentSystemPrompt | null = null;
@@ -90,7 +235,7 @@ export class WAISDKOrchestration {
       let score = 0;
 
       const capabilityMatch = agent.capabilities.skills.filter(
-        skill => task.requiredCapabilities.some(
+        (skill: string) => task.requiredCapabilities.some(
           cap => skill.toLowerCase().includes(cap.toLowerCase()) || 
                  cap.toLowerCase().includes(skill.toLowerCase())
         )
@@ -98,7 +243,7 @@ export class WAISDKOrchestration {
       score += capabilityMatch * 20;
 
       const jurisdictionMatch = agent.capabilities.jurisdictions.filter(
-        j => task.targetJurisdictions.includes(j) || j === "global"
+        (j: Jurisdiction) => task.targetJurisdictions.includes(j) || j === "global"
       ).length;
       score += jurisdictionMatch * 15;
 
@@ -106,7 +251,7 @@ export class WAISDKOrchestration {
         score += 25;
       }
 
-      const tierWeight: Record<AgentTier, number> = {
+      const tierWeight: Record<LegacyAgentTier, number> = {
         "L0": 5,
         "L1": 10,
         "L2": 15,
@@ -172,6 +317,11 @@ export class WAISDKOrchestration {
   }
 
   async executeTask(task: WAITask): Promise<WAITaskResult> {
+    const m360Agent = this.selectMarket360Agent(task);
+    if (m360Agent) {
+      return this.executeMarket360Task(task, m360Agent);
+    }
+    
     const startTime = Date.now();
 
     const agent = this.selectBestAgent(task);
@@ -226,6 +376,147 @@ export class WAISDKOrchestration {
 
     this.completedTasks.push(result);
     return result;
+  }
+
+  async executeMarket360Task(task: WAITask, m360Agent: Market360Agent): Promise<WAITaskResult> {
+    const startTime = Date.now();
+
+    const modelSelection = this.selectOptimalModelFromManifest(task);
+    if (!modelSelection) {
+      throw new Error(`No suitable LLM model found for task: ${task.id}`);
+    }
+
+    const { provider, model } = modelSelection;
+    const systemPrompt = m360Agent.systemPrompt;
+
+    const romaGuardrails = this.checkMarket360Guardrails(task, m360Agent);
+    if (!romaGuardrails.passed) {
+      throw new Error(`ROMA guardrail violation: ${romaGuardrails.violations.join(", ")}`);
+    }
+
+    const userMessage = this.buildMarket360TaskMessage(task, m360Agent);
+
+    const response = await this.aiService.chat(
+      [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      provider.id as AIProvider,
+      model.id
+    );
+
+    const processingTime = Date.now() - startTime;
+
+    this.agentActivations.set(
+      m360Agent.id,
+      (this.agentActivations.get(m360Agent.id) || 0) + 1
+    );
+
+    const tier = provider.tier as ModelTier;
+
+    const result: WAITaskResult = {
+      taskId: task.id,
+      agentId: m360Agent.id,
+      agentName: m360Agent.name,
+      provider: provider.id as AIProvider,
+      model: model.id,
+      tier,
+      response: response.content,
+      confidence: this.calculateMarket360Confidence(response.content, m360Agent),
+      processingTime,
+      tokensUsed: response.tokensUsed,
+      metadata: {
+        jurisdictionsApplied: task.targetJurisdictions,
+        languageUsed: task.language,
+        guardrailsChecked: [`ROMA-${m360Agent.romaLevel}`, ...m360Agent.capabilities.slice(0, 2)],
+        escalationRequired: m360Agent.romaLevel === "L3" || m360Agent.romaLevel === "L4"
+      }
+    };
+
+    this.completedTasks.push(result);
+    return result;
+  }
+
+  private buildMarket360TaskMessage(task: WAITask, agent: Market360Agent): string {
+    const parts: string[] = [];
+    parts.push(`## Task: ${task.description}`);
+    parts.push("");
+    parts.push(`**Type**: ${task.type}`);
+    parts.push(`**Priority**: ${task.priority}`);
+    parts.push(`**Vertical**: ${task.vertical}`);
+    parts.push(`**Language**: ${task.language}`);
+    parts.push(`**ROMA Level**: ${agent.romaLevel}`);
+    parts.push(`**Target Jurisdictions**: ${task.targetJurisdictions.join(", ")}`);
+    parts.push("");
+
+    if (Object.keys(task.context).length > 0) {
+      parts.push(`## Context`);
+      parts.push("```json");
+      parts.push(JSON.stringify(task.context, null, 2));
+      parts.push("```");
+      parts.push("");
+    }
+
+    parts.push(`## Agent Capabilities`);
+    agent.capabilities.forEach(cap => parts.push(`- ${cap}`));
+    parts.push("");
+
+    parts.push(`## Available Tools`);
+    agent.tools.forEach(tool => parts.push(`- ${tool}`));
+    parts.push("");
+
+    parts.push(`## Required Capabilities`);
+    task.requiredCapabilities.forEach(cap => parts.push(`- ${cap}`));
+    parts.push("");
+
+    parts.push(`## ROMA Level Guidelines`);
+    const romaGuidelines: Record<ROMALevel, string> = {
+      "L0": "Reactive: Respond to direct requests only",
+      "L1": "Proactive: Anticipate needs and suggest improvements",
+      "L2": "Autonomous: Execute tasks with minimal oversight",
+      "L3": "Collaborative: Coordinate with other agents for complex workflows",
+      "L4": "Self-Evolving: Learn and optimize based on outcomes"
+    };
+    parts.push(romaGuidelines[agent.romaLevel]);
+
+    return parts.join("\n");
+  }
+
+  private checkMarket360Guardrails(task: WAITask, agent: Market360Agent): { passed: boolean; violations: string[] } {
+    const violations: string[] = [];
+
+    if (task.language !== "en" && !agent.languages.includes(task.language as any)) {
+      violations.push(`Language ${task.language} not supported by agent ${agent.id}`);
+    }
+
+    const jurisdictionMatch = agent.jurisdictions.some(
+      j => task.targetJurisdictions.includes(j as Jurisdiction) || j === "global"
+    );
+    if (!jurisdictionMatch) {
+      violations.push(`No matching jurisdiction for agent ${agent.id}`);
+    }
+
+    if (agent.romaLevel === "L0" && (task.type === "optimization" || task.type === "analysis")) {
+      violations.push(`L0 agent cannot handle ${task.type} tasks`);
+    }
+
+    return { passed: violations.length === 0, violations };
+  }
+
+  private calculateMarket360Confidence(content: string, agent: Market360Agent): number {
+    let confidence = 0.7;
+    
+    if (content.length > 200) confidence += 0.05;
+    if (content.length > 500) confidence += 0.05;
+    
+    const romaBonus: Record<ROMALevel, number> = {
+      "L0": 0, "L1": 0.02, "L2": 0.05, "L3": 0.08, "L4": 0.1
+    };
+    confidence += romaBonus[agent.romaLevel];
+
+    if (agent.capabilities.length > 3) confidence += 0.03;
+
+    return Math.min(confidence, 0.98);
   }
 
   private buildTaskMessage(task: WAITask, agent: AgentSystemPrompt): string {
@@ -303,40 +594,40 @@ export class WAISDKOrchestration {
   }
 
   getOrchestrationStats(): AgentOrchestrationStats {
-    const agentsByCategory: Record<AgentCategory, number> = {
-      social: 0, seo: 0, web: 0, sales: 0, whatsapp: 0, linkedin: 0, performance: 0
-    };
-    const agentsByTier: Record<AgentTier, number> = {
-      L0: 0, L1: 0, L2: 0, L3: 0, L4: 0
-    };
-
-    ALL_AGENTS.forEach(agent => {
-      agentsByCategory[agent.identity.category]++;
-      agentsByTier[agent.identity.tier]++;
-    });
-
-    const avgConfidence = this.completedTasks.length > 0
-      ? this.completedTasks.reduce((sum, t) => sum + t.confidence, 0) / this.completedTasks.length
-      : 0;
-
     return {
-      totalAgents: ALL_AGENTS.length,
-      agentsByCategory,
-      agentsByTier,
+      totalAgents: AGENT_STATS.total,
+      agentsByCategory: AGENT_STATS.byVertical,
+      agentsByTier: AGENT_STATS.byTier,
       activeAgents: this.agentActivations.size,
       tasksProcessed: this.completedTasks.length,
-      averageConfidence: avgConfidence
+      averageConfidence: this.completedTasks.length > 0
+        ? this.completedTasks.reduce((sum, t) => sum + t.confidence, 0) / this.completedTasks.length
+        : 0
+    };
+  }
+
+  getHierarchicalAgentRegistry(): {
+    agents: HierarchicalAgent[];
+    stats: typeof AGENT_STATS;
+    tiers: typeof TIER_DEFINITIONS;
+    jurisdictions: typeof JURISDICTION_REGULATIONS;
+  } {
+    return {
+      agents: ALL_HIERARCHICAL_AGENTS,
+      stats: AGENT_STATS,
+      tiers: TIER_DEFINITIONS,
+      jurisdictions: JURISDICTION_REGULATIONS
     };
   }
 
   getAgentRegistry(): {
     agents: AgentSystemPrompt[];
-    categories: AgentCategory[];
+    categories: LegacyAgentCategory[];
     tiers: typeof TIER_DEFINITIONS;
     jurisdictions: typeof JURISDICTION_REGULATIONS;
   } {
     return {
-      agents: ALL_AGENTS,
+      agents: LEGACY_AGENTS,
       categories: ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance"],
       tiers: TIER_DEFINITIONS,
       jurisdictions: JURISDICTION_REGULATIONS
@@ -344,9 +635,15 @@ export class WAISDKOrchestration {
   }
 
   getAgentSystemPrompt(agentId: string): string | null {
-    const agent = getAgentById(agentId);
+    const agent = getLegacyAgentById(agentId);
     if (!agent) return null;
     return generateSystemPrompt(agent);
+  }
+
+  getHierarchicalAgentSystemPrompt(agentId: string): string | null {
+    const agent = ALL_HIERARCHICAL_AGENTS.find(a => a.id === agentId);
+    if (!agent) return null;
+    return agent.systemPrompt;
   }
 
   async generateContent(

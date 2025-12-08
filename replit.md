@@ -1,26 +1,54 @@
 # Wizards Tech Global - Self-Driving Agency Platform
 
 ## Overview
-Wizards Tech Global is a full-stack TypeScript application (React + Express) designed as an internal Enterprise Resource Planning (ERP) platform for a marketing agency. It leverages a robust AI infrastructure with 23 LLM providers, 752 models, and 267 autonomous agents across 7 marketing verticals (Social, SEO, Web, Sales, WhatsApp, LinkedIn, Performance). The platform aims to automate and optimize marketing operations, brand management, invoicing, and payments, enabling a "self-driving" marketing agency model. It incorporates advanced AI orchestration via the WAI SDK, multilingual support for 12 Indian languages, and voice capabilities, drawing inspiration from leading enterprise marketing tools like HubSpot and Salesforce.
+Wizards Tech Global is a full-stack TypeScript application (React + Express) designed as an internal Enterprise Resource Planning (ERP) platform for a marketing agency. It leverages a robust AI infrastructure with 23 LLM providers, 886 models across 4 tiers, and a comprehensive 267-agent Market360 architecture across 7 marketing verticals (Social, SEO, Web, Sales, WhatsApp, LinkedIn, Performance). The platform aims to automate and optimize marketing operations, brand management, invoicing, and payments, enabling a "self-driving" marketing agency model. It incorporates advanced AI orchestration via the WAI SDK, multilingual support for 12 Indian languages, and voice capabilities, drawing inspiration from leading enterprise marketing tools like HubSpot and Salesforce.
 
 ## User Preferences
 I prefer iterative development, with a focus on delivering functional components incrementally. Please ask for clarification if a task is unclear or before making significant architectural changes. I value clear, concise explanations and prefer to review major changes. Do not make changes to the `shared/schema.ts` and `shared/market360-schema.ts` files without explicit instruction.
 
 ## System Architecture
 
+### Market360 Agent Structure (267 Agents)
+The platform implements the full Market360 specification with 267 specialized agents:
+
+**Agent Distribution by Vertical:**
+- Social Media: 45 agents
+- SEO/GEO: 38 agents
+- Web Development: 32 agents
+- Sales/SDR: 52 agents
+- WhatsApp Marketing: 28 agents
+- LinkedIn B2B: 35 agents
+- Performance Advertising: 37 agents
+
+**ROMA Level Distribution:**
+- L0 (Reactive): 1 agent - Responds to manual triggers
+- L1 (Proactive): 76 agents - Suggests actions based on patterns
+- L2 (Autonomous): 162 agents - Executes approved strategies automatically
+- L3 (Collaborative): 14 agents - Multi-agent coordination across verticals
+- L4 (Self-Evolving): 14 agents - Learns and adapts strategies independently
+
+**Each vertical includes:**
+- Director (L4) - Strategic authority, escalation endpoint
+- Orchestrator (L3) - Task routing, multi-agent coordination
+- Manager (L2) - Workflow execution, tool invocation via MCP
+- Specialized Workers (L1-L2) - Content creation, analytics, automation
+- Reviewer (L1) - Quality verification, compliance checking
+- Approver (L2) - Publication authorization, final validation
+- Self-Optimizer (L4) - ML-based continuous improvement
+
 ### UI/UX Decisions
 The platform features a "Market360 God Mode Dashboard" as a central command center, complemented by 7 vertical-specific dashboards, each with tailored AI tools and KPIs. A professional landing page, a 6-step brand onboarding wizard, and a Command Center with unified search (`Ctrl+K`) provide a streamlined user experience. A Content Library with multilingual support and a Visual Flow Builder for WhatsApp automation enhance content and workflow management.
 
 ### Technical Implementations
-The application is built with React for the frontend and Express for the backend, utilizing a PostgreSQL database with Drizzle ORM. It operates on a unified server (Port 5000) with Vite middleware. Key features include full CRUD APIs for all verticals, sample data seeding, and real-time KPI metrics. The system implements a 4-Tier Model Architecture with a Smart Router for intelligent LLM selection based on task complexity. All 267 autonomous agents adhere to a standardized 6-part system prompt structure for consistent identity, capabilities, tools, response format, coordination, and guardrails.
+The application is built with React for the frontend and Express for the backend, utilizing a PostgreSQL database with Drizzle ORM. It operates on a unified server (Port 5000) with Vite middleware. Key features include full CRUD APIs for all verticals, sample data seeding, and real-time KPI metrics. The system implements a 4-Tier Model Architecture with a Smart Router for intelligent LLM selection based on task complexity. All 267 agents adhere to a standardized 6-part system prompt structure for consistent identity, capabilities, tools, response format, coordination, and guardrails.
 
 ### Feature Specifications
-- **AI Infrastructure**: Integration with 23 LLM providers (e.g., OpenAI, Anthropic, Gemini, Groq, Sarvam), offering 752 models.
-- **Autonomous Agents**: 267 agents categorized by 7 marketing verticals (e.g., Social, SEO, Sales, WhatsApp, LinkedIn).
+- **AI Infrastructure**: Integration with 23 LLM providers (OpenAI, Anthropic, Gemini, Groq, Together, Fireworks, Sarvam, Cohere, Perplexity, DeepSeek, Mistral, xAI, OpenRouter, Replicate, HuggingFace, AWS Bedrock, Azure OpenAI, VertexAI, Ollama, SambaNova, Cerebras, Anyscale, AI21), offering 886 models across 4 tiers.
+- **Market360 Agents**: 267 agents across 7 verticals with ROMA L0-L4 autonomy levels.
 - **Multilingual Support**: 12 Indian languages via Sarvam LLM for content generation, chat, and translation.
 - **Voice Capabilities**: Speech-to-Text (Sarvam Saarika v2) and Text-to-Speech (Sarvam Bulbul v1) for voice agents.
-- **MCP Protocol**: Model Context Protocol for tool orchestration, supporting 156 registered tools.
-- **ROMA Levels**: Orchestration status reporting for ROMA levels L0-L4.
+- **MCP Protocol**: Model Context Protocol for tool orchestration with standardized input/output schemas.
+- **ROMA Levels**: L0 (Reactive), L1 (Proactive), L2 (Autonomous), L3 (Collaborative), L4 (Self-Evolving).
 - **Enterprise Marketing Features**: AI-powered workflow automation, multi-touch campaign orchestration, predictive lead scoring, real-time performance dashboards, AI content generation, and lead management tools.
 
 ### System Design Choices
