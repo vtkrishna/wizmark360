@@ -12,7 +12,7 @@
 ### AI Infrastructure
 - **23 LLM Providers**: OpenAI, Anthropic, Gemini, Groq, Cohere, Sarvam, DeepSeek, Mistral, Perplexity, Together, OpenRouter, xAI, Replicate, Fireworks, Anyscale, HuggingFace, AWS Bedrock, Azure OpenAI, VertexAI, Ollama, and more
 - **752 Models**: From direct providers and aggregators (OpenRouter 343+, OpenAI 102+, Cohere 20+, Groq 20+)
-- **267 Autonomous Agents**: Across 7 marketing verticals with ROMA L0-L4 orchestration
+- **267 Autonomous Agents**: Social 45, SEO 38, Web 32, Sales 52, WhatsApp 28, LinkedIn 35, Performance 37 (ROMA L0-L4)
 - **12+ Indian Languages**: Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Oriya, Assamese (via Sarvam LLM)
 
 ### Voice & MCP Capabilities
@@ -212,9 +212,11 @@ All 203 agents follow standardized system prompts with:
 6. **GUARDRAILS & CONSTRAINTS**: Legal boundaries, ethical constraints, jurisdiction limits
 
 ## Recent Changes
-- 2025-12-08: **Implemented 6-part agent system prompt structure for all 203 agents**
+- 2025-12-08: **Expanded agent registry to 267 agents matching PDF specification**
+  - Social: 45, SEO: 38, Web: 32, Sales: 52, WhatsApp: 28, LinkedIn: 35, Performance: 37
+- 2025-12-08: **Implemented 6-part agent system prompt structure for all 267 agents**
 - 2025-12-08: **Created WAI-SDK orchestration layer as single source of truth**
-- 2025-12-08: **Added full agent registry with 203 agents across 7 verticals**
+- 2025-12-08: **Full ROMA tier distribution: L0: 0, L1: 24, L2: 161, L3: 65, L4: 17**
 - 2025-12-08: Added jurisdiction-aware guardrails (India, UAE, Saudi, Singapore, Global)
 - 2025-12-08: Implemented 4-Tier Model Architecture with Smart Router
 - 2025-12-08: Added 34 core models to LLM registry (from 17 to 34)
