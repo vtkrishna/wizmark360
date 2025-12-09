@@ -146,7 +146,7 @@ export default function LandingPage() {
               <a href="#brands" className="text-gray-600 hover:text-gray-900 font-medium">Brands</a>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" onClick={() => setLocation('/login')}>Sign In</Button>
+              <Button variant="ghost" onClick={() => setLocation('/dashboard')}>Sign In</Button>
               <Button 
                 onClick={() => setLocation('/dashboard')} 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
@@ -550,9 +550,9 @@ export default function LandingPage() {
               <h4 className="font-semibold mb-4">Platform</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
                 <li><a href="/brand-onboarding" className="hover:text-white">Brand Onboarding</a></li>
-                <li><a href="/market360" className="hover:text-white">Dashboard</a></li>
-                <li><a href="/market360" className="hover:text-white">Analytics</a></li>
-                <li><a href="/market360" className="hover:text-white">Invoicing</a></li>
+                <li><a href="/dashboard" className="hover:text-white">Dashboard</a></li>
+                <li><a href="/dashboard" className="hover:text-white">Analytics</a></li>
+                <li><a href="/dashboard" className="hover:text-white">Invoicing</a></li>
               </ul>
             </div>
             <div>

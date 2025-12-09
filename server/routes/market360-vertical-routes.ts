@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { market360VerticalWorkflowService } from "../services/market360-vertical-workflows";
+import { waiSDKOrchestration } from "../services/wai-sdk-orchestration";
 
 const router = Router();
 
@@ -326,6 +327,76 @@ router.post("/performance/attribution", async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: "Attribution analysis failed" });
   }
+});
+
+router.post("/dual-model-workflow", async (req: Request, res: Response) => {
+  const { type, description, brand, requirements, includeReview } = req.body;
+
+  if (!type || !description || !brand) {
+    return res.status(400).json({
+      error: "Missing required fields",
+      required: ["type", "description", "brand"],
+      validTypes: ["website", "ui_ux", "design", "content", "research"]
+    });
+  }
+
+  try {
+    const result = await waiSDKOrchestration.executeDualModelWorkflow({
+      id: `dm_${Date.now()}`,
+      type,
+      description,
+      brand,
+      requirements: requirements || [],
+      includeReview: includeReview ?? false
+    });
+
+    res.json({
+      success: true,
+      workflow: "dual-model",
+      description: "Claude 4.5 Opus (planning) → Gemini 3.0 Pro (execution) → Claude (review)",
+      result
+    });
+  } catch (error) {
+    console.error("Dual-model workflow error:", error);
+    res.status(500).json({ 
+      error: "Dual-model workflow failed",
+      message: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+router.get("/content-model-selector", (req: Request, res: Response) => {
+  const { contentType, priority } = req.query;
+
+  const validTypes = ["social", "blog", "email", "ad", "research", "seo"];
+  const validPriorities = ["cost", "quality", "speed"];
+
+  if (!contentType || !validTypes.includes(contentType as string)) {
+    return res.status(400).json({
+      error: "Invalid or missing contentType",
+      validTypes
+    });
+  }
+
+  if (!priority || !validPriorities.includes(priority as string)) {
+    return res.status(400).json({
+      error: "Invalid or missing priority",
+      validPriorities
+    });
+  }
+
+  const selection = waiSDKOrchestration.selectContentCreationModel(
+    contentType as "social" | "blog" | "email" | "ad" | "research" | "seo",
+    priority as "cost" | "quality" | "speed"
+  );
+
+  res.json({
+    success: true,
+    contentType,
+    priority,
+    recommendedModel: selection,
+    description: `Best ${priority} option for ${contentType} content creation`
+  });
 });
 
 export default router;

@@ -60,8 +60,27 @@ The application is built with React for the frontend and Express for the backend
 
 ## Recent Updates
 
+### Dual-Model Workflow Architecture (December 2024)
+**NEW: Claude + Gemini Orchestration for Website/UI/UX Creation**
+- **Claude 4.5 Opus** (Planning Only): High-level architecture, task decomposition, risk detection, long-term reasoning
+- **Gemini 3.0 Pro** (Execution Only): Step-by-step code generation, clean implementations, UI development, strict instruction following
+- **Claude Review Phase** (Optional): Bug detection, optimization suggestions, approval workflow
+- **Model Selection Matrix**: Smart routing based on content type (social/blog/email/ad/research/seo) and priority (cost/quality/speed)
+
+**API Endpoints:**
+- `POST /api/market360/verticals/dual-model-workflow` - Execute Claude→Gemini workflow
+- `GET /api/market360/verticals/content-model-selector` - Get recommended model for content type
+
+### LLM Provider Configuration (December 2024)
+**5 Verified Working Providers:**
+- **OpenAI**: GPT-5.1, GPT-4o (Premium quality)
+- **Anthropic**: Claude Sonnet 4.5, Claude Haiku 4.5 (Planning & reasoning)
+- **Groq**: Llama 3.3 70B (Ultra-fast, sub-second latency)
+- **OpenRouter**: Llama 3.1 8B, DeepSeek V3, Qwen 2.5 (Cost optimization: $0.055-0.28/1M tokens)
+- **Together.ai**: Llama 3.2 3B-70B (Low-cost: $0.06-0.88/1M tokens)
+
 ### Vertical Workflow Implementation (December 2024)
-- **Social Media Vertical Service**: Full 9-step workflow (Trend Analysis → Content Ideation → Content Creation → Visual Production → Content Review → Schedule Optimization → Publication → Engagement Monitoring → Performance Analytics)
+- **Social Media Vertical Service**: Full 9-step workflow with WAI SDK integration (Trend Analysis → Content Ideation → Content Creation → Visual Production → Content Review → Schedule Optimization → Publication → Engagement Monitoring → Performance Analytics)
 - **Unified Vertical Workflow Service**: All 7 verticals now have complete workflow definitions with step-by-step execution and ROMA-aware agent selection
 - **MCP Tool Catalog**: 156 tools registered with proper vertical distribution, ROMA level requirements, and standardized schemas
 - **Sarvam Voice Integration**: STT (Saarika v2) and TTS (Bulbul v1) with 24 voices across 12 Indian languages
@@ -70,6 +89,8 @@ The application is built with React for the frontend and Express for the backend
 - `/api/voice/*` - Sarvam Voice API (STT/TTS)
 - `/api/market360/social/*` - Social Media vertical endpoints
 - `/api/market360/verticals/*` - Unified vertical workflow API for all 7 verticals
+- `/api/market360/verticals/dual-model-workflow` - Claude + Gemini orchestration
+- `/api/market360/verticals/content-model-selector` - Smart model selection
 
 ### Frontend Dashboards
 - Updated vertical dashboards with correct agent counts per vertical

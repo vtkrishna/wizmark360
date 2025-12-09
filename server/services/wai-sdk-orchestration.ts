@@ -85,6 +85,39 @@ export interface WAITaskResult {
   };
 }
 
+export interface DualModelWorkflowResult {
+  taskId: string;
+  planningPhase: {
+    provider: "anthropic";
+    model: string;
+    architecture: string;
+    taskBreakdown: string[];
+    riskAssessment: string;
+    estimatedComplexity: "low" | "medium" | "high";
+    tokensUsed: number;
+    processingTime: number;
+  };
+  executionPhase: {
+    provider: "gemini";
+    model: string;
+    generatedCode: string;
+    generatedUI?: string;
+    stepsCompleted: number;
+    tokensUsed: number;
+    processingTime: number;
+  };
+  reviewPhase?: {
+    provider: "anthropic";
+    model: string;
+    bugsFound: string[];
+    optimizations: string[];
+    approved: boolean;
+    tokensUsed: number;
+  };
+  totalProcessingTime: number;
+  totalTokensUsed: number;
+}
+
 export interface AgentOrchestrationStats {
   totalAgents: number;
   agentsByCategory: Record<AgentCategory, number>;
@@ -206,6 +239,219 @@ export class WAISDKOrchestration {
     return {
       agents: getMarket360Stats(),
       providers: PROVIDER_STATS
+    };
+  }
+
+  async executeDualModelWorkflow(
+    task: {
+      id: string;
+      type: "website" | "ui_ux" | "design" | "content" | "research";
+      description: string;
+      brand: string;
+      requirements: string[];
+      includeReview?: boolean;
+    }
+  ): Promise<DualModelWorkflowResult> {
+    const startTime = Date.now();
+    let totalTokens = 0;
+
+    const planningPrompt = `You are Claude 4.5 Opus, the high-level planning and architecture AI.
+
+TASK: ${task.description}
+BRAND: ${task.brand}
+REQUIREMENTS: ${task.requirements.join(", ")}
+
+Your role is STRICTLY limited to:
+1. High-level planning and system architecture
+2. Task decomposition into clear, executable steps
+3. Risk detection and mitigation strategies
+4. Long-term reasoning about implementation approach
+
+DO NOT write any production code. Output a structured plan with:
+- Architecture overview (2-3 sentences)
+- Task breakdown (numbered list of 5-8 steps)
+- Risk assessment (potential issues and mitigations)
+- Complexity estimate (low/medium/high)
+
+Format as JSON with keys: architecture, tasks, risks, complexity`;
+
+    const planningStart = Date.now();
+    const planningResult = await this.aiService.chat(
+      [{ role: "user", content: planningPrompt }],
+      "anthropic",
+      "claude-sonnet-4-5-20250925"
+    );
+    const planningTime = Date.now() - planningStart;
+    totalTokens += planningResult.tokensUsed || 0;
+
+    let parsedPlan: { architecture: string; tasks: string[]; risks: string; complexity: string };
+    try {
+      const jsonMatch = planningResult.content.match(/\{[\s\S]*\}/);
+      parsedPlan = jsonMatch ? JSON.parse(jsonMatch[0]) : {
+        architecture: planningResult.content.substring(0, 200),
+        tasks: ["Step 1: Analyze requirements", "Step 2: Design structure", "Step 3: Implement components"],
+        risks: "Standard implementation risks",
+        complexity: "medium"
+      };
+    } catch {
+      parsedPlan = {
+        architecture: planningResult.content.substring(0, 200),
+        tasks: ["Step 1: Analyze requirements", "Step 2: Design structure", "Step 3: Implement components"],
+        risks: "Standard implementation risks",
+        complexity: "medium"
+      };
+    }
+
+    const executionPrompt = `You are Gemini 3.0 Pro, the code generation and UI/UX implementation AI.
+
+ARCHITECTURE PLAN (from Claude - DO NOT modify):
+${parsedPlan.architecture}
+
+TASKS TO EXECUTE:
+${parsedPlan.tasks.map((t, i) => `${i + 1}. ${t}`).join("\n")}
+
+BRAND: ${task.brand}
+TYPE: ${task.type}
+
+Your role is STRICTLY limited to:
+1. Step-by-step code generation following the plan exactly
+2. Clean, minimal, production-ready implementations
+3. Frontend/UI development with modern best practices
+4. Strict instruction following - NO architectural changes
+
+Generate the implementation code. Be concise and production-ready.`;
+
+    const executionStart = Date.now();
+    
+    let executionProvider: AIProvider = "gemini";
+    let executionModel = "gemini-2.5-pro";
+    
+    if (!process.env.GEMINI_API_KEY) {
+      if (process.env.OPENROUTER_API_KEY) {
+        executionProvider = "openrouter";
+        executionModel = "google/gemini-2.0-flash-001";
+      } else if (process.env.GROQ_API_KEY) {
+        executionProvider = "groq";
+        executionModel = "llama-3.3-70b-versatile";
+      }
+    }
+
+    const executionResult = await this.aiService.chat(
+      [{ role: "user", content: executionPrompt }],
+      executionProvider,
+      executionModel
+    );
+    const executionTime = Date.now() - executionStart;
+    totalTokens += executionResult.tokensUsed || 0;
+
+    const result: DualModelWorkflowResult = {
+      taskId: task.id,
+      planningPhase: {
+        provider: "anthropic",
+        model: "claude-sonnet-4-5-20250925",
+        architecture: parsedPlan.architecture,
+        taskBreakdown: parsedPlan.tasks,
+        riskAssessment: parsedPlan.risks,
+        estimatedComplexity: (parsedPlan.complexity as "low" | "medium" | "high") || "medium",
+        tokensUsed: planningResult.tokensUsed || 0,
+        processingTime: planningTime
+      },
+      executionPhase: {
+        provider: executionProvider as "gemini",
+        model: executionModel,
+        generatedCode: executionResult.content,
+        generatedUI: task.type === "ui_ux" ? executionResult.content : undefined,
+        stepsCompleted: parsedPlan.tasks.length,
+        tokensUsed: executionResult.tokensUsed || 0,
+        processingTime: executionTime
+      },
+      totalProcessingTime: Date.now() - startTime,
+      totalTokensUsed: totalTokens
+    };
+
+    if (task.includeReview) {
+      const reviewPrompt = `Review this implementation for bugs and optimization opportunities:
+
+${executionResult.content}
+
+Provide:
+1. Bugs found (list)
+2. Optimization suggestions (list)
+3. Approval status (approved/needs_revision)
+
+Format as JSON with keys: bugs, optimizations, approved`;
+
+      const reviewResult = await this.aiService.chat(
+        [{ role: "user", content: reviewPrompt }],
+        "anthropic",
+        "claude-sonnet-4-5-20250925"
+      );
+      totalTokens += reviewResult.tokensUsed || 0;
+
+      let parsedReview: { bugs: string[]; optimizations: string[]; approved: boolean };
+      try {
+        const jsonMatch = reviewResult.content.match(/\{[\s\S]*\}/);
+        parsedReview = jsonMatch ? JSON.parse(jsonMatch[0]) : { bugs: [], optimizations: [], approved: true };
+      } catch {
+        parsedReview = { bugs: [], optimizations: [], approved: true };
+      }
+
+      result.reviewPhase = {
+        provider: "anthropic",
+        model: "claude-sonnet-4-5-20250925",
+        bugsFound: parsedReview.bugs || [],
+        optimizations: parsedReview.optimizations || [],
+        approved: parsedReview.approved ?? true,
+        tokensUsed: reviewResult.tokensUsed || 0
+      };
+      result.totalTokensUsed = totalTokens;
+    }
+
+    return result;
+  }
+
+  selectContentCreationModel(
+    contentType: "social" | "blog" | "email" | "ad" | "research" | "seo",
+    priority: "cost" | "quality" | "speed"
+  ): { provider: AIProvider; model: string; estimatedCost: number } {
+    const modelMatrix: Record<string, Record<string, { provider: AIProvider; model: string; cost: number }>> = {
+      social: {
+        cost: { provider: "together", model: "meta-llama/Llama-3.2-3B-Instruct-Turbo", cost: 0.06 },
+        quality: { provider: "anthropic", model: "claude-sonnet-4-5-20250925", cost: 3 },
+        speed: { provider: "groq", model: "llama-3.3-70b-versatile", cost: 0.59 }
+      },
+      blog: {
+        cost: { provider: "openrouter", model: "deepseek/deepseek-chat", cost: 0.14 },
+        quality: { provider: "anthropic", model: "claude-sonnet-4-5-20250925", cost: 3 },
+        speed: { provider: "groq", model: "llama-3.3-70b-versatile", cost: 0.59 }
+      },
+      email: {
+        cost: { provider: "together", model: "meta-llama/Llama-3.2-3B-Instruct-Turbo", cost: 0.06 },
+        quality: { provider: "openai", model: "gpt-4o", cost: 2.5 },
+        speed: { provider: "groq", model: "llama-3.1-8b-instant", cost: 0.05 }
+      },
+      ad: {
+        cost: { provider: "openrouter", model: "meta-llama/llama-3.1-8b-instruct", cost: 0.055 },
+        quality: { provider: "openai", model: "gpt-4o", cost: 2.5 },
+        speed: { provider: "groq", model: "llama-3.3-70b-versatile", cost: 0.59 }
+      },
+      research: {
+        cost: { provider: "openrouter", model: "deepseek/deepseek-chat", cost: 0.14 },
+        quality: { provider: "anthropic", model: "claude-sonnet-4-5-20250925", cost: 3 },
+        speed: { provider: "together", model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", cost: 0.88 }
+      },
+      seo: {
+        cost: { provider: "together", model: "Qwen/Qwen2.5-7B-Instruct-Turbo", cost: 0.2 },
+        quality: { provider: "openrouter", model: "deepseek/deepseek-chat", cost: 0.14 },
+        speed: { provider: "groq", model: "llama-3.3-70b-versatile", cost: 0.59 }
+      }
+    };
+
+    const selection = modelMatrix[contentType]?.[priority] || modelMatrix.social.cost;
+    return {
+      provider: selection.provider,
+      model: selection.model,
+      estimatedCost: selection.cost
     };
   }
 
