@@ -270,6 +270,7 @@ export class WAISDKOrchestration {
   }
 
   selectOptimalModel(task: WAITask, agent: AgentSystemPrompt): { provider: AIProvider; model: string; tier: ModelTier } {
+    // Honor explicit provider constraints
     if (task.constraints?.requiredProvider) {
       const models = LLM_REGISTRY.filter(m => m.provider === task.constraints!.requiredProvider);
       if (models.length > 0) {
@@ -281,6 +282,7 @@ export class WAISDKOrchestration {
       }
     }
 
+    // Indian language support via Sarvam
     const needsIndianLanguage = task.language !== "en" || 
       agent.capabilities.sarvamLanguages.length > 0 && task.language !== "en";
 
@@ -288,22 +290,55 @@ export class WAISDKOrchestration {
       return { provider: "sarvam", model: "sarvam-m", tier: "tier3" };
     }
 
+    // COST OPTIMIZATION: Route through aggregators for best value
+    // Priority 1: Ultra-fast via Groq (free tier with generous limits)
     if (task.constraints?.maxLatency && task.constraints.maxLatency < 2000) {
-      return { provider: "groq", model: "llama-3.3-70b", tier: "tier2" };
+      return { provider: "groq", model: "llama-3.3-70b-versatile", tier: "tier2" };
     }
 
+    // Priority 2: Low/medium priority → Use Together.ai or OpenRouter for cost savings
+    if (task.priority === "low" || task.priority === "medium") {
+      // Together.ai: Ultra low cost ($0.06-0.18 per 1M tokens)
+      if (process.env.TOGETHER_API_KEY) {
+        return { provider: "together", model: "meta-llama/Llama-3.2-3B-Instruct-Turbo", tier: "tier2" };
+      }
+      // OpenRouter fallback: Low cost Llama 3.1 8B ($0.055 per 1M)
+      if (process.env.OPENROUTER_API_KEY) {
+        return { provider: "openrouter", model: "meta-llama/llama-3.1-8b-instruct", tier: "tier4" };
+      }
+    }
+
+    // Priority 3: Reasoning tasks → Use cost-effective reasoning models
     if (task.type === "analysis" || task.type === "optimization") {
+      // DeepSeek V3 via OpenRouter: Best reasoning at $0.14-0.28 per 1M
+      if (process.env.OPENROUTER_API_KEY) {
+        return { provider: "openrouter", model: "deepseek/deepseek-chat", tier: "tier4" };
+      }
+      // Fallback to native Anthropic
       return { provider: "anthropic", model: "claude-sonnet-4-20250514", tier: "tier1" };
     }
 
+    // Priority 4: Generation tasks → Balance quality and cost
     if (task.type === "generation") {
+      // Together.ai Llama 3.3 70B: High quality at $0.88 per 1M
+      if (process.env.TOGETHER_API_KEY) {
+        return { provider: "together", model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", tier: "tier2" };
+      }
       return { provider: "openai", model: "gpt-4o", tier: "tier1" };
     }
 
+    // Priority 5: Critical/high priority → Use premium providers
     if (task.priority === "critical" || task.priority === "high") {
-      return { provider: "openai", model: "gpt-5", tier: "tier1" };
+      // Direct native providers for critical tasks
+      return { provider: "openai", model: "gpt-4o", tier: "tier1" };
     }
 
+    // Default: Use Groq for fast, free inference
+    if (process.env.GROQ_API_KEY) {
+      return { provider: "groq", model: "llama-3.3-70b-versatile", tier: "tier2" };
+    }
+
+    // Ultimate fallback: Gemini Flash (very low cost)
     return { provider: "gemini", model: "gemini-2.5-flash", tier: "tier1" };
   }
 

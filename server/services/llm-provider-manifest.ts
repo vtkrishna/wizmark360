@@ -126,14 +126,24 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
     baseUrl: "https://api.together.xyz/v1",
     requiresApiKey: true,
     keyEnvVar: "TOGETHER_API_KEY",
-    capabilities: ["text", "vision", "code", "multimodal"],
-    bestFor: ["Cost-effective speed", "Open source models", "Vision tasks"],
+    capabilities: ["text", "vision", "code", "multimodal", "embedding"],
+    bestFor: ["Cost-effective speed", "Open source models", "Vision tasks", "LOW COST"],
     models: [
-      { id: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo", name: "Llama 3.2 90B Vision", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1.2, outputCostPer1M: 1.2, capabilities: ["text", "vision", "multimodal"], isDefault: true, isActive: true },
-      { id: "Qwen/Qwen2.5-72B-Instruct-Turbo", name: "Qwen 2.5 72B", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code"], isActive: true },
-      { id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", name: "Llama 3.1 405B", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 3.5, outputCostPer1M: 3.5, capabilities: ["text", "reasoning"], isActive: true },
-      { id: "mistralai/Mixtral-8x22B-Instruct-v0.1", name: "Mixtral 8x22B", contextWindow: 65536, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code"], isActive: true },
+      // ULTRA LOW COST - Best value models
+      { id: "meta-llama/Llama-3.2-3B-Instruct-Turbo", name: "Llama 3.2 3B Turbo", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.06, outputCostPer1M: 0.06, capabilities: ["text", "fast"], isDefault: true, isActive: true },
+      { id: "meta-llama/Llama-3.1-8B-Instruct-Turbo", name: "Llama 3.1 8B Turbo", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.18, outputCostPer1M: 0.18, capabilities: ["text", "code", "fast"], isActive: true },
+      { id: "Qwen/Qwen2.5-7B-Instruct-Turbo", name: "Qwen 2.5 7B Turbo", contextWindow: 32768, maxOutput: 8192, inputCostPer1M: 0.2, outputCostPer1M: 0.2, capabilities: ["text", "code"], isActive: true },
+      { id: "mistralai/Mistral-7B-Instruct-v0.3", name: "Mistral 7B v0.3", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0.2, outputCostPer1M: 0.2, capabilities: ["text", "fast"], isActive: true },
+      // MID-TIER VALUE - Quality at low cost
+      { id: "meta-llama/Llama-3.3-70B-Instruct-Turbo", name: "Llama 3.3 70B Turbo", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.88, outputCostPer1M: 0.88, capabilities: ["text", "code", "reasoning"], isActive: true },
+      { id: "Qwen/Qwen2.5-72B-Instruct-Turbo", name: "Qwen 2.5 72B", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code", "reasoning"], isActive: true },
       { id: "deepseek-ai/DeepSeek-V3", name: "DeepSeek V3", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.27, outputCostPer1M: 1.1, capabilities: ["text", "code", "reasoning"], isActive: true },
+      { id: "mistralai/Mixtral-8x7B-Instruct-v0.1", name: "Mixtral 8x7B", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0.6, outputCostPer1M: 0.6, capabilities: ["text", "code"], isActive: true },
+      // VISION MODELS
+      { id: "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo", name: "Llama 3.2 90B Vision", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1.2, outputCostPer1M: 1.2, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      { id: "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo", name: "Llama 3.2 11B Vision", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.35, outputCostPer1M: 0.35, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      // PREMIUM
+      { id: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo", name: "Llama 3.1 405B", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 3.5, outputCostPer1M: 3.5, capabilities: ["text", "reasoning"], isActive: true },
     ]
   },
   {
@@ -263,12 +273,21 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
     requiresApiKey: true,
     keyEnvVar: "OPENROUTER_API_KEY",
     capabilities: ["text", "vision", "code", "reasoning", "multimodal"],
-    bestFor: ["Model diversity", "Fallback routing", "Cost optimization"],
+    bestFor: ["Model diversity", "Fallback routing", "Cost optimization", "FREE models"],
     models: [
-      { id: "openai/gpt-4o", name: "GPT-4o via OpenRouter", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision"], isDefault: true, isActive: true },
+      // LOW COST MODELS - Verified working, best value (confirmed via API)
+      { id: "meta-llama/llama-3.1-8b-instruct", name: "Llama 3.1 8B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.055, outputCostPer1M: 0.055, capabilities: ["text", "code", "fast"], isDefault: true, isActive: true },
+      { id: "qwen/qwen-2.5-7b-instruct", name: "Qwen 2.5 7B", contextWindow: 32768, maxOutput: 8192, inputCostPer1M: 0.055, outputCostPer1M: 0.055, capabilities: ["text", "code"], isActive: true },
+      { id: "deepseek/deepseek-chat", name: "DeepSeek V3", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.14, outputCostPer1M: 0.28, capabilities: ["text", "code", "reasoning"], isActive: true },
+      { id: "mistralai/mistral-7b-instruct", name: "Mistral 7B", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0.06, outputCostPer1M: 0.06, capabilities: ["text", "fast"], isActive: true },
+      // MID-TIER - Quality at reasonable cost
+      { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.12, outputCostPer1M: 0.3, capabilities: ["text", "code", "reasoning"], isActive: true },
+      { id: "qwen/qwen-2.5-72b-instruct", name: "Qwen 2.5 72B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.35, outputCostPer1M: 0.4, capabilities: ["text", "code", "reasoning"], isActive: true },
+      { id: "google/gemini-2.0-flash-001", name: "Gemini 2.0 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      // PREMIUM MODELS - via OpenRouter for fallback
+      { id: "openai/gpt-4o", name: "GPT-4o via OpenRouter", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision"], isActive: true },
       { id: "anthropic/claude-3.5-sonnet", name: "Claude 3.5 Sonnet via OpenRouter", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code"], isActive: true },
-      { id: "google/gemini-2.0-flash", name: "Gemini 2.0 Flash via OpenRouter", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision"], isActive: true },
-      { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B via OpenRouter", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.35, outputCostPer1M: 0.4, capabilities: ["text", "code"], isActive: true },
+      { id: "anthropic/claude-3-haiku", name: "Claude 3 Haiku via OpenRouter", contextWindow: 200000, maxOutput: 4096, inputCostPer1M: 0.25, outputCostPer1M: 1.25, capabilities: ["text", "fast"], isActive: true },
     ]
   },
   {
