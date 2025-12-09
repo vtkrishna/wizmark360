@@ -15,6 +15,9 @@ import market360Router from "./routes/market360";
 import aiRouter from "./routes/ai";
 import brandsRouter from "./routes/brands";
 import chatApiRoutes from "./routes/chat-api";
+import market360VerticalRoutes from "./routes/market360-vertical-routes";
+import llmAdminRoutes from "./routes/llm-admin-routes";
+import multimodalContentRoutes from "./routes/multimodal-content-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -82,6 +85,15 @@ app.use('/api/brands', brandsRouter);
 
 // Chat API routes - Main AI orchestration endpoint
 app.use('/api', chatApiRoutes);
+
+// Market360 Vertical Workflow Routes
+app.use('/api/market360/verticals', market360VerticalRoutes);
+
+// LLM Admin Config Routes
+app.use('/api/admin/llm', llmAdminRoutes);
+
+// Multimodal Content Routes
+app.use('/api/multimodal-content', multimodalContentRoutes);
 
 async function startServer() {
   try {

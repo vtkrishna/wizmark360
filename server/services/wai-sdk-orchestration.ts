@@ -1013,3 +1013,4 @@ Format as JSON with keys: bugs, optimizations, approved`;
 }
 
 export const waiOrchestration = new WAISDKOrchestration();
+export const waiSDKOrchestration = waiOrchestration;

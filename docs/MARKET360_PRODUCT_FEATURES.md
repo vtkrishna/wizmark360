@@ -8,13 +8,16 @@
 **Market360** (Wizards MarketAI 360) is an enterprise-grade self-driving marketing agency platform powered by the **WAI SDK Orchestration Platform**. With 203+ autonomous agents, 34 core LLM models from 23 providers, and support for 12+ Indian languages, Market360 automates end-to-end marketing operations across 7 verticals.
 
 ### Platform Statistics
-- **203 Autonomous Agents** across 7 marketing verticals
+- **267 Autonomous Agents** across 7 marketing verticals (Social: 45, SEO: 38, Web: 32, Sales: 52, WhatsApp: 28, LinkedIn: 35, Performance: 37)
 - **23 LLM Providers** with intelligent model routing
-- **34 Core AI Models** in the registry
+- **886+ AI Models** in the registry (4-tier architecture)
+- **16 Multimodal Models** (9 HuggingFace, 4 OpenAI, 1 Anthropic, 2 Google)
 - **12 Indian Languages** supported via Sarvam AI
 - **5 Jurisdiction Regions** with compliance guardrails
 - **4-Tier Model Architecture** with Smart Router
 - **6-Part Agent System Prompts** for standardized behavior
+- **Dual-Model Workflow** (Claude 4.5 Opus planning → Gemini 3.0 Pro execution)
+- **VibeVoice Integration** (Microsoft VibeVoice-Realtime-0.5B for vibecoding)
 
 ---
 
