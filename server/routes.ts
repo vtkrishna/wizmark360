@@ -184,6 +184,12 @@ import market360VerticalRoutes from "./routes/market360-vertical-routes";
 // LLM Model Updater Routes - Automated model registry updates
 import llmModelUpdaterRoutes from "./routes/llm-model-updater-routes";
 
+// LLM Admin Config Routes - Brand-level LLM settings and model selection
+import llmAdminRoutes from "./routes/llm-admin-routes";
+
+// Multimodal Content Routes - HuggingFace, VibeVoice, and content generation
+import multimodalContentRoutes from "./routes/multimodal-content-routes";
+
 // Orchestration Telemetry Routes - System metrics and capabilities
 import orchestrationTelemetryRoutes from "./routes/orchestration-telemetry-routes";
 
@@ -732,6 +738,12 @@ app.use('/api/market360/verticals', market360VerticalRoutes);
 
 // LLM Model Updater API - Automated model registry system
 app.use('/api/llm-models', llmModelUpdaterRoutes);
+
+// LLM Admin Config API - Brand-level settings and model selection
+app.use('/api/admin/llm', llmAdminRoutes);
+
+// Multimodal Content API - HuggingFace, VibeVoice, and content generation
+app.use('/api/multimodal-content', multimodalContentRoutes);
 
 // Orchestration Telemetry API - System metrics and capabilities
 app.use('/api/orchestration', orchestrationTelemetryRoutes);

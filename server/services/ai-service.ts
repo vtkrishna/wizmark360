@@ -11,7 +11,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // the newest Gemini model series is "gemini-2.5-flash" or "gemini-2.5-pro"
 const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
-export type AIProvider = "openai" | "anthropic" | "gemini";
+export type AIProvider = "openai" | "anthropic" | "gemini" | "groq" | "together" | "openrouter" | "cohere" | "sarvam";
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";

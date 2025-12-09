@@ -85,12 +85,29 @@ The application is built with React for the frontend and Express for the backend
 - **MCP Tool Catalog**: 156 tools registered with proper vertical distribution, ROMA level requirements, and standardized schemas
 - **Sarvam Voice Integration**: STT (Saarika v2) and TTS (Bulbul v1) with 24 voices across 12 Indian languages
 
+### Multimodal Content Orchestration (December 2024)
+**NEW: HuggingFace + VibeVoice Integration for Vibecoding**
+- **Microsoft VibeVoice-Realtime-0.5B**: Real-time voice synthesis for vibecoding and content creation
+- **HuggingFace Aggregator**: 9 HuggingFace models integrated (Whisper, FLUX, MusicGen, XTTS, Parler TTS, BLIP-2, ControlNet)
+- **Multimodal Content**: Text, voice, audio, image, and video generation from best-in-class models
+- **Smart Model Selection**: Automatic routing based on cost/quality/speed across 4 providers (HuggingFace, OpenAI, Anthropic, Google)
+
+### LLM Admin Configuration (December 2024)
+**Brand-Level LLM Settings & Model Routing**
+- **Environment Modes**: Testing (free models) → Development → Production (premium models)
+- **Brand Tiers**: Starter, Professional, Enterprise, VIP with auto-configured capabilities
+- **Dual-Model Workflow**: Only enabled for Enterprise/VIP brands or admin-enabled brands
+- **Cost Optimization**: Automatic model selection based on brand tier, payment level, and criticality
+- **Backup Chains**: Production models include automatic fallback chains
+
 ### API Endpoints
 - `/api/voice/*` - Sarvam Voice API (STT/TTS)
 - `/api/market360/social/*` - Social Media vertical endpoints
 - `/api/market360/verticals/*` - Unified vertical workflow API for all 7 verticals
 - `/api/market360/verticals/dual-model-workflow` - Claude + Gemini orchestration
 - `/api/market360/verticals/content-model-selector` - Smart model selection
+- `/api/admin/llm/*` - LLM admin settings, brand configs, model selection
+- `/api/multimodal-content/*` - HuggingFace models, VibeVoice, vibecoding generation
 
 ### Frontend Dashboards
 - Updated vertical dashboards with correct agent counts per vertical
