@@ -7,7 +7,7 @@ import {
   Zap, Users, Globe, Bot, LineChart, Shield, 
   Sparkles, ArrowRight, Check, Play, TrendingUp,
   MessageCircle, Search, Code2, Briefcase, Share2,
-  Languages, Mic, Brain, Target, BarChart3
+  Languages, Mic, Brain, Target, BarChart3, Mail
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 
