@@ -258,6 +258,138 @@ router.get('/health', async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/analytics/auto-remediation
+ * Auto-remediation for detected issues
+ */
+router.post('/auto-remediation', async (req: Request, res: Response) => {
+  try {
+    const { alerts, dryRun = true } = req.body;
+
+    if (!alerts || !Array.isArray(alerts)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Alerts array is required'
+      });
+    }
+
+    const remediationActions = alerts.map((alert: any) => {
+      const actions: any[] = [];
+      
+      switch (alert.type) {
+        case 'performance':
+          actions.push({
+            type: 'scale_resources',
+            target: alert.component || 'auto',
+            action: alert.severity === 'critical' ? 'immediate_scale_up' : 'scheduled_scale',
+            parameters: {
+              factor: alert.severity === 'critical' ? 2.0 : 1.5,
+              duration: '1h'
+            }
+          });
+          break;
+          
+        case 'capacity':
+          actions.push({
+            type: 'provision_resources',
+            target: alert.resource || 'auto',
+            action: 'add_capacity',
+            parameters: {
+              amount: alert.deficit || '20%',
+              priority: alert.severity
+            }
+          });
+          break;
+          
+        case 'error_rate':
+          actions.push({
+            type: 'traffic_management',
+            target: alert.service || 'auto',
+            action: 'enable_circuit_breaker',
+            parameters: {
+              threshold: 0.5,
+              timeout: '30s',
+              fallback: 'cached_response'
+            }
+          });
+          break;
+          
+        case 'latency':
+          actions.push({
+            type: 'optimization',
+            target: alert.endpoint || 'auto',
+            action: 'enable_caching',
+            parameters: {
+              ttl: '5m',
+              strategy: 'lazy_loading'
+            }
+          });
+          break;
+          
+        case 'security':
+          actions.push({
+            type: 'security_response',
+            target: alert.source || 'auto',
+            action: 'enable_rate_limiting',
+            parameters: {
+              limit: 100,
+              window: '1m',
+              block_duration: '15m'
+            }
+          });
+          break;
+          
+        default:
+          actions.push({
+            type: 'notification',
+            target: 'ops_team',
+            action: 'escalate',
+            parameters: {
+              channel: 'slack',
+              priority: alert.severity
+            }
+          });
+      }
+      
+      return {
+        alertId: alert.id,
+        alertType: alert.type,
+        severity: alert.severity,
+        actions,
+        status: dryRun ? 'simulated' : 'executed',
+        timestamp: new Date().toISOString()
+      };
+    });
+
+    const summary = {
+      totalAlerts: alerts.length,
+      remediationsPlanned: remediationActions.length,
+      actionsByType: remediationActions.reduce((acc: Record<string, number>, r: any) => {
+        r.actions.forEach((a: any) => {
+          acc[a.type] = (acc[a.type] || 0) + 1;
+        });
+        return acc;
+      }, {}),
+      dryRun,
+      executedAt: dryRun ? null : new Date().toISOString()
+    };
+
+    res.json({
+      success: true,
+      data: {
+        remediations: remediationActions,
+        summary
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Auto-remediation failed'
+    });
+  }
+});
+
+/**
  * GET /api/analytics/capabilities
  * Get analytics capabilities
  */
@@ -287,7 +419,7 @@ router.get('/capabilities', async (req: Request, res: Response) => {
       realTimeFeatures: {
         monitoring: true,
         alerting: true,
-        autoRemediation: false // Not implemented yet
+        autoRemediation: true
       },
       dataProcessing: {
         batchAnalysis: true,

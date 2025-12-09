@@ -18,6 +18,8 @@ import chatApiRoutes from "./routes/chat-api";
 import market360VerticalRoutes from "./routes/market360-vertical-routes";
 import llmAdminRoutes from "./routes/llm-admin-routes";
 import multimodalContentRoutes from "./routes/multimodal-content-routes";
+import rbacRoutes from "./routes/rbac-routes";
+import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -94,6 +96,12 @@ app.use('/api/admin/llm', llmAdminRoutes);
 
 // Multimodal Content Routes
 app.use('/api/multimodal-content', multimodalContentRoutes);
+
+// RBAC & Audit Routes
+app.use('/api/rbac', rbacRoutes);
+
+// Audit middleware for logging API access
+app.use(auditMiddleware());
 
 async function startServer() {
   try {
