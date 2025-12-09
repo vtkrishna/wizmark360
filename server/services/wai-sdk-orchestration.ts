@@ -314,8 +314,8 @@ export class WAISDKOrchestration {
       if (process.env.OPENROUTER_API_KEY) {
         return { provider: "openrouter", model: "deepseek/deepseek-chat", tier: "tier4" };
       }
-      // Fallback to native Anthropic
-      return { provider: "anthropic", model: "claude-sonnet-4-20250514", tier: "tier1" };
+      // Fallback to native Anthropic Claude Sonnet 4.5 (latest)
+      return { provider: "anthropic", model: "claude-sonnet-4-5-20250925", tier: "tier1" };
     }
 
     // Priority 4: Generation tasks → Balance quality and cost
@@ -324,13 +324,13 @@ export class WAISDKOrchestration {
       if (process.env.TOGETHER_API_KEY) {
         return { provider: "together", model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", tier: "tier2" };
       }
-      return { provider: "openai", model: "gpt-4o", tier: "tier1" };
+      return { provider: "openai", model: "gpt-5.1-chat-latest", tier: "tier1" };
     }
 
-    // Priority 5: Critical/high priority → Use premium providers
+    // Priority 5: Critical/high priority → Use premium providers (latest models)
     if (task.priority === "critical" || task.priority === "high") {
-      // Direct native providers for critical tasks
-      return { provider: "openai", model: "gpt-4o", tier: "tier1" };
+      // GPT-5.1 Thinking for critical tasks
+      return { provider: "openai", model: "gpt-5.1", tier: "tier1" };
     }
 
     // Default: Use Groq for fast, free inference
