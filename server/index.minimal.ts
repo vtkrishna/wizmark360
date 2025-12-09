@@ -19,6 +19,7 @@ import market360VerticalRoutes from "./routes/market360-vertical-routes";
 import llmAdminRoutes from "./routes/llm-admin-routes";
 import multimodalContentRoutes from "./routes/multimodal-content-routes";
 import rbacRoutes from "./routes/rbac-routes";
+import predictiveAnalyticsRoutes from "./routes/predictive-analytics-api";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -99,6 +100,9 @@ app.use('/api/multimodal-content', multimodalContentRoutes);
 
 // RBAC & Audit Routes
 app.use('/api/rbac', rbacRoutes);
+
+// Predictive Analytics Routes
+app.use('/api/analytics', predictiveAnalyticsRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());

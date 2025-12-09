@@ -100,6 +100,31 @@ The application is built with React for the frontend and Express for the backend
 - **Cost Optimization**: Automatic model selection based on brand tier, payment level, and criticality
 - **Backup Chains**: Production models include automatic fallback chains
 
+### RBAC & Audit Logging (December 2024)
+**NEW: Role-Based Access Control & Audit Trail**
+- **4 User Roles**: Admin (full access), Manager (team management), User (content creation), Viewer (read-only)
+- **Permission System**: Resource-based permissions with 6 actions (create, read, update, delete, execute, manage)
+- **Role Hierarchy**: Inheritance-based with level system (Admin: 100, Manager: 75, User: 50, Viewer: 25)
+- **Audit Logging**: Complete action tracking with middleware integration
+- **Security Events**: Role changes, API access, agent executions, LLM requests logged
+
+**API Endpoints:**
+- `GET /api/rbac/roles` - List all roles with permissions
+- `GET /api/rbac/my-permissions` - Get current user's permissions
+- `POST /api/rbac/check-permission` - Check specific permission
+- `GET /api/rbac/audit-logs` - View audit logs (admin only)
+- `GET /api/rbac/audit-stats` - Audit statistics
+
+### Auto-Remediation for Predictive Analytics (December 2024)
+**NEW: Automated Issue Resolution**
+- **6 Alert Types**: Performance, Capacity, Error Rate, Latency, Security, Default
+- **Smart Actions**: Scale resources, provision capacity, circuit breakers, caching, rate limiting
+- **Dry Run Mode**: Simulate remediation before execution
+- **Action Summary**: Aggregated view of planned remediations
+
+**API Endpoints:**
+- `POST /api/analytics/auto-remediation` - Execute auto-remediation for alerts
+
 ### API Endpoints
 - `/api/voice/*` - Sarvam Voice API (STT/TTS)
 - `/api/market360/social/*` - Social Media vertical endpoints
