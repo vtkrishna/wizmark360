@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Rocket, Zap, Users, Globe, Code2, Bot, LineChart, Shield, 
-  Sparkles, ArrowRight, Check, Play, Star, TrendingUp
+  Sparkles, ArrowRight, Check, Play, TrendingUp
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 
@@ -34,29 +34,6 @@ export default function Homepage() {
     { title: 'Enterprise Security', description: 'SOC2, GDPR, CCPA compliant with encryption at rest & in transit', icon: Shield },
   ];
 
-  const testimonials = [
-    {
-      quote: "We went from idea to paying customers in 12 days. The AI agents built our entire SaaS platform.",
-      author: "Sarah Chen",
-      company: "DataFlow AI",
-      role: "Founder & CEO",
-      stat: "Raised $2M seed"
-    },
-    {
-      quote: "The investor matching alone saved us 3 months of cold outreach. We got 15 warm intros in week 1.",
-      author: "Marcus Johnson",
-      company: "FinTech Ventures",
-      role: "Co-Founder",
-      stat: "$500K raised"
-    },
-    {
-      quote: "267+ AI agents working on our product 24/7? Game changer. We ship 10x faster than our competitors.",
-      author: "Priya Patel",
-      company: "HealthTech Solutions",
-      role: "CTO",
-      stat: "100K+ users"
-    },
-  ];
 
   const stats = [
     { value: '267+', label: 'AI Agents', sublabel: 'Working 24/7' },
@@ -74,7 +51,7 @@ export default function Homepage() {
             <div className="flex items-center gap-3">
               <Rocket className="h-8 w-8 text-blue-500" />
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                Wizards
+                Wizards Tech Global
               </span>
               <Badge variant="outline" className="border-green-500/50 text-green-400 ml-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
@@ -113,7 +90,7 @@ export default function Homepage() {
             transition={{ duration: 0.6 }}
           >
             <Badge className="mb-6 text-sm bg-blue-500/10 border-blue-500/30 text-blue-400" data-testid="badge-tagline">
-              World's First AI-Native Startup Accelerator
+              World's First Self-Driving Marketing Agency Platform
             </Badge>
             
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight" data-testid="text-hero-title">
@@ -252,54 +229,52 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Market360 Verticals Section */}
       <section className="py-24 px-6 relative">
         <div className="absolute inset-0">
           <div className="w-full h-full bg-gradient-to-br from-green-900/10 via-blue-900/10 to-purple-900/10" />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="text-testimonials-title">
-              Founder Success Stories
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="text-verticals-title">
+              7 Marketing Verticals
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Real founders building real companies with AI acceleration
+              Complete coverage across all marketing channels with specialized AI agents
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, i) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: 'Social Media', agents: 45, icon: '📱', color: 'from-pink-500/20 to-purple-500/20' },
+              { name: 'SEO & GEO', agents: 38, icon: '🔍', color: 'from-green-500/20 to-emerald-500/20' },
+              { name: 'Web Development', agents: 32, icon: '🌐', color: 'from-blue-500/20 to-cyan-500/20' },
+              { name: 'Sales SDR', agents: 52, icon: '💼', color: 'from-orange-500/20 to-amber-500/20' },
+              { name: 'WhatsApp', agents: 28, icon: '💬', color: 'from-green-600/20 to-green-500/20' },
+              { name: 'LinkedIn B2B', agents: 35, icon: '🔗', color: 'from-blue-600/20 to-blue-500/20' },
+              { name: 'Performance Ads', agents: 37, icon: '📈', color: 'from-red-500/20 to-pink-500/20' },
+            ].map((vertical, i) => (
               <motion.div
-                key={testimonial.author}
+                key={vertical.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
-                <Card className="bg-gradient-to-br from-white/5 to-white/0 border-white/10 h-full backdrop-blur-sm" data-testid={`card-testimonial-${i}`}>
-                  <CardContent className="p-8">
-                    <div className="flex gap-1 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-                      ))}
-                    </div>
-                    <blockquote className="text-gray-300 mb-6 italic">
-                      "{testimonial.quote}"
-                    </blockquote>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-bold">{testimonial.author}</div>
-                        <div className="text-sm text-gray-400">{testimonial.role}</div>
-                        <div className="text-xs text-gray-500">{testimonial.company}</div>
-                      </div>
-                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                        {testimonial.stat}
-                      </Badge>
-                    </div>
+                <Card className={`bg-gradient-to-br ${vertical.color} border-white/10 h-full backdrop-blur-sm hover:border-white/30 transition-all cursor-pointer`}>
+                  <CardContent className="p-6 text-center">
+                    <div className="text-4xl mb-3">{vertical.icon}</div>
+                    <h3 className="text-lg font-bold mb-2">{vertical.name}</h3>
+                    <Badge variant="secondary" className="bg-white/10 text-white">
+                      {vertical.agents} AI Agents
+                    </Badge>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <p className="text-gray-400 text-sm">Total: 267 specialized agents across ROMA L0-L4 autonomy levels</p>
           </div>
         </div>
       </section>
@@ -352,10 +327,10 @@ export default function Homepage() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Rocket className="h-6 w-6 text-blue-500" />
-                <span className="text-xl font-bold">Wizards</span>
+                <span className="text-xl font-bold">Wizards Tech Global</span>
               </div>
               <p className="text-sm text-gray-400">
-                World's first AI-native startup accelerator. Transform ideas into MVPs in 14 days.
+                World's first self-driving marketing agency platform. 267 AI agents across 7 verticals.
               </p>
             </div>
             <div>
@@ -387,7 +362,7 @@ export default function Homepage() {
             </div>
           </div>
           <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 Wizards Incubator. Powered by WAI SDK v1.0. All rights reserved.</p>
+            <p>&copy; 2025 Wizards Tech Global. Powered by WAI SDK v1.0. All rights reserved.</p>
           </div>
         </div>
       </footer>

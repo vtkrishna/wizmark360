@@ -5,9 +5,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Zap, Users, Globe, Bot, LineChart, Shield, 
-  Sparkles, ArrowRight, Check, Play, Star, TrendingUp,
-  MessageCircle, Search, Code2, Briefcase, Megaphone, Share2,
-  Languages, Mic, Brain, Target, BarChart3, Mail, Phone
+  Sparkles, ArrowRight, Check, Play, TrendingUp,
+  MessageCircle, Search, Code2, Briefcase, Share2,
+  Languages, Mic, Brain, Target, BarChart3
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 
@@ -117,29 +117,6 @@ const features = [
   },
 ];
 
-const testimonials = [
-  {
-    quote: "Wizards Tech transformed our marketing operations. We now run campaigns in 8 languages with a single AI command.",
-    author: "Rajesh Kumar",
-    company: "TechMahindra Digital",
-    role: "VP Marketing",
-    stat: "3x ROI improvement"
-  },
-  {
-    quote: "The WhatsApp commerce integration drove 40% more conversions. Voice support in Hindi was a game-changer for Tier 2 cities.",
-    author: "Priya Sharma",
-    company: "Flipkart Seller Solutions",
-    role: "Head of Growth",
-    stat: "40% conversion lift"
-  },
-  {
-    quote: "267 AI agents working on our marketing 24/7. Our SDR team books 5x more meetings with AI-personalized outreach.",
-    author: "Arun Menon",
-    company: "Zoho Marketing",
-    role: "Director of Sales",
-    stat: "5x meeting rate"
-  },
-];
 
 export default function LandingPage() {
   const [, setLocation] = useLocation();
@@ -160,7 +137,7 @@ export default function LandingPage() {
               </span>
               <Badge className="ml-2 bg-green-100 text-green-700 border-green-200">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
-                Internal Platform
+                Agency Platform
               </Badge>
             </div>
             <div className="hidden md:flex items-center gap-6">
@@ -193,7 +170,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
             >
               <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200 text-sm px-4 py-2">
-                Wizards Tech Global - Internal Agency Platform
+                Wizards Tech Global Agency Platform
               </Badge>
               
               <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
@@ -467,54 +444,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-green-100 text-green-700 border-green-200">Success Stories</Badge>
-            <h2 className="text-4xl font-bold mb-4">Trusted by India's Best Brands</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, i) => (
-              <motion.div
-                key={testimonial.author}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <Card className="h-full border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex gap-1 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                      ))}
-                    </div>
-                    <p className="text-gray-700 mb-6 italic">"{testimonial.quote}"</p>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                        {testimonial.author.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <div className="font-semibold text-gray-900">{testimonial.author}</div>
-                        <div className="text-sm text-gray-500">{testimonial.role}, {testimonial.company}</div>
-                      </div>
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                      <div className="text-lg font-bold text-green-600">{testimonial.stat}</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section id="brands" className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-orange-100 text-orange-700 border-orange-200">Agency ERP</Badge>
+            <Badge className="mb-4 bg-orange-100 text-orange-700 border-orange-200">Agency Platform</Badge>
             <h2 className="text-4xl font-bold mb-4">Complete Brand Management</h2>
             <p className="text-xl text-gray-600">Onboard brands, manage services, track invoices, and deliver results.</p>
           </div>
