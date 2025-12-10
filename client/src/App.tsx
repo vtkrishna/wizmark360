@@ -6,6 +6,10 @@ import NewDashboard from './pages/new-dashboard';
 import VerticalPage from './pages/vertical-page';
 import BrandOnboarding from './pages/brand-onboarding';
 import LandingPage from './pages/landing-page';
+import BrandsPage from './pages/brands';
+import ContentLibraryPage from './pages/content-library';
+import AnalyticsPage from './pages/analytics';
+import SettingsPage from './pages/settings';
 import NotFound from './pages/not-found';
 
 function RedirectTo({ to }: { to: string }) {
@@ -30,6 +34,11 @@ export default function App() {
             </Route>
             <Route path="/onboarding" component={BrandOnboarding} />
             <Route path="/brand-onboarding" component={BrandOnboarding} />
+            <Route path="/brands" component={BrandsPage} />
+            <Route path="/content" component={ContentLibraryPage} />
+            <Route path="/content-library" component={ContentLibraryPage} />
+            <Route path="/analytics" component={AnalyticsPage} />
+            <Route path="/settings" component={SettingsPage} />
             <Route component={NotFound} />
           </Switch>
         </Router>
