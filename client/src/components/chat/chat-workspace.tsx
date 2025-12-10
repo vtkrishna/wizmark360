@@ -44,13 +44,68 @@ interface ChatWorkspaceProps {
   brandContext?: Record<string, any>;
 }
 
-const quickActions: QuickAction[] = [
-  { id: "social", label: "Create social post", icon: Megaphone, prompt: "Create an engaging Instagram post for our upcoming Diwali sale campaign with relevant hashtags", color: "bg-pink-50 text-pink-600 border-pink-200", vertical: "social" },
-  { id: "seo", label: "SEO analysis", icon: Globe, prompt: "Analyze our website's SEO performance and suggest improvements for ranking higher on Google", color: "bg-green-50 text-green-600 border-green-200", vertical: "seo" },
-  { id: "leads", label: "Score leads", icon: Target, prompt: "Score and prioritize my latest leads from the LinkedIn campaign based on engagement and profile data", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "sales" },
-  { id: "whatsapp", label: "WhatsApp template", icon: MessageCircle, prompt: "Create a WhatsApp Business message template for order confirmation with tracking details", color: "bg-emerald-50 text-emerald-600 border-emerald-200", vertical: "whatsapp" },
-  { id: "analytics", label: "Performance report", icon: TrendingUp, prompt: "Generate a weekly performance report for all our marketing campaigns with key metrics and insights", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "performance" },
-];
+const verticalPrompts: Record<string, QuickAction[]> = {
+  social: [
+    { id: "social-1", label: "Content Calendar Strategy", icon: Megaphone, prompt: "Design a comprehensive 30-day content calendar for our brand across Instagram, Facebook, and Twitter. Include content themes, optimal posting times based on our audience analytics, and a mix of educational, promotional, and engagement posts.", color: "bg-pink-50 text-pink-600 border-pink-200", vertical: "social" },
+    { id: "social-2", label: "Viral Post Creation", icon: Sparkles, prompt: "Create 5 high-engagement social media posts for our upcoming product launch. Include attention-grabbing hooks, compelling visuals concepts, strategic hashtags, and call-to-actions optimized for each platform.", color: "bg-pink-50 text-pink-600 border-pink-200", vertical: "social" },
+    { id: "social-3", label: "Competitor Analysis", icon: Target, prompt: "Analyze the top 3 competitors in our industry on social media. Compare their content strategy, engagement rates, posting frequency, and identify gaps we can exploit to gain market share.", color: "bg-pink-50 text-pink-600 border-pink-200", vertical: "social" },
+    { id: "social-4", label: "Multilingual Campaign", icon: Globe, prompt: "Create a festival marketing campaign in Hindi and Tamil for Diwali. Include localized messaging, culturally relevant hashtags, and platform-specific content for Instagram and WhatsApp.", color: "bg-pink-50 text-pink-600 border-pink-200", vertical: "social" },
+    { id: "social-5", label: "Engagement Strategy", icon: MessageCircle, prompt: "Develop an engagement strategy to increase our comment rate by 50%. Include response templates, community management guidelines, and UGC campaign ideas.", color: "bg-pink-50 text-pink-600 border-pink-200", vertical: "social" }
+  ],
+  seo: [
+    { id: "seo-1", label: "Technical SEO Audit", icon: Globe, prompt: "Conduct a comprehensive technical SEO audit of our website. Analyze Core Web Vitals, crawlability issues, indexation status, mobile optimization, and provide prioritized recommendations with estimated impact.", color: "bg-green-50 text-green-600 border-green-200", vertical: "seo" },
+    { id: "seo-2", label: "Keyword Research", icon: Target, prompt: "Perform in-depth keyword research for our SaaS product targeting Indian SMBs. Include search volume, keyword difficulty, intent classification, and create topic clusters with pillar and cluster content recommendations.", color: "bg-green-50 text-green-600 border-green-200", vertical: "seo" },
+    { id: "seo-3", label: "GEO Optimization", icon: Sparkles, prompt: "Optimize our content for Generative Engine Optimization (GEO). Analyze how our brand appears in AI search responses from ChatGPT, Perplexity, and Google AI Overviews, and provide strategies to improve AI citation rate.", color: "bg-green-50 text-green-600 border-green-200", vertical: "seo" },
+    { id: "seo-4", label: "Content Gap Analysis", icon: TrendingUp, prompt: "Identify content gaps by comparing our organic rankings with top 5 competitors. List high-opportunity keywords we're missing, suggested content types, and projected traffic potential.", color: "bg-green-50 text-green-600 border-green-200", vertical: "seo" },
+    { id: "seo-5", label: "Local SEO Strategy", icon: Globe, prompt: "Develop a local SEO strategy for our business targeting 10 major Indian cities. Include Google Business Profile optimization, local citation building, and location-specific content recommendations.", color: "bg-green-50 text-green-600 border-green-200", vertical: "seo" }
+  ],
+  web: [
+    { id: "web-1", label: "Landing Page Design", icon: Sparkles, prompt: "Design a high-converting landing page for our SaaS product launch. Include wireframe structure, headline copy options, feature sections, trust signals, and A/B testing variants for the CTA.", color: "bg-blue-50 text-blue-600 border-blue-200", vertical: "web" },
+    { id: "web-2", label: "Performance Optimization", icon: TrendingUp, prompt: "Analyze our website performance and create an optimization roadmap. Focus on reducing load time below 2 seconds, improving Core Web Vitals scores, and implementing lazy loading and caching strategies.", color: "bg-blue-50 text-blue-600 border-blue-200", vertical: "web" },
+    { id: "web-3", label: "Conversion Rate Optimization", icon: Target, prompt: "Review our current website conversion funnel and identify drop-off points. Provide A/B testing hypotheses, UX improvement recommendations, and implement tracking for key micro-conversions.", color: "bg-blue-50 text-blue-600 border-blue-200", vertical: "web" },
+    { id: "web-4", label: "Multilingual Website", icon: Globe, prompt: "Plan a multilingual website expansion to support Hindi, Tamil, and Telugu. Include URL structure recommendations, hreflang implementation, content localization strategy, and RTL considerations.", color: "bg-blue-50 text-blue-600 border-blue-200", vertical: "web" },
+    { id: "web-5", label: "E-commerce Features", icon: Megaphone, prompt: "Add e-commerce capabilities to our website. Design the product catalog structure, cart functionality, checkout flow, and payment gateway integration with Razorpay and UPI support.", color: "bg-blue-50 text-blue-600 border-blue-200", vertical: "web" }
+  ],
+  sales: [
+    { id: "sales-1", label: "Lead Scoring Model", icon: Target, prompt: "Create a comprehensive lead scoring model for our B2B SaaS business. Define scoring criteria based on firmographics, technographics, behavioral signals, and engagement data. Set MQL/SQL thresholds and routing rules.", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "sales" },
+    { id: "sales-2", label: "Outreach Sequence", icon: MessageCircle, prompt: "Design a multi-touch outreach sequence for enterprise prospects. Include personalized email templates, LinkedIn connection messages, follow-up cadence, and objection handling responses for common sales blockers.", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "sales" },
+    { id: "sales-3", label: "Sales Proposal", icon: Sparkles, prompt: "Generate a professional sales proposal for an enterprise client. Include executive summary, solution overview, implementation timeline, pricing options with ROI calculations, and case studies from similar industries.", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "sales" },
+    { id: "sales-4", label: "Pipeline Analysis", icon: TrendingUp, prompt: "Analyze our current sales pipeline and identify bottlenecks. Calculate stage conversion rates, average deal velocity, and provide recommendations to improve win rates and shorten sales cycles.", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "sales" },
+    { id: "sales-5", label: "Competitive Battle Card", icon: Globe, prompt: "Create a competitive battle card for our top 3 competitors. Include feature comparisons, pricing analysis, common objections and rebuttals, and unique selling propositions we can leverage in sales conversations.", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "sales" }
+  ],
+  whatsapp: [
+    { id: "whatsapp-1", label: "Conversation Flow", icon: MessageCircle, prompt: "Design an intelligent WhatsApp conversation flow for customer support. Include welcome message, FAQ automation, order status queries, complaint handling, and human handoff triggers. Support Hindi and English.", color: "bg-emerald-50 text-emerald-600 border-emerald-200", vertical: "whatsapp" },
+    { id: "whatsapp-2", label: "Broadcast Campaign", icon: Megaphone, prompt: "Create a WhatsApp broadcast campaign for our festive sale. Include personalized message templates, product catalog integration, discount code delivery, and follow-up sequences based on customer engagement.", color: "bg-emerald-50 text-emerald-600 border-emerald-200", vertical: "whatsapp" },
+    { id: "whatsapp-3", label: "Voice Message Templates", icon: Sparkles, prompt: "Generate voice message templates in Hindi and Tamil for customer onboarding. Include welcome message, product tutorial guidance, and support contact information using natural conversational tone.", color: "bg-emerald-50 text-emerald-600 border-emerald-200", vertical: "whatsapp" },
+    { id: "whatsapp-4", label: "Payment Collection", icon: Target, prompt: "Design a WhatsApp automation for payment reminders and collection. Include polite reminder sequences, payment link generation, receipt confirmation, and escalation paths for overdue accounts.", color: "bg-emerald-50 text-emerald-600 border-emerald-200", vertical: "whatsapp" },
+    { id: "whatsapp-5", label: "Lead Qualification Bot", icon: TrendingUp, prompt: "Build a WhatsApp lead qualification bot that captures prospect information, assesses their needs, qualifies based on BANT criteria, and routes hot leads to sales reps with conversation context.", color: "bg-emerald-50 text-emerald-600 border-emerald-200", vertical: "whatsapp" }
+  ],
+  linkedin: [
+    { id: "linkedin-1", label: "Thought Leadership", icon: Sparkles, prompt: "Create a thought leadership content series for LinkedIn. Develop 10 long-form article topics, outline structure, engaging hooks, and a publishing schedule that establishes our CEO as an industry authority.", color: "bg-sky-50 text-sky-600 border-sky-200", vertical: "linkedin" },
+    { id: "linkedin-2", label: "Lead Generation", icon: Target, prompt: "Design a LinkedIn lead generation campaign targeting IT decision-makers in India. Include ICP definition, connection request templates, engagement strategy, and InMail sequences with personalization tokens.", color: "bg-sky-50 text-sky-600 border-sky-200", vertical: "linkedin" },
+    { id: "linkedin-3", label: "Company Page Optimization", icon: TrendingUp, prompt: "Audit and optimize our LinkedIn company page for maximum visibility. Include headline updates, About section rewrite, showcase pages strategy, and employee advocacy program to amplify reach.", color: "bg-sky-50 text-sky-600 border-sky-200", vertical: "linkedin" },
+    { id: "linkedin-4", label: "Event Promotion", icon: Megaphone, prompt: "Create a LinkedIn promotion strategy for our upcoming webinar. Include teaser posts, speaker spotlight content, LinkedIn Events integration, and post-event content repurposing plan.", color: "bg-sky-50 text-sky-600 border-sky-200", vertical: "linkedin" },
+    { id: "linkedin-5", label: "SSI Improvement Plan", icon: Globe, prompt: "Analyze my current LinkedIn SSI score and create an action plan to reach 80+. Include daily activities for each SSI pillar, content creation schedule, and networking targets for the next 90 days.", color: "bg-sky-50 text-sky-600 border-sky-200", vertical: "linkedin" }
+  ],
+  performance: [
+    { id: "perf-1", label: "Campaign Strategy", icon: TrendingUp, prompt: "Develop a comprehensive paid media strategy across Google Ads, Meta, and LinkedIn. Include budget allocation by platform, audience targeting strategy, creative guidelines, and ROAS targets by funnel stage.", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "performance" },
+    { id: "perf-2", label: "Creative Testing", icon: Sparkles, prompt: "Design an A/B testing framework for our ad creatives. Create 5 headline variations, 3 visual concepts, and 4 CTA options. Include statistical significance requirements and success metrics.", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "performance" },
+    { id: "perf-3", label: "Audience Strategy", icon: Target, prompt: "Build advanced audience segments for our remarketing campaigns. Include website visitor segments, lookalike audience strategies, customer list targeting, and exclusion rules to optimize ad spend.", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "performance" },
+    { id: "perf-4", label: "Attribution Analysis", icon: Globe, prompt: "Analyze our multi-touch attribution data and recommend improvements. Compare last-click vs data-driven attribution, identify undervalued touchpoints, and suggest budget reallocation opportunities.", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "performance" },
+    { id: "perf-5", label: "Budget Optimization", icon: Megaphone, prompt: "Optimize our monthly ad spend of Rs 5 Lakhs across platforms. Analyze current performance by channel, identify waste, and create a reallocation plan to improve overall ROAS by 30%.", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "performance" }
+  ],
+  general: [
+    { id: "gen-1", label: "Campaign Planning", icon: Megaphone, prompt: "Create a comprehensive marketing campaign plan for our upcoming product launch. Include multi-channel strategy across social, email, paid ads, and PR with timeline, budget allocation, and KPIs.", color: "bg-blue-50 text-blue-600 border-blue-200", vertical: "general" },
+    { id: "gen-2", label: "Performance Report", icon: TrendingUp, prompt: "Generate a comprehensive weekly marketing performance report. Include metrics from all active campaigns, channel comparison, trend analysis, and data-driven recommendations for optimization.", color: "bg-purple-50 text-purple-600 border-purple-200", vertical: "general" },
+    { id: "gen-3", label: "Content Strategy", icon: Sparkles, prompt: "Develop a quarterly content strategy aligned with our business goals. Include content pillars, format mix, distribution channels, resource requirements, and success metrics.", color: "bg-green-50 text-green-600 border-green-200", vertical: "general" },
+    { id: "gen-4", label: "Brand Voice Guide", icon: MessageCircle, prompt: "Create a brand voice and tone guide for all our marketing communications. Include personality attributes, do's and don'ts, example messaging for different channels, and multilingual considerations.", color: "bg-orange-50 text-orange-600 border-orange-200", vertical: "general" },
+    { id: "gen-5", label: "Market Analysis", icon: Globe, prompt: "Conduct a market analysis for our expansion into South Indian markets. Include market size, competitive landscape, cultural considerations, and go-to-market strategy recommendations.", color: "bg-sky-50 text-sky-600 border-sky-200", vertical: "general" }
+  ]
+};
+
+const getQuickActions = (vertical: string): QuickAction[] => {
+  return verticalPrompts[vertical] || verticalPrompts.general;
+};
 
 export default function ChatWorkspace({ vertical = "general", brandId = 1, brandContext }: ChatWorkspaceProps) {
   const [messages, setMessages] = useState<Message[]>([
@@ -262,9 +317,9 @@ export default function ChatWorkspace({ vertical = "general", brandId = 1, brand
 
       {messages.length <= 1 && (
         <div className="max-w-3xl mx-auto px-4 pb-4">
-          <p className="text-sm text-gray-500 mb-3">Quick actions</p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Suggested prompts for {vertical === "general" ? "marketing" : vertical}</p>
           <div className="flex flex-wrap gap-2">
-            {quickActions.map((action) => (
+            {getQuickActions(vertical).slice(0, 5).map((action: QuickAction) => (
               <button
                 key={action.id}
                 onClick={() => handleQuickAction(action)}

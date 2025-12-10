@@ -43,6 +43,21 @@ interface ContentItem {
   vertical: string;
 }
 
+const indianLanguages = [
+  { code: "hi", name: "Hindi", native: "हिन्दी" },
+  { code: "ta", name: "Tamil", native: "தமிழ்" },
+  { code: "te", name: "Telugu", native: "తెలుగు" },
+  { code: "bn", name: "Bengali", native: "বাংলা" },
+  { code: "mr", name: "Marathi", native: "मराठी" },
+  { code: "gu", name: "Gujarati", native: "ગુજરાતી" },
+  { code: "kn", name: "Kannada", native: "ಕನ್ನಡ" },
+  { code: "ml", name: "Malayalam", native: "മലയാളം" },
+  { code: "pa", name: "Punjabi", native: "ਪੰਜਾਬੀ" },
+  { code: "or", name: "Odia", native: "ଓଡ଼ିଆ" },
+  { code: "as", name: "Assamese", native: "অসমীয়া" },
+  { code: "en", name: "English", native: "English" }
+];
+
 const sampleContent: ContentItem[] = [
   {
     id: 1,
@@ -55,11 +70,151 @@ const sampleContent: ContentItem[] = [
     updatedAt: "2024-10-18",
     author: "Content Creator AI",
     tags: ["diwali", "festival", "campaign"],
-    preview: "दीपावली की हार्दिक शुभकामनाएं! इस त्योहार...",
+    preview: "दीपावली की हार्दिक शुभकामनाएं! इस त्योहार पर विशेष ऑफर...",
     vertical: "social"
   },
   {
     id: 2,
+    title: "Tamil Pongal Festival Promo",
+    type: "image",
+    status: "published",
+    platform: "Instagram",
+    language: "Tamil",
+    createdAt: "2024-01-10",
+    updatedAt: "2024-01-12",
+    author: "Content Creator AI",
+    tags: ["pongal", "festival", "tamil"],
+    preview: "பொங்கல் வாழ்த்துக்கள்! சிறப்பு தள்ளுபடி...",
+    vertical: "social"
+  },
+  {
+    id: 3,
+    title: "Telugu Sankranti Campaign",
+    type: "image",
+    status: "approved",
+    platform: "Facebook",
+    language: "Telugu",
+    createdAt: "2024-01-08",
+    updatedAt: "2024-01-10",
+    author: "Creative Factory AI",
+    tags: ["sankranti", "telugu", "festival"],
+    preview: "సంక్రాంతి శుభాకాంక్షలు! ప్రత్యేక ఆఫర్లు...",
+    vertical: "performance"
+  },
+  {
+    id: 4,
+    title: "Bengali Durga Puja Special",
+    type: "text",
+    status: "published",
+    platform: "WhatsApp",
+    language: "Bengali",
+    createdAt: "2024-10-01",
+    updatedAt: "2024-10-03",
+    author: "Campaign Automator AI",
+    tags: ["durga-puja", "bengali", "festival"],
+    preview: "শারদীয়া শুভেচ্ছা! দুর্গা পূজার বিশেষ অফার...",
+    vertical: "whatsapp"
+  },
+  {
+    id: 5,
+    title: "Marathi Ganesh Chaturthi Post",
+    type: "image",
+    status: "published",
+    platform: "Instagram",
+    language: "Marathi",
+    createdAt: "2024-09-05",
+    updatedAt: "2024-09-07",
+    author: "Content Creator AI",
+    tags: ["ganesh-chaturthi", "marathi", "festival"],
+    preview: "गणपती बाप्पा मोरया! विशेष सवलत...",
+    vertical: "social"
+  },
+  {
+    id: 6,
+    title: "Gujarati Navratri Campaign",
+    type: "video",
+    status: "approved",
+    platform: "Instagram",
+    language: "Gujarati",
+    createdAt: "2024-09-28",
+    updatedAt: "2024-10-01",
+    author: "Creative Factory AI",
+    tags: ["navratri", "gujarati", "festival"],
+    preview: "નવરાત્રીની શુભકામના! વિશેષ ઓફર...",
+    vertical: "social"
+  },
+  {
+    id: 7,
+    title: "Kannada Ugadi Celebration",
+    type: "text",
+    status: "published",
+    platform: "LinkedIn",
+    language: "Kannada",
+    createdAt: "2024-04-05",
+    updatedAt: "2024-04-07",
+    author: "Authority Builder AI",
+    tags: ["ugadi", "kannada", "new-year"],
+    preview: "ಯುಗಾದಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ವಿಶೇಷ ಕೊಡುಗೆ...",
+    vertical: "linkedin"
+  },
+  {
+    id: 8,
+    title: "Malayalam Onam Festival",
+    type: "image",
+    status: "published",
+    platform: "Facebook",
+    language: "Malayalam",
+    createdAt: "2024-08-25",
+    updatedAt: "2024-08-28",
+    author: "Creative Factory AI",
+    tags: ["onam", "malayalam", "kerala"],
+    preview: "ഓണാശംസകൾ! പ്രത്യേക ഓഫർ...",
+    vertical: "performance"
+  },
+  {
+    id: 9,
+    title: "Punjabi Baisakhi Promo",
+    type: "video",
+    status: "approved",
+    platform: "Instagram",
+    language: "Punjabi",
+    createdAt: "2024-04-10",
+    updatedAt: "2024-04-12",
+    author: "Content Creator AI",
+    tags: ["baisakhi", "punjabi", "festival"],
+    preview: "ਬੈਸਾਖੀ ਦੀਆਂ ਲੱਖ ਲੱਖ ਵਧਾਈਆਂ! ਵਿਸ਼ੇਸ਼ ਛੂਟ...",
+    vertical: "social"
+  },
+  {
+    id: 10,
+    title: "Odia Raja Festival Content",
+    type: "text",
+    status: "published",
+    platform: "WhatsApp",
+    language: "Odia",
+    createdAt: "2024-06-12",
+    updatedAt: "2024-06-14",
+    author: "Campaign Automator AI",
+    tags: ["raja", "odia", "festival"],
+    preview: "ରଜ ପର୍ବର ଶୁଭେଚ୍ଛା! ବିଶେଷ ଅଫର...",
+    vertical: "whatsapp"
+  },
+  {
+    id: 11,
+    title: "Assamese Bihu Celebration",
+    type: "image",
+    status: "approved",
+    platform: "Facebook",
+    language: "Assamese",
+    createdAt: "2024-04-12",
+    updatedAt: "2024-04-14",
+    author: "Creative Factory AI",
+    tags: ["bihu", "assamese", "festival"],
+    preview: "বহাগ বিহুৰ শুভেচ্ছা! বিশেষ ৰেহাই...",
+    vertical: "performance"
+  },
+  {
+    id: 12,
     title: "Product Launch Email Sequence",
     type: "text",
     status: "approved",
@@ -73,7 +228,7 @@ const sampleContent: ContentItem[] = [
     vertical: "sales"
   },
   {
-    id: 3,
+    id: 13,
     title: "LinkedIn Thought Leadership Article",
     type: "text",
     status: "draft",
@@ -87,7 +242,7 @@ const sampleContent: ContentItem[] = [
     vertical: "linkedin"
   },
   {
-    id: 4,
+    id: 14,
     title: "WhatsApp Broadcast - Holiday Sale",
     type: "text",
     status: "published",
@@ -101,7 +256,7 @@ const sampleContent: ContentItem[] = [
     vertical: "whatsapp"
   },
   {
-    id: 5,
+    id: 15,
     title: "SEO Blog Post - AI Marketing Guide",
     type: "text",
     status: "published",
@@ -115,7 +270,7 @@ const sampleContent: ContentItem[] = [
     vertical: "seo"
   },
   {
-    id: 6,
+    id: 16,
     title: "Facebook Ad Creative - Summer Collection",
     type: "image",
     status: "approved",
@@ -129,7 +284,7 @@ const sampleContent: ContentItem[] = [
     vertical: "performance"
   },
   {
-    id: 7,
+    id: 17,
     title: "Website Hero Section Copy",
     type: "text",
     status: "published",
@@ -143,8 +298,8 @@ const sampleContent: ContentItem[] = [
     vertical: "web"
   },
   {
-    id: 8,
-    title: "Voice Message Template - Customer Support",
+    id: 18,
+    title: "Voice Message Template - Hindi Support",
     type: "audio",
     status: "approved",
     platform: "WhatsApp",
@@ -155,6 +310,34 @@ const sampleContent: ContentItem[] = [
     tags: ["voice", "support", "template"],
     preview: "नमस्ते, मैं आपकी कैसे सहायता कर सकता हूं?",
     vertical: "whatsapp"
+  },
+  {
+    id: 19,
+    title: "Tamil Customer Welcome Message",
+    type: "audio",
+    status: "published",
+    platform: "WhatsApp",
+    language: "Tamil",
+    createdAt: "2024-12-03",
+    updatedAt: "2024-12-03",
+    author: "Voice Agent AI",
+    tags: ["voice", "welcome", "tamil"],
+    preview: "வணக்கம்! நான் உங்களுக்கு எப்படி உதவ முடியும்?",
+    vertical: "whatsapp"
+  },
+  {
+    id: 20,
+    title: "Telugu Product Demo Script",
+    type: "video",
+    status: "draft",
+    platform: "YouTube",
+    language: "Telugu",
+    createdAt: "2024-12-01",
+    updatedAt: "2024-12-02",
+    author: "Creative Factory AI",
+    tags: ["demo", "product", "telugu"],
+    preview: "మా కొత్త ఉత్పత్తి యొక్క పూర్తి గైడ్...",
+    vertical: "web"
   }
 ];
 
@@ -271,10 +454,27 @@ export default function ContentLibraryPage() {
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">4</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">12</p>
                     <p className="text-sm text-gray-500">Languages</p>
                   </div>
                   <Globe className="w-8 h-8 text-orange-500" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-orange-500 to-amber-600 rounded-xl p-5 text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">Multilingual Content Support</h3>
+                  <p className="text-white/80 text-sm">Create and manage content in 12 Indian languages with AI-powered translation</p>
+                </div>
+                <div className="flex flex-wrap gap-2 max-w-xl">
+                  {indianLanguages.slice(0, 6).map((lang) => (
+                    <span key={lang.code} className="px-2 py-1 bg-white/20 rounded text-xs font-medium">
+                      {lang.native}
+                    </span>
+                  ))}
+                  <span className="px-2 py-1 bg-white/20 rounded text-xs font-medium">+6 more</span>
                 </div>
               </div>
             </div>
