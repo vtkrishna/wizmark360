@@ -20,18 +20,35 @@ const router = Router();
 
 router.post("/chat", async (req: Request, res: Response) => {
   try {
-    const { message, brandId, vertical, conversationId, context } = req.body;
+    const { message, brandId, vertical, conversationId, context, model, provider } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
+
+    const providerMap: Record<string, "anthropic" | "openai" | "gemini" | "groq" | "zhipu"> = {
+      "anthropic": "anthropic",
+      "claude": "anthropic",
+      "openai": "openai",
+      "gpt": "openai",
+      "gemini": "gemini",
+      "google": "gemini",
+      "groq": "groq",
+      "llama": "groq",
+      "zhipu": "zhipu",
+      "glm": "zhipu"
+    };
+
+    const preferredProvider = providerMap[model?.toLowerCase()] || providerMap[provider?.toLowerCase()] || undefined;
 
     const chatRequest: ChatRequest = {
       message,
       brandId: brandId || 1,
       vertical: (vertical as Vertical) || "general",
       conversationId,
-      context
+      context,
+      preferredProvider,
+      preferredModel: model
     };
 
     const response = await chiefOfStaffService.processChat(chatRequest);

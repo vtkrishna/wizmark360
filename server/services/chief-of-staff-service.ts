@@ -23,6 +23,8 @@ export interface ChatRequest {
   vertical: Vertical;
   conversationId?: string;
   context?: Record<string, any>;
+  preferredProvider?: "anthropic" | "openai" | "gemini" | "groq" | "zhipu";
+  preferredModel?: string;
 }
 
 export interface ChatResponse {
@@ -351,7 +353,7 @@ Maintain this brand context in all responses and ensure consistency with brand g
   }
 
   async processChat(request: ChatRequest): Promise<ChatResponse> {
-    const provider = this.selectProvider();
+    const provider = request.preferredProvider || this.selectProvider();
     const agent = this.getAgentForVertical(request.vertical);
     const systemPrompt = this.getSystemPrompt(request.vertical, request.context);
 
@@ -369,7 +371,89 @@ Maintain this brand context in all responses and ensure consistency with brand g
     let model: string;
 
     try {
-      if (provider === "anthropic" && this.anthropic) {
+      if (provider === "zhipu") {
+        model = request.preferredModel || "glm-4.6";
+        const zhipuApiKey = process.env.ZHIPU_API_KEY;
+        const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+        
+        const messages = [
+          { role: "system", content: systemPrompt },
+          ...conversationHistory
+            .filter(m => m.role !== "system")
+            .map(m => ({
+              role: m.role as "user" | "assistant",
+              content: m.content
+            }))
+        ];
+
+        let data: any;
+        
+        if (zhipuApiKey) {
+          const zhipuResponse = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${zhipuApiKey}`,
+            },
+            body: JSON.stringify({
+              model,
+              messages,
+              max_tokens: 2048,
+              temperature: 0.7,
+            }),
+          });
+          data = await zhipuResponse.json();
+          
+          if (!zhipuResponse.ok && openRouterApiKey) {
+            console.log("Zhipu direct API failed, falling back to OpenRouter for GLM-4.6");
+            const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${openRouterApiKey}`,
+                "HTTP-Referer": "https://wizards-tech.replit.app",
+                "X-Title": "Wizards Tech Platform"
+              },
+              body: JSON.stringify({
+                model: "z-ai/glm-4.6",
+                messages,
+                max_tokens: 2048,
+                temperature: 0.7,
+              }),
+            });
+            data = await openRouterResponse.json();
+            if (!openRouterResponse.ok) {
+              throw new Error(data.error?.message || "OpenRouter GLM-4.6 API error");
+            }
+          } else if (!zhipuResponse.ok) {
+            throw new Error(data.error?.message || "Zhipu API error");
+          }
+        } else if (openRouterApiKey) {
+          const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${openRouterApiKey}`,
+              "HTTP-Referer": "https://wizards-tech.replit.app",
+              "X-Title": "Wizards Tech Platform"
+            },
+            body: JSON.stringify({
+              model: "z-ai/glm-4.6",
+              messages,
+              max_tokens: 2048,
+              temperature: 0.7,
+            }),
+          });
+          data = await openRouterResponse.json();
+          if (!openRouterResponse.ok) {
+            throw new Error(data.error?.message || "OpenRouter GLM-4.6 API error");
+          }
+        } else {
+          throw new Error("No ZHIPU_API_KEY or OPENROUTER_API_KEY configured for GLM-4.6");
+        }
+
+        response = data.choices?.[0]?.message?.content || "";
+      } else if (provider === "anthropic" && this.anthropic) {
         model = "claude-sonnet-4-20250514";
         const messages = conversationHistory
           .filter(m => m.role !== "system")

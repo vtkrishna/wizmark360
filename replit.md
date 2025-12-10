@@ -72,12 +72,32 @@ The application is built with React for the frontend and Express for the backend
 - `GET /api/market360/verticals/content-model-selector` - Get recommended model for content type
 
 ### LLM Provider Configuration (December 2024)
-**5 Verified Working Providers:**
+**6 Verified Working Providers:**
 - **OpenAI**: GPT-5.1, GPT-4o (Premium quality)
 - **Anthropic**: Claude Sonnet 4.5, Claude Haiku 4.5 (Planning & reasoning)
 - **Groq**: Llama 3.3 70B (Ultra-fast, sub-second latency)
 - **OpenRouter**: Llama 3.1 8B, DeepSeek V3, Qwen 2.5 (Cost optimization: $0.055-0.28/1M tokens)
 - **Together.ai**: Llama 3.2 3B-70B (Low-cost: $0.06-0.88/1M tokens)
+- **Zhipu AI (GLM-4.6)**: Content creation, website coding, agent tasks ($0.60-2.20/1M tokens)
+
+### GLM-4.6 Integration (December 2024)
+**NEW: Zhipu AI GLM-4.6 for Content & Coding**
+- **GLM-4.6**: 355B MoE model (32B active), 200K context, optimized for coding & content creation
+- **GLM-4.6V**: Vision-language model with native tool calling for multimodal tasks
+- **GLM-4-Long**: 1M context window for long document processing
+- **CodeGeeX 4**: Specialized coding model for fast code generation
+- **Fallback Chain**: Zhipu API → OpenRouter (z-ai/glm-4.6) → Groq fallback
+- **Smart Routing**: Automatically routes content creation, website coding, blog, and article tasks to GLM-4.6
+
+**Usage:**
+```javascript
+// Via Chat API
+POST /api/chat
+{ "message": "...", "model": "zhipu" }  // or "glm"
+
+// Via WAI SDK Orchestration
+aiService.chat(messages, "zhipu", "glm-4.6")
+```
 
 ### Vertical Workflow Implementation (December 2024)
 - **Social Media Vertical Service**: Full 9-step workflow with WAI SDK integration (Trend Analysis → Content Ideation → Content Creation → Visual Production → Content Review → Schedule Optimization → Publication → Engagement Monitoring → Performance Analytics)

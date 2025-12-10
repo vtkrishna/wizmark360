@@ -428,41 +428,80 @@ export class EnhancedAIService {
 
   private async chatWithZhipu(messages: ChatMessage[], model?: string): Promise<EnhancedAIResponse> {
     const zhipuApiKey = process.env.ZHIPU_API_KEY;
-    if (!zhipuApiKey) {
-      console.log("Zhipu API key not configured, falling back to Groq");
+    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+    const selectedModel = model || "glm-4.6";
+    
+    if (!zhipuApiKey && !openRouterApiKey) {
+      console.log("No Zhipu or OpenRouter API key configured, falling back to Groq");
       return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
     }
 
     try {
-      const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${zhipuApiKey}`,
-        },
-        body: JSON.stringify({
-          model: model || "glm-4.6",
-          messages: messages.map(m => ({ role: m.role, content: m.content })),
-          max_tokens: 4096,
-          temperature: 0.7,
-        }),
-      });
-
-      const data = await response.json();
+      let data: any;
+      let usedOpenRouter = false;
       
-      if (!response.ok) {
-        console.error("Zhipu API error:", data);
-        return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
+      if (zhipuApiKey) {
+        const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${zhipuApiKey}`,
+          },
+          body: JSON.stringify({
+            model: selectedModel,
+            messages: messages.map(m => ({ role: m.role, content: m.content })),
+            max_tokens: 4096,
+            temperature: 0.7,
+          }),
+        });
+
+        data = await response.json();
+        
+        if (!response.ok && openRouterApiKey) {
+          console.log("Zhipu direct API failed, falling back to OpenRouter for GLM-4.6");
+          usedOpenRouter = true;
+        } else if (!response.ok) {
+          console.error("Zhipu API error:", data);
+          return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
+        }
+      }
+      
+      if (!zhipuApiKey || usedOpenRouter) {
+        if (!openRouterApiKey) {
+          return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
+        }
+        
+        const openRouterResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${openRouterApiKey}`,
+            "HTTP-Referer": "https://wizards-tech.replit.app",
+            "X-Title": "Wizards Tech Platform"
+          },
+          body: JSON.stringify({
+            model: "z-ai/glm-4.6",
+            messages: messages.map(m => ({ role: m.role, content: m.content })),
+            max_tokens: 4096,
+            temperature: 0.7,
+          }),
+        });
+        
+        data = await openRouterResponse.json();
+        if (!openRouterResponse.ok) {
+          console.error("OpenRouter GLM-4.6 API error:", data);
+          return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
+        }
       }
 
       return {
         content: data.choices?.[0]?.message?.content || "",
         provider: "zhipu",
-        model: model || "glm-4.6",
+        model: selectedModel,
         tokensUsed: data.usage?.total_tokens,
       };
     } catch (error) {
-      console.error("Zhipu API error:", error);
+      console.error("Zhipu/OpenRouter API error:", error);
       return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
     }
   }
