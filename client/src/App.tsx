@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { Router, Route, Switch, useLocation } from 'wouter';
+import { Router, Route, Switch } from 'wouter';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import NewDashboard from './pages/new-dashboard';
@@ -11,14 +10,6 @@ import ContentLibraryPage from './pages/content-library';
 import AnalyticsPage from './pages/analytics';
 import SettingsPage from './pages/settings';
 import NotFound from './pages/not-found';
-
-function RedirectTo({ to }: { to: string }) {
-  const [, setLocation] = useLocation();
-  useEffect(() => {
-    setLocation(to);
-  }, [to, setLocation]);
-  return null;
-}
 
 export default function App() {
   return (
