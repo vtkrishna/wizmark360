@@ -75,7 +75,7 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
     capabilities: ["text", "vision", "code", "reasoning"],
     bestFor: ["Long-form content", "Analysis", "Code generation", "Safety-focused"],
     models: [
-      { id: "claude-sonnet-4-5-20250925", name: "Claude Sonnet 4.5", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], isDefault: true, isActive: true },
+      { id: "claude-sonnet-4-20250514", name: "Claude 4 Sonnet", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], isDefault: true, isActive: true },
       { id: "claude-haiku-4-5-20250925", name: "Claude Haiku 4.5", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.8, outputCostPer1M: 4, capabilities: ["text", "vision", "code", "fast"], isActive: true },
       { id: "claude-sonnet-4-20250514", name: "Claude 4 Sonnet", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], isActive: true },
       { id: "claude-opus-4-20250514", name: "Claude 4 Opus", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "reasoning", "code"], isActive: true },

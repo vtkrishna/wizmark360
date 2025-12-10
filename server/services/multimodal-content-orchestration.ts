@@ -128,7 +128,7 @@ const MULTIMODAL_PROVIDERS: MultimodalProvider[] = [
     name: "Anthropic",
     provider: "anthropic",
     models: [
-      { id: "claude-sonnet-4-5-20250925", name: "Claude Sonnet 4.5", modality: "multimodal", task: "vision-language", costPer1000Calls: 3.0, qualityRating: 10, speedRating: 7 }
+      { id: "claude-sonnet-4-20250514", name: "Claude 4 Sonnet", modality: "multimodal", task: "vision-language", costPer1000Calls: 3.0, qualityRating: 10, speedRating: 7 }
     ],
     capabilities: ["text", "multimodal"]
   },

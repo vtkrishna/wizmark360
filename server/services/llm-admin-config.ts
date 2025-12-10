@@ -93,7 +93,7 @@ const FREE_TESTING_MODELS: ModelConfig[] = [
 const PRODUCTION_MODELS: ModelConfig[] = [
   {
     provider: "anthropic",
-    model: "claude-sonnet-4-5-20250925",
+    model: "claude-sonnet-4-20250514",
     costPer1MTokens: 3.0,
     tier: "premium",
     speedRating: 7,

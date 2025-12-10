@@ -279,7 +279,7 @@ Format as JSON with keys: architecture, tasks, risks, complexity`;
     const planningResult = await this.aiService.chat(
       [{ role: "user", content: planningPrompt }],
       "anthropic",
-      "claude-sonnet-4-5-20250925"
+      "claude-sonnet-4-20250514"
     );
     const planningTime = Date.now() - planningStart;
     totalTokens += planningResult.tokensUsed || 0;
@@ -348,7 +348,7 @@ Generate the implementation code. Be concise and production-ready.`;
       taskId: task.id,
       planningPhase: {
         provider: "anthropic",
-        model: "claude-sonnet-4-5-20250925",
+        model: "claude-sonnet-4-20250514",
         architecture: parsedPlan.architecture,
         taskBreakdown: parsedPlan.tasks,
         riskAssessment: parsedPlan.risks,
@@ -384,7 +384,7 @@ Format as JSON with keys: bugs, optimizations, approved`;
       const reviewResult = await this.aiService.chat(
         [{ role: "user", content: reviewPrompt }],
         "anthropic",
-        "claude-sonnet-4-5-20250925"
+        "claude-sonnet-4-20250514"
       );
       totalTokens += reviewResult.tokensUsed || 0;
 
@@ -398,7 +398,7 @@ Format as JSON with keys: bugs, optimizations, approved`;
 
       result.reviewPhase = {
         provider: "anthropic",
-        model: "claude-sonnet-4-5-20250925",
+        model: "claude-sonnet-4-20250514",
         bugsFound: parsedReview.bugs || [],
         optimizations: parsedReview.optimizations || [],
         approved: parsedReview.approved ?? true,
@@ -417,12 +417,12 @@ Format as JSON with keys: bugs, optimizations, approved`;
     const modelMatrix: Record<string, Record<string, { provider: AIProvider; model: string; cost: number }>> = {
       social: {
         cost: { provider: "together", model: "meta-llama/Llama-3.2-3B-Instruct-Turbo", cost: 0.06 },
-        quality: { provider: "anthropic", model: "claude-sonnet-4-5-20250925", cost: 3 },
+        quality: { provider: "anthropic", model: "claude-sonnet-4-20250514", cost: 3 },
         speed: { provider: "groq", model: "llama-3.3-70b-versatile", cost: 0.59 }
       },
       blog: {
         cost: { provider: "openrouter", model: "deepseek/deepseek-chat", cost: 0.14 },
-        quality: { provider: "anthropic", model: "claude-sonnet-4-5-20250925", cost: 3 },
+        quality: { provider: "anthropic", model: "claude-sonnet-4-20250514", cost: 3 },
         speed: { provider: "groq", model: "llama-3.3-70b-versatile", cost: 0.59 }
       },
       email: {
@@ -437,7 +437,7 @@ Format as JSON with keys: bugs, optimizations, approved`;
       },
       research: {
         cost: { provider: "openrouter", model: "deepseek/deepseek-chat", cost: 0.14 },
-        quality: { provider: "anthropic", model: "claude-sonnet-4-5-20250925", cost: 3 },
+        quality: { provider: "anthropic", model: "claude-sonnet-4-20250514", cost: 3 },
         speed: { provider: "together", model: "meta-llama/Llama-3.3-70B-Instruct-Turbo", cost: 0.88 }
       },
       seo: {
@@ -561,7 +561,7 @@ Format as JSON with keys: bugs, optimizations, approved`;
         return { provider: "openrouter", model: "deepseek/deepseek-chat", tier: "tier4" };
       }
       // Fallback to native Anthropic Claude Sonnet 4.5 (latest)
-      return { provider: "anthropic", model: "claude-sonnet-4-5-20250925", tier: "tier1" };
+      return { provider: "anthropic", model: "claude-sonnet-4-20250514", tier: "tier1" };
     }
 
     // Priority 4: Generation tasks → Balance quality and cost
@@ -1009,6 +1009,54 @@ Format as JSON with keys: bugs, optimizations, approved`;
     };
 
     return this.executeTask(task);
+  }
+
+  async executeAgentTask(params: {
+    agentId: string;
+    prompt: string;
+    context?: Record<string, any>;
+    priority?: "cost" | "quality" | "speed" | "balanced";
+  }): Promise<{ success: boolean; content: string; provider: AIProvider; model: string; tokensUsed: number }> {
+    const { agentId, prompt, priority = "balanced" } = params;
+    
+    const agent = ALL_MARKET360_AGENTS.find(a => a.id === agentId) || 
+                  ALL_HIERARCHICAL_AGENTS.find(a => a.id === agentId);
+    
+    const requiresSpeed = priority === "speed" || priority === "cost";
+    const requiresReasoning = priority === "quality";
+    
+    const modelSelection = selectOptimalModel({
+      type: "content",
+      requiresSpeed,
+      requiresReasoning
+    });
+
+    const systemPrompt = agent?.systemPrompt || "You are a helpful AI assistant.";
+    
+    let provider: AIProvider = "groq";
+    let model = "llama-3.3-70b-versatile";
+    
+    if (modelSelection) {
+      provider = modelSelection.provider.id;
+      model = modelSelection.model.id;
+    }
+    
+    const result = await this.aiService.chat(
+      [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: prompt }
+      ],
+      provider,
+      model
+    );
+
+    return {
+      success: true,
+      content: result.content,
+      provider,
+      model,
+      tokensUsed: result.tokensUsed || 0
+    };
   }
 }
 
