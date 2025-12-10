@@ -3,7 +3,7 @@ export type AIProvider =
   | "sarvam" | "deepseek" | "mistral" | "perplexity" | "together"
   | "openrouter" | "xai" | "replicate" | "fireworks" | "anyscale"
   | "huggingface" | "aws_bedrock" | "azure_openai" | "vertexai"
-  | "ollama" | "sambanova" | "cerebras" | "ai21";
+  | "ollama" | "sambanova" | "cerebras" | "ai21" | "zhipu";
 
 export type ModelTier = "tier1" | "tier2" | "tier3" | "tier4";
 export type ModelCapability = "text" | "vision" | "code" | "reasoning" | "multimodal" | "voice" | "embedding" | "image-generation" | "search" | "rag" | "indian-languages" | "fast" | "tts" | "stt" | "translation";
@@ -438,6 +438,25 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
       { id: "jamba-1.5-large", name: "Jamba 1.5 Large", contextWindow: 256000, maxOutput: 4096, inputCostPer1M: 2, outputCostPer1M: 8, capabilities: ["text", "rag"], isDefault: true, isActive: true },
       { id: "jamba-1.5-mini", name: "Jamba 1.5 Mini", contextWindow: 256000, maxOutput: 4096, inputCostPer1M: 0.2, outputCostPer1M: 0.4, capabilities: ["text"], isActive: true },
       { id: "j2-ultra", name: "Jurassic-2 Ultra", contextWindow: 8192, maxOutput: 8192, inputCostPer1M: 15, outputCostPer1M: 15, capabilities: ["text"], isActive: true },
+    ]
+  },
+  {
+    id: "zhipu",
+    name: "Zhipu AI (GLM)",
+    tier: "tier1",
+    modelCount: 6,
+    baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+    requiresApiKey: true,
+    keyEnvVar: "ZHIPU_API_KEY",
+    capabilities: ["text", "vision", "code", "reasoning", "multimodal"],
+    bestFor: ["Content creation", "Website coding", "Code generation", "Agent tasks", "Long context processing"],
+    models: [
+      { id: "glm-4.6", name: "GLM-4.6", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.6, outputCostPer1M: 2.2, capabilities: ["text", "code", "reasoning"], isDefault: true, isActive: true },
+      { id: "glm-4.6v", name: "GLM-4.6V (Vision)", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.9, capabilities: ["text", "vision", "multimodal", "code"], isActive: true },
+      { id: "glm-4-long", name: "GLM-4-Long (1M Context)", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.14, outputCostPer1M: 0.14, capabilities: ["text", "reasoning"], isActive: true },
+      { id: "glm-4-flash", name: "GLM-4 Flash", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.1, capabilities: ["text", "fast"], isActive: true },
+      { id: "glm-4-alltools", name: "GLM-4-AllTools", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.6, outputCostPer1M: 2.2, capabilities: ["text", "code", "reasoning"], isActive: true },
+      { id: "codegeex-4", name: "CodeGeeX 4", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.1, capabilities: ["code"], isActive: true },
     ]
   }
 ];

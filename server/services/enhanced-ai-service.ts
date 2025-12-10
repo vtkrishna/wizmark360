@@ -9,7 +9,7 @@ export type AIProvider =
   | "sarvam" | "deepseek" | "mistral" | "perplexity" | "together"
   | "openrouter" | "xai" | "replicate" | "fireworks" | "anyscale"
   | "huggingface" | "aws_bedrock" | "azure_openai" | "vertexai"
-  | "ollama" | "claude_instant" | "gpt4_turbo" | "gemini_pro";
+  | "ollama" | "claude_instant" | "gpt4_turbo" | "gemini_pro" | "zhipu";
 
 export type SupportedLanguage = 
   | "en" | "hi" | "bn" | "ta" | "te" | "mr" | "gu" | "kn" | "ml" | "pa" | "or" | "as";
@@ -59,8 +59,8 @@ export const MODEL_TIERS: Record<ModelTier, ModelTierConfig> = {
     tier: "tier1",
     name: "Premium Intelligence",
     description: "High complexity/reasoning tasks",
-    useCases: ["complex-reasoning", "code-generation", "strategic-planning", "advanced-analysis"],
-    providers: ["openai", "anthropic", "gemini"]
+    useCases: ["complex-reasoning", "code-generation", "strategic-planning", "advanced-analysis", "content-creation", "website-coding"],
+    providers: ["openai", "anthropic", "gemini", "zhipu"]
   },
   tier2: {
     tier: "tier2",
@@ -106,6 +106,10 @@ export const LLM_REGISTRY: LLMModel[] = [
   { id: "sarvam-m", name: "Sarvam M (24B)", provider: "sarvam", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages", "reasoning"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
   { id: "sarvam-1", name: "Sarvam 1 (2B)", provider: "sarvam", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
   { id: "sarvam-translate", name: "Sarvam Translate", provider: "sarvam", contextWindow: 8192, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["translation", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: false },
+  { id: "glm-4.6", name: "GLM-4.6", provider: "zhipu", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.6, outputCostPer1M: 2.2, capabilities: ["text", "code", "reasoning", "content-creation", "website-coding"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "glm-4.6v", name: "GLM-4.6V (Vision)", provider: "zhipu", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.9, capabilities: ["text", "vision", "multimodal", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "glm-4-long", name: "GLM-4-Long (1M Context)", provider: "zhipu", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.14, outputCostPer1M: 0.14, capabilities: ["text", "reasoning", "long-context"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "codegeex-4", name: "CodeGeeX 4", provider: "zhipu", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.1, capabilities: ["code", "fast"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   { id: "sarvam-bulbul", name: "Sarvam Bulbul v1 (TTS)", provider: "sarvam", contextWindow: 4096, maxOutput: 0, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["tts", "voice", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: true },
   { id: "sarvam-saarika", name: "Sarvam Saarika v2 (STT)", provider: "sarvam", contextWindow: 0, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["stt", "voice", "indian-languages", "transcription"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: true },
   { id: "deepseek-v3", name: "DeepSeek V3", provider: "deepseek", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.27, outputCostPer1M: 1.1, capabilities: ["text", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
@@ -217,7 +221,7 @@ export class EnhancedAIService {
     return MODEL_TIERS;
   }
 
-  analyzeTaskComplexity(task: string, requirements?: { needsReasoning?: boolean; needsSpeed?: boolean; needsIndianLanguage?: boolean; needsSearch?: boolean; needsCode?: boolean }): { complexity: TaskComplexity; recommendedTier: ModelTier; recommendedProvider: AIProvider; recommendedModel: string } {
+  analyzeTaskComplexity(task: string, requirements?: { needsReasoning?: boolean; needsSpeed?: boolean; needsIndianLanguage?: boolean; needsSearch?: boolean; needsCode?: boolean; needsContentCreation?: boolean; needsWebsiteCoding?: boolean; preferZhipu?: boolean }): { complexity: TaskComplexity; recommendedTier: ModelTier; recommendedProvider: AIProvider; recommendedModel: string } {
     const taskLower = task.toLowerCase();
     
     if (requirements?.needsIndianLanguage || Object.keys(INDIAN_LANGUAGES).some(lang => lang !== 'en' && taskLower.includes(lang))) {
@@ -228,12 +232,20 @@ export class EnhancedAIService {
       return { complexity: "specialized", recommendedTier: "tier3", recommendedProvider: "perplexity", recommendedModel: "sonar-pro" };
     }
     
+    if (requirements?.preferZhipu || requirements?.needsContentCreation || taskLower.includes('content') || taskLower.includes('blog') || taskLower.includes('article') || taskLower.includes('marketing') || taskLower.includes('social media')) {
+      return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "zhipu", recommendedModel: "glm-4.6" };
+    }
+    
+    if (requirements?.needsWebsiteCoding || taskLower.includes('website') || taskLower.includes('react') || taskLower.includes('html') || taskLower.includes('css') || taskLower.includes('frontend') || taskLower.includes('ui')) {
+      return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "zhipu", recommendedModel: "glm-4.6" };
+    }
+    
     if (requirements?.needsReasoning || taskLower.includes('analyze') || taskLower.includes('strategic') || taskLower.includes('complex') || taskLower.includes('reason')) {
       return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "anthropic", recommendedModel: "claude-sonnet-4-20250514" };
     }
     
     if (requirements?.needsCode || taskLower.includes('code') || taskLower.includes('programming') || taskLower.includes('develop')) {
-      return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "openai", recommendedModel: "gpt-5" };
+      return { complexity: "high", recommendedTier: "tier1", recommendedProvider: "zhipu", recommendedModel: "glm-4.6" };
     }
     
     if (requirements?.needsSpeed || taskLower.includes('quick') || taskLower.includes('fast') || taskLower.includes('simple')) {
@@ -264,6 +276,8 @@ export class EnhancedAIService {
         return this.chatWithCohere(messages, model);
       case "sarvam":
         return this.chatWithSarvam(messages, model);
+      case "zhipu":
+        return this.chatWithZhipu(messages, model);
       default:
         return this.chatWithOpenAI(messages, model);
     }
@@ -409,6 +423,47 @@ export class EnhancedAIService {
     } catch (error) {
       console.error("Sarvam API error:", error);
       return this.chatWithOpenAI(messages, "gpt-4o");
+    }
+  }
+
+  private async chatWithZhipu(messages: ChatMessage[], model?: string): Promise<EnhancedAIResponse> {
+    const zhipuApiKey = process.env.ZHIPU_API_KEY;
+    if (!zhipuApiKey) {
+      console.log("Zhipu API key not configured, falling back to Groq");
+      return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
+    }
+
+    try {
+      const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${zhipuApiKey}`,
+        },
+        body: JSON.stringify({
+          model: model || "glm-4.6",
+          messages: messages.map(m => ({ role: m.role, content: m.content })),
+          max_tokens: 4096,
+          temperature: 0.7,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error("Zhipu API error:", data);
+        return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
+      }
+
+      return {
+        content: data.choices?.[0]?.message?.content || "",
+        provider: "zhipu",
+        model: model || "glm-4.6",
+        tokensUsed: data.usage?.total_tokens,
+      };
+    } catch (error) {
+      console.error("Zhipu API error:", error);
+      return this.chatWithGroq(messages, "llama-3.3-70b-versatile");
     }
   }
 
