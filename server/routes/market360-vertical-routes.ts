@@ -1,6 +1,10 @@
 import { Router, Request, Response } from "express";
 import { market360VerticalWorkflowService } from "../services/market360-vertical-workflows";
 import { waiSDKOrchestration } from "../services/wai-sdk-orchestration";
+import { seedMasterData } from "../seed-master-data";
+import { db } from "../db";
+import { socialPosts, seoAudits, leads, performanceAds, whatsappConversations, linkedinActivities, campaigns, analyticsSnapshots } from "@shared/market360-schema";
+import { desc, eq, and, gte } from "drizzle-orm";
 
 const router = Router();
 
@@ -397,6 +401,133 @@ router.get("/content-model-selector", (req: Request, res: Response) => {
     recommendedModel: selection,
     description: `Best ${priority} option for ${contentType} content creation`
   });
+});
+
+router.post("/seed-master-data", async (_req: Request, res: Response) => {
+  try {
+    const result = await seedMasterData();
+    res.json({
+      success: true,
+      message: "Master data seeded successfully",
+      ...result
+    });
+  } catch (error) {
+    console.error("Seed master data error:", error);
+    res.status(500).json({
+      error: "Failed to seed master data",
+      message: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+router.get("/:vertical/history", async (req: Request, res: Response) => {
+  const { vertical } = req.params;
+  const { limit = "20", offset = "0" } = req.query;
+
+  if (!VERTICALS.includes(vertical as any)) {
+    return res.status(400).json({
+      error: "Invalid vertical",
+      validVerticals: VERTICALS
+    });
+  }
+
+  try {
+    let history: any[] = [];
+    const limitNum = parseInt(limit as string, 10);
+    const offsetNum = parseInt(offset as string, 10);
+
+    switch (vertical) {
+      case "social":
+        history = await db.select().from(socialPosts).orderBy(desc(socialPosts.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+      case "seo":
+        history = await db.select().from(seoAudits).orderBy(desc(seoAudits.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+      case "sales":
+        history = await db.select().from(leads).orderBy(desc(leads.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+      case "performance":
+        history = await db.select().from(performanceAds).orderBy(desc(performanceAds.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+      case "whatsapp":
+        history = await db.select().from(whatsappConversations).orderBy(desc(whatsappConversations.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+      case "linkedin":
+        history = await db.select().from(linkedinActivities).orderBy(desc(linkedinActivities.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+      case "web":
+        history = await db.select().from(campaigns).where(eq(campaigns.vertical, "web")).orderBy(desc(campaigns.createdAt)).limit(limitNum).offset(offsetNum);
+        break;
+    }
+
+    res.json({
+      success: true,
+      vertical,
+      count: history.length,
+      history
+    });
+  } catch (error) {
+    console.error(`Error fetching ${vertical} history:`, error);
+    res.status(500).json({
+      error: "Failed to fetch history",
+      message: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+router.get("/:vertical/analytics", async (req: Request, res: Response) => {
+  const { vertical } = req.params;
+  const { days = "30" } = req.query;
+
+  if (!VERTICALS.includes(vertical as any)) {
+    return res.status(400).json({
+      error: "Invalid vertical",
+      validVerticals: VERTICALS
+    });
+  }
+
+  try {
+    const daysNum = parseInt(days as string, 10);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - daysNum);
+
+    const analytics = await db.select()
+      .from(analyticsSnapshots)
+      .where(
+        and(
+          eq(analyticsSnapshots.vertical, vertical),
+          gte(analyticsSnapshots.timestamp, startDate)
+        )
+      )
+      .orderBy(desc(analyticsSnapshots.timestamp))
+      .limit(100);
+
+    const totals = analytics.reduce((acc, snap) => {
+      const metrics = snap.metrics as any || {};
+      return {
+        impressions: (acc.impressions || 0) + (metrics.impressions || 0),
+        clicks: (acc.clicks || 0) + (metrics.clicks || 0),
+        conversions: (acc.conversions || 0) + (metrics.conversions || 0),
+        revenue: (acc.revenue || 0) + (metrics.revenue || 0),
+        spend: (acc.spend || 0) + (metrics.spend || 0)
+      };
+    }, {} as Record<string, number>);
+
+    res.json({
+      success: true,
+      vertical,
+      period: `Last ${daysNum} days`,
+      snapshotsCount: analytics.length,
+      totals,
+      snapshots: analytics
+    });
+  } catch (error) {
+    console.error(`Error fetching ${vertical} analytics:`, error);
+    res.status(500).json({
+      error: "Failed to fetch analytics",
+      message: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
 });
 
 export default router;
