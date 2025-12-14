@@ -193,6 +193,9 @@ import multimodalContentRoutes from "./routes/multimodal-content-routes";
 // Orchestration Telemetry Routes - System metrics and capabilities
 import orchestrationTelemetryRoutes from "./routes/orchestration-telemetry-routes";
 
+// Enhanced Agent Prompts Routes - Context engineering, clarification, document handling
+import enhancedAgentsRoutes from "./routes/enhanced-agents";
+
 // Schema imports
 import { insertUserSchema, insertProjectSchema, insertTaskSchema, insertDeploymentSchema, insertGameProjectSchema } from "@shared/schema";
 
@@ -747,6 +750,9 @@ app.use('/api/multimodal-content', multimodalContentRoutes);
 
 // Orchestration Telemetry API - System metrics and capabilities
 app.use('/api/orchestration', orchestrationTelemetryRoutes);
+
+// Enhanced Agent Prompts API - Context engineering, clarification, document handling
+app.use('/api/enhanced-agents', enhancedAgentsRoutes);
 
 // Global Optimization Routes - Advanced Performance Management
 app.use('/api/global-optimization', globalOptimizationRoutes);
