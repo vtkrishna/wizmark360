@@ -3,6 +3,8 @@ import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 import { db } from "../db";
 import { eq, desc, and } from "drizzle-orm";
+import { contentIntentAnalyzer } from "./content-intent-analyzer";
+import { multimodalVerticalGeneration } from "./multimodal-vertical-generation";
 
 export type Vertical = "social" | "seo" | "web" | "sales" | "whatsapp" | "linkedin" | "performance" | "general";
 
@@ -366,6 +368,81 @@ Maintain this brand context in all responses and ensure consistency with brand g
       content: request.message,
       timestamp: new Date()
     });
+
+    const isMultimodal = contentIntentAnalyzer.isMultimodalRequest(request.message);
+    
+    if (isMultimodal) {
+      try {
+        const multimodalResult = await multimodalVerticalGeneration.generateContent({
+          prompt: request.message,
+          vertical: request.vertical,
+          brandId: request.brandId,
+          brandName: request.context?.name,
+          saveToLibrary: true
+        });
+
+        if (multimodalResult.success && multimodalResult.assets.length > 0) {
+          const assetsDescription = multimodalResult.assets.map(a => {
+            if (a.type === "image" && a.url) {
+              return `![Generated Image](${a.url})`;
+            } else if (a.type === "video") {
+              return `**Video**: ${a.metadata?.note || 'Video generation queued'}`;
+            } else if (a.type === "audio" && a.url) {
+              return `**Audio**: [Listen](${a.url})`;
+            } else if (a.type === "text" && a.content) {
+              return a.content;
+            }
+            return `**${a.type}**: Generated successfully`;
+          }).join("\n\n");
+
+          const libraryNote = multimodalResult.savedToLibrary 
+            ? `\n\n*This content has been saved to your Content Library for future use.*` 
+            : '';
+
+          const response = `${multimodalResult.textResponse || 'Content generated successfully!'}\n\n${assetsDescription}${libraryNote}`;
+
+          const assistantMessage: ChatMessage = {
+            id: `msg_${Date.now()}`,
+            role: "assistant",
+            content: response,
+            agentId: agent.id,
+            agentName: agent.name,
+            model: "multimodal-orchestrator",
+            timestamp: new Date(),
+            metadata: {
+              multimodal: true,
+              assets: multimodalResult.assets,
+              libraryItemIds: multimodalResult.libraryItemIds,
+              intent: multimodalResult.intent
+            }
+          };
+
+          conversationHistory.push(assistantMessage);
+          this.conversations.set(conversationId, conversationHistory);
+
+          return {
+            id: assistantMessage.id,
+            message: response,
+            agentId: agent.id,
+            agentName: agent.name,
+            model: "multimodal-orchestrator",
+            provider: "wai-sdk",
+            confidence: 0.95,
+            suggestedActions: ["View in Content Library", "Create Another", "Share Content"],
+            metadata: {
+              conversationId,
+              vertical: request.vertical,
+              brandId: request.brandId,
+              multimodal: true,
+              assets: multimodalResult.assets,
+              libraryItemIds: multimodalResult.libraryItemIds
+            }
+          };
+        }
+      } catch (error) {
+        console.error("Multimodal generation failed, falling back to text:", error);
+      }
+    }
 
     let response: string;
     let model: string;

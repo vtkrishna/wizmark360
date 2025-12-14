@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AppShell from "../components/layout/app-shell";
 import {
   FileText,
@@ -25,22 +26,28 @@ import {
   Instagram,
   Twitter,
   Linkedin,
-  Facebook
+  Facebook,
+  Play,
+  Pause,
+  RefreshCw,
+  Music,
+  Loader2
 } from "lucide-react";
 
 interface ContentItem {
-  id: number;
-  title: string;
-  type: "text" | "image" | "video" | "audio";
-  status: "draft" | "approved" | "published" | "archived";
-  platform?: string;
+  id: string;
+  name: string;
+  type: "text" | "image" | "video" | "audio" | "music" | "voice";
+  status: "draft" | "processing" | "published" | "archived";
+  content?: string;
+  url?: string;
   language: string;
   createdAt: string;
   updatedAt: string;
   author: string;
   tags: string[];
-  preview?: string;
-  vertical: string;
+  metadata?: Record<string, any>;
+  vertical?: string;
 }
 
 const indianLanguages = [
@@ -60,283 +67,283 @@ const indianLanguages = [
 
 const sampleContent: ContentItem[] = [
   {
-    id: 1,
-    title: "Diwali Campaign - Instagram Post",
+    id: "1",
+    name: "Diwali Campaign - Instagram Post",
     type: "image",
     status: "published",
-    platform: "Instagram",
+    content: "दीपावली की हार्दिक शुभकामनाएं! इस त्योहार पर विशेष ऑफर...",
     language: "Hindi",
     createdAt: "2024-10-15",
     updatedAt: "2024-10-18",
     author: "Content Creator AI",
     tags: ["diwali", "festival", "campaign"],
-    preview: "दीपावली की हार्दिक शुभकामनाएं! इस त्योहार पर विशेष ऑफर...",
+    metadata: { platform: "Instagram" },
     vertical: "social"
   },
   {
-    id: 2,
-    title: "Tamil Pongal Festival Promo",
+    id: "2",
+    name: "Tamil Pongal Festival Promo",
     type: "image",
     status: "published",
-    platform: "Instagram",
+    content: "பொங்கல் வாழ்த்துக்கள்! சிறப்பு தள்ளுபடி...",
     language: "Tamil",
     createdAt: "2024-01-10",
     updatedAt: "2024-01-12",
     author: "Content Creator AI",
     tags: ["pongal", "festival", "tamil"],
-    preview: "பொங்கல் வாழ்த்துக்கள்! சிறப்பு தள்ளுபடி...",
+    metadata: { platform: "Instagram" },
     vertical: "social"
   },
   {
-    id: 3,
-    title: "Telugu Sankranti Campaign",
+    id: "3",
+    name: "Telugu Sankranti Campaign",
     type: "image",
-    status: "approved",
-    platform: "Facebook",
+    status: "published",
+    content: "సంక్రాంతి శుభాకాంక్షలు! ప్రత్యేక ఆఫర్లు...",
     language: "Telugu",
     createdAt: "2024-01-08",
     updatedAt: "2024-01-10",
     author: "Creative Factory AI",
     tags: ["sankranti", "telugu", "festival"],
-    preview: "సంక్రాంతి శుభాకాంక్షలు! ప్రత్యేక ఆఫర్లు...",
+    metadata: { platform: "Facebook" },
     vertical: "performance"
   },
   {
-    id: 4,
-    title: "Bengali Durga Puja Special",
+    id: "4",
+    name: "Bengali Durga Puja Special",
     type: "text",
     status: "published",
-    platform: "WhatsApp",
+    content: "শারদীয়া শুভেচ্ছা! দুর্গা পূজার বিশেষ অফার...",
     language: "Bengali",
     createdAt: "2024-10-01",
     updatedAt: "2024-10-03",
     author: "Campaign Automator AI",
     tags: ["durga-puja", "bengali", "festival"],
-    preview: "শারদীয়া শুভেচ্ছা! দুর্গা পূজার বিশেষ অফার...",
+    metadata: { platform: "WhatsApp" },
     vertical: "whatsapp"
   },
   {
-    id: 5,
-    title: "Marathi Ganesh Chaturthi Post",
+    id: "5",
+    name: "Marathi Ganesh Chaturthi Post",
     type: "image",
     status: "published",
-    platform: "Instagram",
+    content: "गणपती बाप्पा मोरया! विशेष सवलत...",
     language: "Marathi",
     createdAt: "2024-09-05",
     updatedAt: "2024-09-07",
     author: "Content Creator AI",
     tags: ["ganesh-chaturthi", "marathi", "festival"],
-    preview: "गणपती बाप्पा मोरया! विशेष सवलत...",
+    metadata: { platform: "Instagram" },
     vertical: "social"
   },
   {
-    id: 6,
-    title: "Gujarati Navratri Campaign",
+    id: "6",
+    name: "Gujarati Navratri Campaign",
     type: "video",
-    status: "approved",
-    platform: "Instagram",
+    status: "published",
+    content: "નવરાત્રીની શુભકામના! વિશેષ ઓફર...",
     language: "Gujarati",
     createdAt: "2024-09-28",
     updatedAt: "2024-10-01",
     author: "Creative Factory AI",
     tags: ["navratri", "gujarati", "festival"],
-    preview: "નવરાત્રીની શુભકામના! વિશેષ ઓફર...",
+    metadata: { platform: "Instagram" },
     vertical: "social"
   },
   {
-    id: 7,
-    title: "Kannada Ugadi Celebration",
+    id: "7",
+    name: "Kannada Ugadi Celebration",
     type: "text",
     status: "published",
-    platform: "LinkedIn",
+    content: "ಯುಗಾದಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ವಿಶೇಷ ಕೊಡುಗೆ...",
     language: "Kannada",
     createdAt: "2024-04-05",
     updatedAt: "2024-04-07",
     author: "Authority Builder AI",
     tags: ["ugadi", "kannada", "new-year"],
-    preview: "ಯುಗಾದಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ವಿಶೇಷ ಕೊಡುಗೆ...",
+    metadata: { platform: "LinkedIn" },
     vertical: "linkedin"
   },
   {
-    id: 8,
-    title: "Malayalam Onam Festival",
+    id: "8",
+    name: "Malayalam Onam Festival",
     type: "image",
     status: "published",
-    platform: "Facebook",
+    content: "ഓണാശംസകൾ! പ്രത്യേക ഓഫർ...",
     language: "Malayalam",
     createdAt: "2024-08-25",
     updatedAt: "2024-08-28",
     author: "Creative Factory AI",
     tags: ["onam", "malayalam", "kerala"],
-    preview: "ഓണാശംസകൾ! പ്രത്യേക ഓഫർ...",
+    metadata: { platform: "Facebook" },
     vertical: "performance"
   },
   {
-    id: 9,
-    title: "Punjabi Baisakhi Promo",
+    id: "9",
+    name: "Punjabi Baisakhi Promo",
     type: "video",
-    status: "approved",
-    platform: "Instagram",
+    status: "published",
+    content: "ਬੈਸਾਖੀ ਦੀਆਂ ਲੱਖ ਲੱਖ ਵਧਾਈਆਂ! ਵਿਸ਼ੇਸ਼ ਛੂਟ...",
     language: "Punjabi",
     createdAt: "2024-04-10",
     updatedAt: "2024-04-12",
     author: "Content Creator AI",
     tags: ["baisakhi", "punjabi", "festival"],
-    preview: "ਬੈਸਾਖੀ ਦੀਆਂ ਲੱਖ ਲੱਖ ਵਧਾਈਆਂ! ਵਿਸ਼ੇਸ਼ ਛੂਟ...",
+    metadata: { platform: "Instagram" },
     vertical: "social"
   },
   {
-    id: 10,
-    title: "Odia Raja Festival Content",
+    id: "10",
+    name: "Odia Raja Festival Content",
     type: "text",
     status: "published",
-    platform: "WhatsApp",
+    content: "ରଜ ପର୍ବର ଶୁଭେଚ୍ଛା! ବିଶେଷ ଅଫର...",
     language: "Odia",
     createdAt: "2024-06-12",
     updatedAt: "2024-06-14",
     author: "Campaign Automator AI",
     tags: ["raja", "odia", "festival"],
-    preview: "ରଜ ପର୍ବର ଶୁଭେଚ୍ଛା! ବିଶେଷ ଅଫର...",
+    metadata: { platform: "WhatsApp" },
     vertical: "whatsapp"
   },
   {
-    id: 11,
-    title: "Assamese Bihu Celebration",
+    id: "11",
+    name: "Assamese Bihu Celebration",
     type: "image",
-    status: "approved",
-    platform: "Facebook",
+    status: "published",
+    content: "বহাগ বিহুৰ শুভেচ্ছা! বিশেষ ৰেহাই...",
     language: "Assamese",
     createdAt: "2024-04-12",
     updatedAt: "2024-04-14",
     author: "Creative Factory AI",
     tags: ["bihu", "assamese", "festival"],
-    preview: "বহাগ বিহুৰ শুভেচ্ছা! বিশেষ ৰেহাই...",
+    metadata: { platform: "Facebook" },
     vertical: "performance"
   },
   {
-    id: 12,
-    title: "Product Launch Email Sequence",
+    id: "12",
+    name: "Product Launch Email Sequence",
     type: "text",
-    status: "approved",
-    platform: "Email",
+    status: "published",
+    content: "Introducing our revolutionary new product that will transform...",
     language: "English",
     createdAt: "2024-11-01",
     updatedAt: "2024-11-05",
     author: "Sales SDR Agent",
     tags: ["email", "product-launch", "sequence"],
-    preview: "Introducing our revolutionary new product that will transform...",
+    metadata: { platform: "Email" },
     vertical: "sales"
   },
   {
-    id: 13,
-    title: "LinkedIn Thought Leadership Article",
+    id: "13",
+    name: "LinkedIn Thought Leadership Article",
     type: "text",
     status: "draft",
-    platform: "LinkedIn",
+    content: "5 Trends That Will Shape B2B Marketing in 2025...",
     language: "English",
     createdAt: "2024-11-20",
     updatedAt: "2024-11-20",
     author: "Authority Builder AI",
     tags: ["linkedin", "thought-leadership", "B2B"],
-    preview: "5 Trends That Will Shape B2B Marketing in 2025...",
+    metadata: { platform: "LinkedIn" },
     vertical: "linkedin"
   },
   {
-    id: 14,
-    title: "WhatsApp Broadcast - Holiday Sale",
+    id: "14",
+    name: "WhatsApp Broadcast - Holiday Sale",
     type: "text",
     status: "published",
-    platform: "WhatsApp",
+    content: "विशेष छूट! सभी उत्पादों पर 50% की छूट...",
     language: "Hindi",
     createdAt: "2024-12-01",
     updatedAt: "2024-12-01",
     author: "Campaign Automator AI",
     tags: ["whatsapp", "sale", "broadcast"],
-    preview: "🎉 विशेष छूट! सभी उत्पादों पर 50% की छूट...",
+    metadata: { platform: "WhatsApp" },
     vertical: "whatsapp"
   },
   {
-    id: 15,
-    title: "SEO Blog Post - AI Marketing Guide",
+    id: "15",
+    name: "SEO Blog Post - AI Marketing Guide",
     type: "text",
     status: "published",
-    platform: "Blog",
+    content: "The Complete Guide to AI-Powered Marketing in 2024...",
     language: "English",
     createdAt: "2024-11-10",
     updatedAt: "2024-11-12",
     author: "Content Optimizer AI",
     tags: ["seo", "ai", "marketing", "guide"],
-    preview: "The Complete Guide to AI-Powered Marketing in 2024...",
+    metadata: { platform: "Blog" },
     vertical: "seo"
   },
   {
-    id: 16,
-    title: "Facebook Ad Creative - Summer Collection",
+    id: "16",
+    name: "Facebook Ad Creative - Summer Collection",
     type: "image",
-    status: "approved",
-    platform: "Facebook",
+    status: "published",
+    content: "Summer styles that turn heads. Shop now!",
     language: "English",
     createdAt: "2024-11-25",
     updatedAt: "2024-11-28",
     author: "Creative Factory AI",
     tags: ["facebook", "ad", "creative"],
-    preview: "Summer styles that turn heads. Shop now!",
+    metadata: { platform: "Facebook" },
     vertical: "performance"
   },
   {
-    id: 17,
-    title: "Website Hero Section Copy",
+    id: "17",
+    name: "Website Hero Section Copy",
     type: "text",
     status: "published",
-    platform: "Website",
+    content: "Transform your business with AI-powered solutions...",
     language: "English",
     createdAt: "2024-10-05",
     updatedAt: "2024-10-10",
     author: "AI Page Builder",
     tags: ["website", "hero", "copy"],
-    preview: "Transform your business with AI-powered solutions...",
+    metadata: { platform: "Website" },
     vertical: "web"
   },
   {
-    id: 18,
-    title: "Voice Message Template - Hindi Support",
+    id: "18",
+    name: "Voice Message Template - Hindi Support",
     type: "audio",
-    status: "approved",
-    platform: "WhatsApp",
+    status: "published",
+    content: "नमस्ते, मैं आपकी कैसे सहायता कर सकता हूं?",
     language: "Hindi",
     createdAt: "2024-12-05",
     updatedAt: "2024-12-05",
     author: "Voice Agent AI",
     tags: ["voice", "support", "template"],
-    preview: "नमस्ते, मैं आपकी कैसे सहायता कर सकता हूं?",
+    metadata: { platform: "WhatsApp" },
     vertical: "whatsapp"
   },
   {
-    id: 19,
-    title: "Tamil Customer Welcome Message",
+    id: "19",
+    name: "Tamil Customer Welcome Message",
     type: "audio",
     status: "published",
-    platform: "WhatsApp",
+    content: "வணக்கம்! நான் உங்களுக்கு எப்படி உதவ முடியும்?",
     language: "Tamil",
     createdAt: "2024-12-03",
     updatedAt: "2024-12-03",
     author: "Voice Agent AI",
     tags: ["voice", "welcome", "tamil"],
-    preview: "வணக்கம்! நான் உங்களுக்கு எப்படி உதவ முடியும்?",
+    metadata: { platform: "WhatsApp" },
     vertical: "whatsapp"
   },
   {
-    id: 20,
-    title: "Telugu Product Demo Script",
+    id: "20",
+    name: "Telugu Product Demo Script",
     type: "video",
     status: "draft",
-    platform: "YouTube",
+    content: "మా కొత్త ఉత్పత్తి యొక్క పూర్తి గైడ్...",
     language: "Telugu",
     createdAt: "2024-12-01",
     updatedAt: "2024-12-02",
     author: "Creative Factory AI",
     tags: ["demo", "product", "telugu"],
-    preview: "మా కొత్త ఉత్పత్తి యొక్క పూర్తి గైడ్...",
+    metadata: { platform: "YouTube" },
     vertical: "web"
   }
 ];
@@ -353,7 +360,6 @@ const platformIcons: Record<string, any> = {
 };
 
 export default function ContentLibraryPage() {
-  const [content] = useState<ContentItem[]>(sampleContent);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -361,30 +367,61 @@ export default function ContentLibraryPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
 
+  const { data: apiContent, isLoading, refetch } = useQuery({
+    queryKey: ["/api/content-library"],
+    queryFn: async () => {
+      const res = await fetch("/api/content-library?limit=100");
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.items || [];
+    },
+    staleTime: 30000
+  });
+
+  const content: ContentItem[] = apiContent?.length > 0 ? apiContent.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    type: item.type || "text",
+    status: item.status || "published",
+    content: item.content,
+    url: item.url,
+    language: item.language || "English",
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    author: item.author || "AI Generated",
+    tags: Array.isArray(item.tags) ? item.tags : [],
+    metadata: item.metadata,
+    vertical: item.metadata?.vertical || item.metadata?.brandId ? "social" : "general"
+  })) : sampleContent;
+
   const filteredContent = content.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.tags || []).some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesType = filterType === "all" || item.type === filterType;
     const matchesStatus = filterStatus === "all" || item.status === filterStatus;
     const matchesVertical = filterVertical === "all" || item.vertical === filterVertical;
     return matchesSearch && matchesType && matchesStatus && matchesVertical;
   });
 
-  const getTypeIcon = (type: ContentItem["type"]) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
       case "text": return FileText;
       case "image": return Image;
       case "video": return Video;
       case "audio": return Mic;
+      case "music": return Music;
+      case "voice": return Mic;
+      default: return FileText;
     }
   };
 
   const getStatusColor = (status: ContentItem["status"]) => {
     switch (status) {
       case "draft": return "bg-gray-100 text-gray-700";
-      case "approved": return "bg-blue-100 text-blue-700";
+      case "processing": return "bg-blue-100 text-blue-700";
       case "published": return "bg-green-100 text-green-700";
       case "archived": return "bg-yellow-100 text-yellow-700";
+      default: return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -549,7 +586,8 @@ export default function ContentLibraryPage() {
                 <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredContent.map((item) => {
                     const TypeIcon = getTypeIcon(item.type);
-                    const PlatformIcon = item.platform ? platformIcons[item.platform] || Globe : Globe;
+                    const platform = item.metadata?.platform as string | undefined;
+                    const PlatformIcon = platform ? platformIcons[platform] || Globe : Globe;
                     return (
                       <div
                         key={item.id}
@@ -564,17 +602,17 @@ export default function ContentLibraryPage() {
                             {item.status}
                           </span>
                         </div>
-                        <h3 className="font-medium text-gray-900 dark:text-white mb-1 line-clamp-2">{item.title}</h3>
-                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{item.preview}</p>
+                        <h3 className="font-medium text-gray-900 dark:text-white mb-1 line-clamp-2">{item.name}</h3>
+                        <p className="text-sm text-gray-500 mb-3 line-clamp-2">{item.content}</p>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`px-2 py-0.5 rounded text-xs ${verticalColors[item.vertical]}`}>
+                          <span className={`px-2 py-0.5 rounded text-xs ${verticalColors[item.vertical || "social"]}`}>
                             {item.vertical}
                           </span>
                           <span className="text-xs text-gray-400">{item.language}</span>
-                          {item.platform && (
+                          {platform && (
                             <div className="flex items-center gap-1 text-xs text-gray-400">
                               <PlatformIcon className="w-3 h-3" />
-                              {item.platform}
+                              {platform}
                             </div>
                           )}
                         </div>
@@ -596,10 +634,10 @@ export default function ContentLibraryPage() {
                           <TypeIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-gray-900 dark:text-white">{item.title}</h3>
-                          <p className="text-sm text-gray-500 truncate">{item.preview}</p>
+                          <h3 className="font-medium text-gray-900 dark:text-white">{item.name}</h3>
+                          <p className="text-sm text-gray-500 truncate">{item.content}</p>
                         </div>
-                        <span className={`px-2 py-0.5 rounded text-xs ${verticalColors[item.vertical]}`}>
+                        <span className={`px-2 py-0.5 rounded text-xs ${verticalColors[item.vertical || "social"]}`}>
                           {item.vertical}
                         </span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
@@ -629,19 +667,19 @@ export default function ContentLibraryPage() {
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{selectedContent.title}</h3>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{selectedContent.name}</h3>
                 <div className="flex items-center gap-2">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedContent.status)}`}>
                     {selectedContent.status}
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-xs ${verticalColors[selectedContent.vertical]}`}>
+                  <span className={`px-2 py-0.5 rounded text-xs ${verticalColors[selectedContent.vertical || "social"]}`}>
                     {selectedContent.vertical}
                   </span>
                 </div>
               </div>
 
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <p className="text-sm text-gray-600 dark:text-gray-300">{selectedContent.preview}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{selectedContent.content}</p>
               </div>
 
               <div className="space-y-3">

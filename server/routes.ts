@@ -1927,6 +1927,32 @@ app.get('/api/content', async (req: Request, res: Response) => {
   }
 });
 
+// Content Library API - fetches from database with multimodal support
+app.get('/api/content-library', async (req: Request, res: Response) => {
+  try {
+    const { limit = "50", type, vertical } = req.query;
+    const { contentItems } = await import("@shared/schema");
+    const { desc } = await import("drizzle-orm");
+    
+    let query = storage.db.select().from(contentItems).orderBy(desc(contentItems.createdAt)).limit(parseInt(limit as string, 10));
+    
+    const items = await query;
+    
+    res.json({
+      success: true,
+      count: items.length,
+      items: items.map(item => ({
+        ...item,
+        vertical: (item.metadata as any)?.vertical || "general",
+        preview: item.content?.substring(0, 200) || item.url || ""
+      }))
+    });
+  } catch (error) {
+    console.error('Failed to fetch content library:', error);
+    res.status(500).json({ error: 'Failed to fetch content library', items: [] });
+  }
+});
+
 // Fetch content folders
 app.get('/api/content/folders', async (req: Request, res: Response) => {
   try {
