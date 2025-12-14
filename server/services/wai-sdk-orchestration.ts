@@ -631,6 +631,10 @@ Format as JSON with keys: bugs, optimizations, approved`;
   }
 
   async executeTask(task: WAITask): Promise<WAITaskResult> {
+    if (task.documents?.length || task.enhancedOptions) {
+      return this.executeEnhancedTask(task);
+    }
+
     const m360Agent = this.selectMarket360Agent(task);
     if (m360Agent) {
       return this.executeMarket360Task(task, m360Agent);
