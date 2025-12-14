@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AppShell from "../components/layout/app-shell";
+import { ContentSourceSelector, ContentSourceType } from "../components/content-source-selector";
+import StockImageModal from "../components/stock-image-modal";
+import WebSearchModal from "../components/web-search-modal";
 import {
   FileText,
   Image,
@@ -31,7 +34,9 @@ import {
   Pause,
   RefreshCw,
   Music,
-  Loader2
+  Loader2,
+  X,
+  Sparkles
 } from "lucide-react";
 
 interface ContentItem {
@@ -366,6 +371,40 @@ export default function ContentLibraryPage() {
   const [filterVertical, setFilterVertical] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedSource, setSelectedSource] = useState<ContentSourceType | null>(null);
+  const [showStockImageModal, setShowStockImageModal] = useState(false);
+  const [showWebSearchModal, setShowWebSearchModal] = useState(false);
+  const [inspirationContent, setInspirationContent] = useState<string>("");
+
+  const handleSourceSelect = (source: ContentSourceType) => {
+    setSelectedSource(source);
+    setShowCreateModal(false);
+    
+    switch (source) {
+      case "stock":
+        setShowStockImageModal(true);
+        break;
+      case "web":
+        setShowWebSearchModal(true);
+        break;
+      case "ai":
+        window.location.href = "/god-mode";
+        break;
+      case "library":
+        break;
+    }
+  };
+
+  const handleStockImageSelect = (image: any, localPath?: string) => {
+    refetch();
+  };
+
+  const handleInspirationSelect = (content: string, source: string) => {
+    setInspirationContent(content);
+    window.location.href = `/god-mode?inspiration=${encodeURIComponent(content)}`;
+  };
 
   const { data: apiContent, isLoading, refetch } = useQuery({
     queryKey: ["/api/content-library"],
@@ -445,7 +484,10 @@ export default function ContentLibraryPage() {
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Content Library</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">Manage all your AI-generated content across verticals</p>
               </div>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
                 <Plus className="w-4 h-4" />
                 Create Content
               </button>
@@ -735,6 +777,52 @@ export default function ContentLibraryPage() {
           </div>
         )}
       </div>
+
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl shadow-2xl mx-4 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Create New Content</h2>
+                  <p className="text-sm text-gray-500">Choose how you want to create content</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <ContentSourceSelector
+              selectedSource={selectedSource}
+              onSourceSelect={handleSourceSelect}
+              vertical={filterVertical !== "all" ? filterVertical : undefined}
+            />
+          </div>
+        </div>
+      )}
+
+      <StockImageModal
+        isOpen={showStockImageModal}
+        onClose={() => setShowStockImageModal(false)}
+        onSelect={handleStockImageSelect}
+        brandId={1}
+        brandName="Acme Corp"
+        vertical={filterVertical !== "all" ? filterVertical : undefined}
+      />
+
+      <WebSearchModal
+        isOpen={showWebSearchModal}
+        onClose={() => setShowWebSearchModal(false)}
+        onInspirationSelect={handleInspirationSelect}
+        vertical={filterVertical !== "all" ? filterVertical : "general"}
+      />
     </AppShell>
   );
 }

@@ -1953,6 +1953,126 @@ app.get('/api/content-library', async (req: Request, res: Response) => {
   }
 });
 
+// Stock Image Search API
+app.get('/api/stock-images/search', async (req: Request, res: Response) => {
+  try {
+    const { stockImageService } = await import("./services/stock-image-service");
+    const { query, page = "1", perPage = "20", orientation, color } = req.query;
+    
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    const results = await stockImageService.searchImages(query, {
+      page: parseInt(page as string, 10),
+      perPage: parseInt(perPage as string, 10),
+      orientation: orientation as "landscape" | "portrait" | "square" | undefined,
+      color: color as string | undefined
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error('Stock image search error:', error);
+    res.status(500).json({ error: 'Failed to search stock images' });
+  }
+});
+
+// Stock Image Download and Save to Library
+app.post('/api/stock-images/download', async (req: Request, res: Response) => {
+  try {
+    const { stockImageService } = await import("./services/stock-image-service");
+    const { image, brandId = 1, brandName, vertical } = req.body;
+    
+    if (!image || !image.url) {
+      return res.status(400).json({ error: "Image data is required" });
+    }
+
+    const result = await stockImageService.downloadAndSaveImage(
+      image,
+      brandId,
+      brandName,
+      vertical
+    );
+
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(500).json(result);
+    }
+  } catch (error) {
+    console.error('Stock image download error:', error);
+    res.status(500).json({ error: 'Failed to download stock image' });
+  }
+});
+
+// Stock Image Categories
+app.get('/api/stock-images/categories', async (req: Request, res: Response) => {
+  try {
+    const { stockImageService } = await import("./services/stock-image-service");
+    const categories = await stockImageService.getPopularCategories();
+    res.json({ categories });
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+// Stock Image Collections
+app.get('/api/stock-images/collections', async (req: Request, res: Response) => {
+  try {
+    const { stockImageService } = await import("./services/stock-image-service");
+    const collections = await stockImageService.getCuratedCollections();
+    res.json({ collections });
+  } catch (error) {
+    console.error('Failed to fetch collections:', error);
+    res.status(500).json({ error: 'Failed to fetch collections' });
+  }
+});
+
+// Web Search API for Content Inspiration
+app.post('/api/web-search', async (req: Request, res: Response) => {
+  try {
+    const { query, vertical } = req.body;
+    
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({ error: "Search query is required" });
+    }
+
+    const verticalName = vertical || 'marketing';
+    const queryClean = query.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+    const timestamp = Date.now();
+
+    const generateResults = (q: string, v: string) => {
+      const topics = [
+        { type: "trends", title: `Top ${v} Trends: ${q}`, snippet: `Explore the latest ${v} trends related to "${q}". Industry experts share insights on emerging strategies, tools, and techniques that are driving results in 2024.` },
+        { type: "guide", title: `Complete Guide: ${q} for ${v}`, snippet: `A comprehensive resource covering everything about "${q}" in the context of ${v}. Learn step-by-step processes, best practices, and actionable tips from professionals.` },
+        { type: "tips", title: `10 Expert Tips for ${q}`, snippet: `Practical advice from ${v} professionals on how to effectively implement "${q}" strategies. Discover proven methods that increase engagement and conversions.` },
+        { type: "case-study", title: `Success Story: ${q} Implementation`, snippet: `Real-world examples of companies that achieved remarkable results with "${q}". Learn from their ${v} strategies and apply these lessons to your own campaigns.` },
+        { type: "tools", title: `Best Tools for ${q} in ${v}`, snippet: `A curated list of the most effective tools and platforms for "${q}". Compare features, pricing, and user reviews to find the perfect solution for your ${v} needs.` }
+      ];
+
+      return topics.map((topic, index) => ({
+        title: topic.title,
+        url: `https://marketing-insights.example.com/${topic.type}/${v.toLowerCase()}/${queryClean.replace(/\s+/g, '-')}-${timestamp + index}`,
+        snippet: topic.snippet,
+        source: topic.type === "case-study" ? "Case Study Library" : topic.type === "tools" ? "Tool Comparison Hub" : "Marketing Insights"
+      }));
+    };
+
+    res.json({
+      success: true,
+      query,
+      vertical: verticalName,
+      isSimulated: true,
+      note: "These are AI-generated content suggestions. Configure a search API (SerpAPI, Google Custom Search) for real web results.",
+      results: generateResults(query, verticalName)
+    });
+  } catch (error) {
+    console.error('Web search error:', error);
+    res.status(500).json({ error: 'Failed to search web' });
+  }
+});
+
 // Fetch content folders
 app.get('/api/content/folders', async (req: Request, res: Response) => {
   try {

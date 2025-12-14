@@ -145,6 +145,27 @@ aiService.chat(messages, "zhipu", "glm-4.6")
 **API Endpoints:**
 - `POST /api/analytics/auto-remediation` - Execute auto-remediation for alerts
 
+### Stock Images & Content Source Options (December 2024)
+**NEW: Multiple Content Source Options**
+- **Content Source Selector**: 4 options (Create with AI, Select from Library, Search Stock Images, Web Search)
+- **Stock Image Service**: Integration with Pexels/Unsplash APIs, fallback to Lorem Picsum
+- **Stock Image Modal**: Search, preview, and download royalty-free images to content library
+- **Web Search Modal**: Search for content inspiration with vertical-specific suggestions
+- **Content Library Integration**: All sources integrated into Create Content flow
+
+**API Endpoints:**
+- `GET /api/stock-images/search` - Search stock images
+- `POST /api/stock-images/download` - Download and save image to library
+- `GET /api/stock-images/categories` - Get popular image categories
+- `GET /api/stock-images/collections` - Get curated collections
+- `POST /api/web-search` - Search web for content inspiration
+
+**Components:**
+- `client/src/components/content-source-selector.tsx` - Source selection UI
+- `client/src/components/stock-image-modal.tsx` - Stock image browser
+- `client/src/components/web-search-modal.tsx` - Web search for inspiration
+- `server/services/stock-image-service.ts` - Stock image service
+
 ### API Endpoints
 - `/api/voice/*` - Sarvam Voice API (STT/TTS)
 - `/api/market360/social/*` - Social Media vertical endpoints
