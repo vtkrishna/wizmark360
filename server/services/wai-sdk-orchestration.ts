@@ -47,6 +47,20 @@ import {
   selectOptimalModel,
   ModelTier as ProviderModelTier
 } from "./llm-provider-manifest";
+import {
+  enhancedPromptService,
+  DocumentContext,
+  PromptEnhancementResult
+} from "./enhanced-agent-prompts";
+import {
+  promptClarificationService,
+  ClarificationAnalysis,
+  ClarifyingQuestion
+} from "./prompt-clarification-service";
+import {
+  documentContextHandler,
+  RAGContext
+} from "./document-context-handler";
 
 export interface WAITask {
   id: string;
@@ -63,6 +77,14 @@ export interface WAITask {
     maxCost?: number;
     preferredTier?: ModelTier;
     requiredProvider?: AIProvider;
+  };
+  documents?: DocumentContext[];
+  enhancedOptions?: {
+    enablePromptEngineering?: boolean;
+    enableClarificationCheck?: boolean;
+    enableDocumentRAG?: boolean;
+    maxDocumentTokens?: number;
+    skipClarificationIfConfident?: boolean;
   };
 }
 
@@ -82,7 +104,18 @@ export interface WAITaskResult {
     languageUsed: SupportedLanguage;
     guardrailsChecked: string[];
     escalationRequired: boolean;
+    enhancementsApplied?: string[];
+    documentContextUsed?: boolean;
+    clarificationSkipped?: boolean;
   };
+}
+
+export interface EnhancedTaskResult extends WAITaskResult {
+  clarificationAnalysis?: ClarificationAnalysis;
+  promptEnhancement?: PromptEnhancementResult;
+  documentContext?: RAGContext;
+  needsClarification: boolean;
+  clarifyingQuestions?: ClarifyingQuestion[];
 }
 
 export interface DualModelWorkflowResult {
@@ -1057,6 +1090,295 @@ Format as JSON with keys: bugs, optimizations, approved`;
       model,
       tokensUsed: result.tokensUsed || 0
     };
+  }
+
+  async executeEnhancedTask(task: WAITask): Promise<EnhancedTaskResult> {
+    const startTime = Date.now();
+    const enhancementsApplied: string[] = [];
+    const options = task.enhancedOptions || {};
+
+    let clarificationAnalysis: ClarificationAnalysis | undefined;
+    let promptEnhancement: PromptEnhancementResult | undefined;
+    let documentContext: RAGContext | undefined;
+
+    const m360Agent = this.selectMarket360Agent(task);
+    const agentCapabilities = m360Agent?.capabilities || task.requiredCapabilities;
+
+    if (options.enableClarificationCheck !== false) {
+      clarificationAnalysis = await promptClarificationService.analyzeForClarification(
+        task.description,
+        task.vertical,
+        agentCapabilities
+      );
+      enhancementsApplied.push("clarification-analysis");
+
+      if (clarificationAnalysis.needsClarification && 
+          !(options.skipClarificationIfConfident && clarificationAnalysis.confidence > 0.85)) {
+        const baseResult = await this.buildEnhancedBaseResult(task, m360Agent, startTime);
+        return {
+          ...baseResult,
+          needsClarification: true,
+          clarificationAnalysis,
+          clarifyingQuestions: clarificationAnalysis.suggestedQuestions,
+          metadata: {
+            ...baseResult.metadata,
+            enhancementsApplied,
+            clarificationSkipped: false
+          }
+        };
+      }
+    }
+
+    if (task.documents && task.documents.length > 0 && options.enableDocumentRAG !== false) {
+      for (const doc of task.documents) {
+        await documentContextHandler.processDocument({
+          id: doc.id,
+          type: doc.type,
+          content: doc.content,
+          metadata: doc.metadata
+        });
+      }
+
+      const docIds = task.documents.map(d => d.id);
+      documentContext = await documentContextHandler.getRelevantContext(
+        task.description,
+        docIds,
+        options.maxDocumentTokens || 4000
+      );
+      enhancementsApplied.push("document-rag");
+    }
+
+    if (options.enablePromptEngineering !== false && m360Agent) {
+      promptEnhancement = enhancedPromptService.enhancePrompt(
+        task.description,
+        {
+          agentName: m360Agent.name,
+          agentRole: m360Agent.role,
+          vertical: task.vertical,
+          capabilities: m360Agent.capabilities
+        },
+        task.documents
+      );
+      enhancementsApplied.push("prompt-engineering");
+    }
+
+    const result = m360Agent
+      ? await this.executeEnhancedMarket360Task(task, m360Agent, promptEnhancement, documentContext)
+      : await this.executeEnhancedLegacyTask(task, promptEnhancement, documentContext);
+
+    const processingTime = Date.now() - startTime;
+
+    return {
+      ...result,
+      processingTime,
+      needsClarification: false,
+      clarificationAnalysis,
+      promptEnhancement,
+      documentContext,
+      metadata: {
+        ...result.metadata,
+        enhancementsApplied,
+        documentContextUsed: !!documentContext,
+        clarificationSkipped: clarificationAnalysis?.needsClarification || false
+      }
+    };
+  }
+
+  private async executeEnhancedMarket360Task(
+    task: WAITask,
+    m360Agent: Market360Agent,
+    promptEnhancement?: PromptEnhancementResult,
+    documentContext?: RAGContext
+  ): Promise<WAITaskResult> {
+    const modelSelection = this.selectOptimalModelFromManifest(task);
+    if (!modelSelection) {
+      throw new Error(`No suitable LLM model found for task: ${task.id}`);
+    }
+
+    const { provider, model } = modelSelection;
+
+    let systemPrompt = m360Agent.systemPrompt;
+    if (promptEnhancement) {
+      systemPrompt = promptEnhancement.enhancedPrompt;
+    }
+
+    let userMessage = this.buildMarket360TaskMessage(task, m360Agent);
+    if (documentContext && documentContext.relevantChunks.length > 0) {
+      const docContextStr = documentContextHandler.formatContextForPrompt(documentContext);
+      userMessage = `${docContextStr}\n\n${userMessage}`;
+    }
+
+    const response = await this.aiService.chat(
+      [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      provider.id as AIProvider,
+      model.id
+    );
+
+    this.agentActivations.set(
+      m360Agent.id,
+      (this.agentActivations.get(m360Agent.id) || 0) + 1
+    );
+
+    return {
+      taskId: task.id,
+      agentId: m360Agent.id,
+      agentName: m360Agent.name,
+      provider: provider.id as AIProvider,
+      model: model.id,
+      tier: provider.tier as ModelTier,
+      response: response.content,
+      confidence: this.calculateMarket360Confidence(response.content, m360Agent),
+      processingTime: 0,
+      tokensUsed: response.tokensUsed,
+      metadata: {
+        jurisdictionsApplied: task.targetJurisdictions,
+        languageUsed: task.language,
+        guardrailsChecked: [`ROMA-${m360Agent.romaLevel}`, ...m360Agent.capabilities.slice(0, 2)],
+        escalationRequired: m360Agent.romaLevel === "L3" || m360Agent.romaLevel === "L4"
+      }
+    };
+  }
+
+  private async executeEnhancedLegacyTask(
+    task: WAITask,
+    promptEnhancement?: PromptEnhancementResult,
+    documentContext?: RAGContext
+  ): Promise<WAITaskResult> {
+    const agent = this.selectBestAgent(task);
+    if (!agent) {
+      throw new Error(`No suitable agent found for task: ${task.id}`);
+    }
+
+    const { provider, model, tier } = this.selectOptimalModel(task, agent);
+
+    let systemPrompt = generateSystemPrompt(agent);
+    if (promptEnhancement) {
+      systemPrompt = promptEnhancement.enhancedPrompt;
+    }
+
+    let userMessage = this.buildTaskMessage(task, agent);
+    if (documentContext && documentContext.relevantChunks.length > 0) {
+      const docContextStr = documentContextHandler.formatContextForPrompt(documentContext);
+      userMessage = `${docContextStr}\n\n${userMessage}`;
+    }
+
+    const guardrailChecks = this.checkGuardrails(task, agent);
+    if (!guardrailChecks.passed) {
+      throw new Error(`Guardrail violation: ${guardrailChecks.violations.join(", ")}`);
+    }
+
+    const response = await this.aiService.chat(
+      [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage }
+      ],
+      provider,
+      model
+    );
+
+    this.agentActivations.set(
+      agent.identity.id,
+      (this.agentActivations.get(agent.identity.id) || 0) + 1
+    );
+
+    return {
+      taskId: task.id,
+      agentId: agent.identity.id,
+      agentName: agent.identity.name,
+      provider,
+      model,
+      tier,
+      response: response.content,
+      confidence: this.calculateConfidence(response.content, agent),
+      processingTime: 0,
+      tokensUsed: response.tokensUsed,
+      metadata: {
+        jurisdictionsApplied: task.targetJurisdictions,
+        languageUsed: task.language,
+        guardrailsChecked: agent.guardrails.legalBoundaries.slice(0, 3),
+        escalationRequired: false
+      }
+    };
+  }
+
+  private async buildEnhancedBaseResult(
+    task: WAITask,
+    m360Agent: Market360Agent | null,
+    startTime: number
+  ): Promise<Omit<EnhancedTaskResult, 'needsClarification' | 'clarificationAnalysis' | 'promptEnhancement' | 'documentContext' | 'clarifyingQuestions'>> {
+    const agentId = m360Agent?.id || "wai-generic";
+    const agentName = m360Agent?.name || "WAI Generic Agent";
+
+    return {
+      taskId: task.id,
+      agentId,
+      agentName,
+      provider: "groq",
+      model: "llama-3.3-70b-versatile",
+      tier: "tier2",
+      response: "",
+      confidence: 0,
+      processingTime: Date.now() - startTime,
+      metadata: {
+        jurisdictionsApplied: task.targetJurisdictions,
+        languageUsed: task.language,
+        guardrailsChecked: [],
+        escalationRequired: false
+      }
+    };
+  }
+
+  async refineTaskWithClarifications(
+    task: WAITask,
+    clarifications: Record<string, string>,
+    previousAnalysis: ClarificationAnalysis
+  ): Promise<EnhancedTaskResult> {
+    const refined = await promptClarificationService.refineWithUserInput(
+      task.description,
+      clarifications,
+      previousAnalysis
+    );
+
+    const refinedTask: WAITask = {
+      ...task,
+      description: refined.refinedRequest,
+      context: {
+        ...task.context,
+        clarifications,
+        additionalContext: refined.additionalContext
+      }
+    };
+
+    if (!refined.readyToProcess && refined.remainingQuestions.length > 0) {
+      const startTime = Date.now();
+      const baseResult = await this.buildEnhancedBaseResult(refinedTask, null, startTime);
+      return {
+        ...baseResult,
+        needsClarification: true,
+        clarifyingQuestions: refined.remainingQuestions,
+        clarificationAnalysis: previousAnalysis
+      };
+    }
+
+    return this.executeEnhancedTask(refinedTask);
+  }
+
+  async analyzeTaskForClarification(task: WAITask): Promise<ClarificationAnalysis> {
+    const m360Agent = this.selectMarket360Agent(task);
+    const capabilities = m360Agent?.capabilities || task.requiredCapabilities;
+    
+    return promptClarificationService.analyzeForClarification(
+      task.description,
+      task.vertical,
+      capabilities
+    );
+  }
+
+  formatClarifyingQuestionsForUser(questions: ClarifyingQuestion[]): string {
+    return promptClarificationService.formatQuestionsForUser(questions);
   }
 }
 
