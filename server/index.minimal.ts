@@ -21,6 +21,7 @@ import multimodalContentRoutes from "./routes/multimodal-content-routes";
 import rbacRoutes from "./routes/rbac-routes";
 import predictiveAnalyticsRoutes from "./routes/predictive-analytics-api";
 import unifiedOrchestrationRoutes from "./routes/unified-orchestration-api";
+import contentLibraryRoutes from "./routes/content-library-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -107,6 +108,9 @@ app.use('/api/analytics', predictiveAnalyticsRoutes);
 
 // Unified WAI SDK Orchestration Routes
 app.use('/api/orchestration', unifiedOrchestrationRoutes);
+
+// Brand-Aware Content Library Routes
+app.use('/api/content-library', contentLibraryRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
