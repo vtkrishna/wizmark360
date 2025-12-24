@@ -6,6 +6,7 @@ import { PROVIDER_MANIFESTS, selectOptimalModel } from "../services/llm-provider
 import { llmModelAutoUpdater } from "../services/llm-model-auto-updater";
 import { LLM_REGISTRY_VERSION, LLM_REGISTRY_LAST_UPDATED } from "../services/enhanced-ai-service";
 import { difyIntegration, DIFY_CAPABILITIES } from "../services/dify-integration";
+import { intelligentRouter, TaskType, TaskComplexity } from "../services/intelligent-model-router";
 
 const router = Router();
 const waiOrchestration = new WAISDKOrchestration();
@@ -384,6 +385,187 @@ router.get("/models/provider/:provider", async (req: Request, res: Response) => 
       flagship,
       lastUpdate,
       ...models
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/router/select-model", async (req: Request, res: Response) => {
+  try {
+    const { 
+      taskType = "chat", 
+      complexity = "moderate",
+      requiresVision = false,
+      requiresVoice = false,
+      requiresReasoning = false,
+      requiresCode = false,
+      requiresMultimodal = false,
+      requiresIndianLanguages = false,
+      maxCostPerMillion,
+      preferredProviders,
+      agentRomaLevel,
+      agentVertical,
+      latencyPriority = "medium",
+      qualityPriority = "standard"
+    } = req.body;
+
+    const decision = intelligentRouter.selectOptimalModel({
+      taskType: taskType as TaskType,
+      complexity: complexity as TaskComplexity,
+      requiresVision,
+      requiresVoice,
+      requiresReasoning,
+      requiresCode,
+      requiresMultimodal,
+      requiresIndianLanguages,
+      maxCostPerMillion,
+      preferredProviders,
+      agentRomaLevel,
+      agentVertical,
+      latencyPriority,
+      qualityPriority
+    });
+
+    res.json({
+      success: true,
+      decision: {
+        primary: {
+          modelId: decision.primary.model.id,
+          modelName: decision.primary.model.name,
+          provider: decision.primary.model.provider,
+          score: decision.primary.totalScore,
+          reasoning: decision.primary.reasoning,
+          breakdown: decision.primary.breakdown
+        },
+        fallbacks: decision.fallbacks.map(f => ({
+          modelId: f.model.id,
+          modelName: f.model.name,
+          provider: f.model.provider,
+          score: f.totalScore
+        })),
+        estimatedCost: decision.estimatedCost,
+        confidence: decision.confidence,
+        strategy: decision.strategy
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/router/agent-recommendation/:agentId", async (req: Request, res: Response) => {
+  try {
+    const { agentId } = req.params;
+    const { taskType = "chat" } = req.query;
+
+    const decision = waiOrchestration.getModelRecommendationForAgent(
+      agentId,
+      taskType as TaskType
+    );
+
+    if (!decision) {
+      return res.status(404).json({ error: "Agent not found" });
+    }
+
+    res.json({
+      success: true,
+      agentId,
+      taskType,
+      recommendation: {
+        primary: {
+          modelId: decision.primary.model.id,
+          modelName: decision.primary.model.name,
+          provider: decision.primary.model.provider,
+          score: decision.primary.totalScore,
+          reasoning: decision.primary.reasoning
+        },
+        fallbacks: decision.fallbacks.slice(0, 2).map(f => ({
+          modelId: f.model.id,
+          provider: f.model.provider
+        })),
+        estimatedCost: decision.estimatedCost,
+        strategy: decision.strategy
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/router/cost-optimized", async (req: Request, res: Response) => {
+  try {
+    const { maxCost = "5", capabilities } = req.query;
+    
+    const capList = capabilities ? String(capabilities).split(",") : ["text"];
+    const model = intelligentRouter.getCostOptimizedModel(
+      parseFloat(maxCost as string),
+      capList
+    );
+
+    if (!model) {
+      return res.status(404).json({ 
+        error: "No model found matching criteria",
+        criteria: { maxCost, capabilities: capList }
+      });
+    }
+
+    res.json({
+      success: true,
+      model: {
+        id: model.id,
+        name: model.name,
+        provider: model.provider,
+        inputCost: model.inputCostPer1M,
+        outputCost: model.outputCostPer1M,
+        capabilities: model.capabilities,
+        contextWindow: model.contextWindow
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/router/flagship-models", async (req: Request, res: Response) => {
+  try {
+    const categories = [
+      "premium-reasoning", "balanced-performance", "fast-quality", 
+      "code-specialist", "multimodal-vision", "cost-effective-vision",
+      "long-context", "ultra-fast", "indian-languages", "deep-analysis", "balanced-claude"
+    ];
+
+    const flagships = categories.map(category => {
+      const model = intelligentRouter.getModelByCategory(category as any);
+      return model ? {
+        category,
+        modelId: model.id,
+        modelName: model.name,
+        provider: model.provider,
+        inputCost: model.inputCostPer1M,
+        outputCost: model.outputCostPer1M,
+        capabilities: model.capabilities.slice(0, 5)
+      } : null;
+    }).filter(Boolean);
+
+    res.json({
+      success: true,
+      count: flagships.length,
+      flagships
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/router/usage-stats", async (req: Request, res: Response) => {
+  try {
+    const stats = waiOrchestration.getModelUsageStats();
+    
+    res.json({
+      success: true,
+      stats,
+      totalModelsTracked: Object.keys(stats).length
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

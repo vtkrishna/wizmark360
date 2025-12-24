@@ -61,6 +61,13 @@ import {
   documentContextHandler,
   RAGContext
 } from "./document-context-handler";
+import {
+  intelligentRouter,
+  RoutingContext,
+  RoutingDecision,
+  TaskType,
+  TaskComplexity
+} from "./intelligent-model-router";
 
 export interface WAITask {
   id: string;
@@ -266,6 +273,66 @@ export class WAISDKOrchestration {
       requiresVision: task.requiredCapabilities.includes("vision") || task.requiredCapabilities.includes("image"),
       requiresReasoning: task.type === "analysis" || task.type === "optimization"
     });
+  }
+
+  selectModelWithIntelligentRouter(task: WAITask, agent?: Market360Agent): RoutingDecision {
+    const taskTypeMap: Record<WAITask["type"], TaskType> = {
+      content: "content",
+      analysis: "reasoning",
+      automation: "agents",
+      support: "chat",
+      optimization: "reasoning",
+      generation: "content"
+    };
+
+    const priorityComplexityMap: Record<WAITask["priority"], TaskComplexity> = {
+      low: "simple",
+      medium: "moderate",
+      high: "complex",
+      critical: "critical"
+    };
+
+    const context: RoutingContext = {
+      taskType: taskTypeMap[task.type],
+      complexity: priorityComplexityMap[task.priority],
+      requiresVision: task.requiredCapabilities.includes("vision") || task.requiredCapabilities.includes("image"),
+      requiresVoice: task.requiredCapabilities.includes("voice") || task.requiredCapabilities.includes("audio"),
+      requiresReasoning: task.type === "analysis" || task.type === "optimization",
+      requiresCode: task.requiredCapabilities.includes("code"),
+      requiresMultimodal: task.requiredCapabilities.includes("multimodal"),
+      requiresIndianLanguages: task.language !== "en" && ["hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "or", "as"].includes(task.language),
+      maxCostPerMillion: task.constraints?.maxCost,
+      preferredProviders: task.constraints?.requiredProvider ? [task.constraints.requiredProvider] : undefined,
+      agentRomaLevel: agent?.romaLevel,
+      agentVertical: agent?.vertical,
+      latencyPriority: task.constraints?.maxLatency && task.constraints.maxLatency < 2000 ? "high" : "medium",
+      qualityPriority: task.priority === "critical" ? "premium" : task.priority === "high" ? "high" : "standard"
+    };
+
+    return intelligentRouter.selectOptimalModel(context);
+  }
+
+  getModelRecommendationForAgent(agentId: string, taskType: TaskType = "chat"): RoutingDecision | null {
+    const agent = getMarket360AgentById(agentId);
+    if (!agent) return null;
+    
+    return intelligentRouter.getRecommendedModelForAgent(
+      agent.romaLevel,
+      agent.vertical,
+      taskType
+    );
+  }
+
+  getCostOptimizedModel(maxCost: number, capabilities: string[]) {
+    return intelligentRouter.getCostOptimizedModel(maxCost, capabilities);
+  }
+
+  recordModelUsage(modelId: string, latencyMs: number, success: boolean) {
+    intelligentRouter.recordUsage(modelId, latencyMs, success);
+  }
+
+  getModelUsageStats() {
+    return intelligentRouter.getUsageStats();
   }
 
   getPlatformStats(): { agents: ReturnType<typeof getMarket360Stats>; providers: typeof PROVIDER_STATS } {
