@@ -644,6 +644,7 @@ app.use('/api/search', searchRoutes);
 import templateRoutes from './routes/templates';
 app.use('/api/templates', templateRoutes);
 
+
 // Industry Templates Routes - Top 5 Templates (SaaS, E-commerce, Fintech, Healthcare, EdTech)
 import industryTemplatesRoutes from './routes/industry-templates-routes';
 app.use('/api/industry-templates', industryTemplatesRoutes);
