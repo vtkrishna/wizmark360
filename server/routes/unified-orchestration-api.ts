@@ -3,6 +3,8 @@ import { WAISDKOrchestration } from "../services/wai-sdk-orchestration";
 import { EnhancedAIService, MODEL_TIERS, LLM_REGISTRY, AIProvider } from "../services/enhanced-ai-service";
 import { ALL_MARKET360_AGENTS, getAgentsByVertical, getAgentsByROMALevel, Vertical, ROMALevel } from "../agents/market360-agent-catalog";
 import { PROVIDER_MANIFESTS, selectOptimalModel } from "../services/llm-provider-manifest";
+import { llmModelAutoUpdater } from "../services/llm-model-auto-updater";
+import { LLM_REGISTRY_VERSION, LLM_REGISTRY_LAST_UPDATED } from "../services/enhanced-ai-service";
 
 const router = Router();
 const waiOrchestration = new WAISDKOrchestration();
@@ -326,6 +328,61 @@ router.get("/stats", async (req: Request, res: Response) => {
         "Smart model selection",
         "Cost optimization"
       ]
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/models/updates", async (req: Request, res: Response) => {
+  try {
+    const updateStatus = await llmModelAutoUpdater.checkForUpdates();
+    const modelSummary = llmModelAutoUpdater.getModelSummary();
+    
+    res.json({
+      registryVersion: LLM_REGISTRY_VERSION,
+      lastUpdated: LLM_REGISTRY_LAST_UPDATED,
+      ...updateStatus,
+      modelSummary,
+      updateSources: llmModelAutoUpdater.getUpdateSources().length,
+      autoUpdateEnabled: true
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/models/flagship", async (req: Request, res: Response) => {
+  try {
+    const manifest = llmModelAutoUpdater.getLatestModelsManifest();
+    const flagshipModels = Object.entries(manifest).map(([provider, info]) => ({
+      provider,
+      flagship: info.flagship,
+      totalModels: info.models.length,
+      lastUpdate: info.lastUpdate
+    }));
+    
+    res.json({
+      flagshipModels,
+      totalProviders: flagshipModels.length
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/models/provider/:provider", async (req: Request, res: Response) => {
+  try {
+    const { provider } = req.params;
+    const models = await llmModelAutoUpdater.fetchProviderModels(provider as any);
+    const flagship = llmModelAutoUpdater.getProviderFlagship(provider as any);
+    const lastUpdate = llmModelAutoUpdater.getProviderLastUpdate(provider as any);
+    
+    res.json({
+      provider,
+      flagship,
+      lastUpdate,
+      ...models
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

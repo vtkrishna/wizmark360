@@ -86,44 +86,83 @@ export const MODEL_TIERS: Record<ModelTier, ModelTierConfig> = {
 };
 
 export const LLM_REGISTRY: LLMModel[] = [
-  { id: "gpt-5", name: "GPT-5", provider: "openai", contextWindow: 128000, maxOutput: 32768, inputCostPer1M: 5, outputCostPer1M: 15, capabilities: ["text", "vision", "reasoning", "code"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  // OpenAI Models (Latest: o3, o4-mini, GPT-4.1 - Dec 2024)
+  { id: "o3", name: "o3 Reasoning", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 15, outputCostPer1M: 60, capabilities: ["advanced-reasoning", "code", "math", "agentic"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "o3-pro", name: "o3 Pro", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 30, outputCostPer1M: 120, capabilities: ["advanced-reasoning", "code", "math", "deep-thinking"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "o4-mini", name: "o4 Mini", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 1.1, outputCostPer1M: 4.4, capabilities: ["reasoning", "code", "math", "fast"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "gpt-4.1", name: "GPT-4.1", provider: "openai", contextWindow: 128000, maxOutput: 32768, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "code", "instruction-following", "web-dev"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-4.1-mini", name: "GPT-4.1 Mini", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.4, outputCostPer1M: 1.6, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gpt-4o", name: "GPT-4o", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: true },
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "vision"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "o3", name: "o3 Reasoning", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 15, outputCostPer1M: 60, capabilities: ["advanced-reasoning", "code", "math"], languages: ["en"], isMultilingual: false, supportsVoice: false },
-  { id: "o3-mini", name: "o3 Mini", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 1.1, outputCostPer1M: 4.4, capabilities: ["reasoning", "code", "math"], languages: ["en"], isMultilingual: false, supportsVoice: false },
-  { id: "claude-sonnet-4-20250514", name: "Claude 4 Sonnet", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-opus-4-20250514", name: "Claude 4 Opus", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-3-haiku", name: "Claude 3 Haiku", provider: "anthropic", contextWindow: 200000, maxOutput: 4096, inputCostPer1M: 0.25, outputCostPer1M: 1.25, capabilities: ["text", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // Anthropic Models (Latest: Claude Sonnet 4.5, Opus 4.5, Haiku 4.5 - Nov 2025)
+  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "agents", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-opus-4.5", name: "Claude Opus 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code", "agentic"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-opus-4", name: "Claude Opus 4", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "code", "sustained-performance"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-sonnet-4", name: "Claude Sonnet 4", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.8, outputCostPer1M: 4, capabilities: ["text", "fast", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // Google Gemini Models (Latest: Gemini 3 Flash/Pro - Dec 2024)
+  { id: "gemini-3-flash", name: "Gemini 3 Flash", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.5, outputCostPer1M: 3, capabilities: ["text", "vision", "multimodal", "agentic-coding", "video-analysis"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gemini-3-pro", name: "Gemini 3 Pro", provider: "gemini", contextWindow: 2000000, maxOutput: 16384, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "advanced-reasoning", "vibe-coding", "long-context"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gemini-3-deep-think", name: "Gemini 3 Deep Think", provider: "gemini", contextWindow: 2000000, maxOutput: 16384, inputCostPer1M: 5, outputCostPer1M: 20, capabilities: ["advanced-reasoning", "math", "science", "deep-thinking"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 2.5, capabilities: ["text", "vision", "multimodal", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", provider: "gemini", contextWindow: 2000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "advanced-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "gemini-3-pro-image", name: "Gemini 3 Pro (Nano Banana)", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "image-generation", "4k"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "llama-3.3-70b", name: "Llama 3.3 70B", provider: "groq", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.59, outputCostPer1M: 0.79, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gemini-2.5-flash-native-audio", name: "Gemini 2.5 Flash Native Audio", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.5, outputCostPer1M: 3, capabilities: ["text", "voice", "live-speech", "translation"], languages: ["en"], isMultilingual: true, supportsVoice: true },
+  
+  // Meta Llama Models (Latest: Llama 4, Llama 3.3 - Apr 2025, Dec 2024)
+  { id: "llama-4-scout", name: "Llama 4 Scout", provider: "together", contextWindow: 256000, maxOutput: 16384, inputCostPer1M: 1.5, outputCostPer1M: 6, capabilities: ["text", "vision", "multimodal", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "llama-4-maverick", name: "Llama 4 Maverick", provider: "together", contextWindow: 256000, maxOutput: 16384, inputCostPer1M: 2, outputCostPer1M: 8, capabilities: ["text", "vision", "multimodal", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "llama-3.3-70b", name: "Llama 3.3 70B", provider: "groq", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.59, outputCostPer1M: 0.79, capabilities: ["text", "code", "fast", "instruction-following"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "llama-3.3-8b", name: "Llama 3.3 8B", provider: "groq", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.05, outputCostPer1M: 0.08, capabilities: ["text", "ultra-fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "mixtral-8x7b", name: "Mixtral 8x7B", provider: "groq", contextWindow: 32768, maxOutput: 8192, inputCostPer1M: 0.24, outputCostPer1M: 0.24, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // xAI Grok Models (Latest: Grok 3 - Feb 2025)
+  { id: "grok-3", name: "Grok-3", provider: "xai", contextWindow: 1000000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "reasoning", "real-time", "agentic"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "grok-3-mini", name: "Grok-3 Mini", provider: "xai", contextWindow: 256000, maxOutput: 8192, inputCostPer1M: 0.5, outputCostPer1M: 2, capabilities: ["text", "fast", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "grok-3-reasoning", name: "Grok-3 Reasoning", provider: "xai", contextWindow: 1000000, maxOutput: 16384, inputCostPer1M: 5, outputCostPer1M: 25, capabilities: ["advanced-reasoning", "math", "deep-thinking"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "grok-2", name: "Grok-2", provider: "xai", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 10, capabilities: ["text", "real-time", "humor"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // DeepSeek Models (Latest: DeepSeek V3, R1 - Dec 2024, Jan 2025)
+  { id: "deepseek-v3", name: "DeepSeek V3", provider: "deepseek", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.27, outputCostPer1M: 1.1, capabilities: ["text", "code", "reasoning", "moe"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "deepseek-r1", name: "DeepSeek R1", provider: "deepseek", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.55, outputCostPer1M: 2.19, capabilities: ["text", "code", "advanced-reasoning", "chain-of-thought"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "deepseek-v3.1", name: "DeepSeek V3.1", provider: "deepseek", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 1.2, capabilities: ["text", "code", "hybrid-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // Mistral Models (Latest: Mistral Large 2, Devstral 2 - Nov/Dec 2024)
+  { id: "mistral-large-2", name: "Mistral Large 2", provider: "mistral", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 6, capabilities: ["text", "code", "enterprise", "function-calling", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "devstral-2", name: "Devstral 2", provider: "mistral", contextWindow: 256000, maxOutput: 16384, inputCostPer1M: 0.4, outputCostPer1M: 2, capabilities: ["code", "agents", "swe-bench"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "pixtral-large", name: "Pixtral Large", provider: "mistral", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 6, capabilities: ["text", "vision", "multimodal", "documents"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "codestral", name: "Codestral", provider: "mistral", contextWindow: 32000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 3, capabilities: ["code", "fill-in-middle"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  
+  // Cohere Models
   { id: "command-r-plus", name: "Command R+", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "command-r", name: "Command R", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 0.5, outputCostPer1M: 1.5, capabilities: ["text", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "embed-v3", name: "Embed V3", provider: "cohere", contextWindow: 512, maxOutput: 1024, inputCostPer1M: 0.1, outputCostPer1M: 0, capabilities: ["embedding", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "sarvam-m", name: "Sarvam M (24B)", provider: "sarvam", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages", "reasoning"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
-  { id: "sarvam-1", name: "Sarvam 1 (2B)", provider: "sarvam", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
-  { id: "sarvam-translate", name: "Sarvam Translate", provider: "sarvam", contextWindow: 8192, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["translation", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: false },
+  
+  // Perplexity Models
+  { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "perplexity", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "search", "real-time"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "sonar", name: "Perplexity Sonar", provider: "perplexity", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 1, capabilities: ["text", "search"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // Together.ai Models
+  { id: "llama-3.2-90b-vision", name: "Llama 3.2 90B Vision", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1.2, outputCostPer1M: 1.2, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "qwen-2.5-72b", name: "Qwen 2.5 72B", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code", "multilingual"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // Zhipu GLM Models
   { id: "glm-4.6", name: "GLM-4.6", provider: "zhipu", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.6, outputCostPer1M: 2.2, capabilities: ["text", "code", "reasoning", "content-creation", "website-coding"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "glm-4.6v", name: "GLM-4.6V (Vision)", provider: "zhipu", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.9, capabilities: ["text", "vision", "multimodal", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "glm-4-long", name: "GLM-4-Long (1M Context)", provider: "zhipu", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.14, outputCostPer1M: 0.14, capabilities: ["text", "reasoning", "long-context"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "codegeex-4", name: "CodeGeeX 4", provider: "zhipu", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.1, capabilities: ["code", "fast"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  
+  // Sarvam AI Models (Indian Languages)
+  { id: "sarvam-m", name: "Sarvam M (24B)", provider: "sarvam", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages", "reasoning"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
+  { id: "sarvam-1", name: "Sarvam 1 (2B)", provider: "sarvam", contextWindow: 32768, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or"], isMultilingual: true, supportsVoice: true },
+  { id: "sarvam-translate", name: "Sarvam Translate", provider: "sarvam", contextWindow: 8192, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["translation", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: false },
   { id: "sarvam-bulbul", name: "Sarvam Bulbul v1 (TTS)", provider: "sarvam", contextWindow: 4096, maxOutput: 0, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["tts", "voice", "indian-languages"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: true },
   { id: "sarvam-saarika", name: "Sarvam Saarika v2 (STT)", provider: "sarvam", contextWindow: 0, maxOutput: 4096, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["stt", "voice", "indian-languages", "transcription"], languages: ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "or", "as"], isMultilingual: true, supportsVoice: true },
-  { id: "deepseek-v3", name: "DeepSeek V3", provider: "deepseek", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.27, outputCostPer1M: 1.1, capabilities: ["text", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "deepseek-r1", name: "DeepSeek R1", provider: "deepseek", contextWindow: 64000, maxOutput: 8192, inputCostPer1M: 0.55, outputCostPer1M: 2.19, capabilities: ["text", "code", "advanced-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "mistral-large", name: "Mistral Large", provider: "mistral", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 6, capabilities: ["text", "code", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "mistral-medium", name: "Mistral Medium", provider: "mistral", contextWindow: 32000, maxOutput: 8192, inputCostPer1M: 2.7, outputCostPer1M: 8.1, capabilities: ["text", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "codestral", name: "Codestral", provider: "mistral", contextWindow: 32000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 3, capabilities: ["code", "fill-in-middle"], languages: ["en"], isMultilingual: false, supportsVoice: false },
-  { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "perplexity", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "search", "real-time"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "sonar", name: "Perplexity Sonar", provider: "perplexity", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 1, capabilities: ["text", "search"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "llama-3.2-90b-vision", name: "Llama 3.2 90B Vision", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1.2, outputCostPer1M: 1.2, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "qwen-2.5-72b", name: "Qwen 2.5 72B", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code", "multilingual"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "grok-2", name: "Grok-2", provider: "xai", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 10, capabilities: ["text", "real-time", "humor"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "grok-2-mini", name: "Grok-2 Mini", provider: "xai", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.5, capabilities: ["text", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
 ];
+
+export const LLM_REGISTRY_VERSION = "2024.12.24";
+export const LLM_REGISTRY_LAST_UPDATED = new Date().toISOString();
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
