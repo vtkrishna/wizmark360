@@ -9,6 +9,7 @@ import { healthRouter } from './health';
 import { coreInterfacesRouter } from './core-interfaces';
 import wizardsRouter from './wizards-platform-routes';
 import authRouter from './auth-routes';
+import integrationsRouter from './integrations-routes';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 
 const router = Router();
@@ -27,6 +28,9 @@ router.use('/api/health', healthRouter);
 
 // Mount core interfaces endpoints  
 router.use('/api/core', coreInterfacesRouter);
+
+// Mount integrations routes (CRM, Social, Inbox)
+router.use('/api/integrations', integrationsRouter);
 
 // Mount provider status endpoint (alias for health/providers)
 router.use('/api/providers', (req, res, next) => {
