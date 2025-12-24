@@ -18,7 +18,8 @@ A "Market360 God Mode Dashboard" serves as the central command center, supported
 The application uses React for the frontend and Express for the backend, with a PostgreSQL database managed by Drizzle ORM. It runs on a unified server (Port 5000) with Vite middleware. Key features include full CRUD APIs, sample data seeding, real-time KPI metrics, and a 4-Tier Model Architecture with a Smart Router for intelligent LLM selection. All 267 agents adhere to a standardized 6-part system prompt structure. The platform supports a Dual-Model Workflow Architecture, leveraging Claude for planning and Gemini for execution in specific tasks.
 
 ### Feature Specifications
-- **AI Infrastructure**: Integration with 23 LLM providers offering 886 models across 4 tiers.
+- **AI Infrastructure**: Integration with 24 LLM providers offering 50+ flagship models across 4 tiers. Includes LLM Auto-Update system for tracking new model releases.
+- **LLM Model Auto-Updater**: Manifest-based tracking system with endpoints for checking model updates (`/api/orchestration/models/updates`), flagship models (`/api/orchestration/models/flagship`), and provider-specific models (`/api/orchestration/models/provider/:provider`).
 - **Market360 Agents**: 267 agents across 7 verticals with ROMA L0-L4 autonomy levels.
 - **Multilingual Support**: 12 Indian languages for content generation, chat, and translation.
 - **Voice Capabilities**: Speech-to-Text (Sarvam Saarika v2) and Text-to-Speech (Sarvam Bulbul v1) for voice agents.
