@@ -19,6 +19,7 @@ The application uses React for the frontend and Express for the backend, with a 
 
 ### Feature Specifications
 - **AI Infrastructure**: Integration with 24 LLM providers offering 50+ flagship models across 4 tiers. Includes LLM Auto-Update system for tracking new model releases.
+- **Intelligent Model Router**: Multi-factor scoring engine for optimal model selection based on task complexity, cost, quality requirements, and agent capabilities. Flagship models include GPT-5.2, GPT-5.2-Pro, GLM-4.6V (multimodal), with robust fallback handling.
 - **LLM Model Auto-Updater**: Manifest-based tracking system with endpoints for checking model updates (`/api/orchestration/models/updates`), flagship models (`/api/orchestration/models/flagship`), and provider-specific models (`/api/orchestration/models/provider/:provider`).
 - **Market360 Agents**: 267 agents across 7 verticals with ROMA L0-L4 autonomy levels.
 - **Multilingual Support**: 12 Indian languages for content generation, chat, and translation.
@@ -31,6 +32,13 @@ The application uses React for the frontend and Express for the backend, with a 
 - **Role-Based Access Control (RBAC) & Audit Logging**: 4 user roles with resource-based permissions and comprehensive action tracking.
 - **Auto-Remediation**: Automated issue resolution for predictive analytics alerts.
 - **Stock Images & Content Source Options**: Integration with stock image services and web search for content creation.
+
+### Feature Roadmap (Priority)
+**Phase 1 (P0)**: CRM integrations (Salesforce/HubSpot bi-directional sync), Ad Platform APIs (Meta, Google), WhatsApp Business full stack, Social Publishing APIs.
+**Phase 2 (P1)**: Predictive Analytics Engine, AI Visibility Tracker (GEO for ChatGPT/Perplexity), Social Listening Engine, Omnichannel Smart Inbox.
+**Phase 3 (P2)**: Cross-Vertical Journey Builder, Influencer Marketplace, White-label Reporting, Client Portal.
+
+See `project-tracker.md` for detailed feature tracking and implementation status.
 
 ### System Design Choices
 - **WAI SDK Orchestration Platform**: Backbone for managing AI agents and models.
