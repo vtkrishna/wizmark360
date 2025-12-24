@@ -20,6 +20,7 @@ import llmAdminRoutes from "./routes/llm-admin-routes";
 import multimodalContentRoutes from "./routes/multimodal-content-routes";
 import rbacRoutes from "./routes/rbac-routes";
 import predictiveAnalyticsRoutes from "./routes/predictive-analytics-api";
+import unifiedOrchestrationRoutes from "./routes/unified-orchestration-api";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -103,6 +104,9 @@ app.use('/api/rbac', rbacRoutes);
 
 // Predictive Analytics Routes
 app.use('/api/analytics', predictiveAnalyticsRoutes);
+
+// Unified WAI SDK Orchestration Routes
+app.use('/api/orchestration', unifiedOrchestrationRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
