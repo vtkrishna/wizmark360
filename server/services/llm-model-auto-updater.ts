@@ -40,9 +40,9 @@ const MODEL_UPDATE_SOURCES: ModelUpdateSource[] = [
 
 const LATEST_MODELS_MANIFEST: Record<AIProvider, { flagship: string; models: string[]; lastUpdate: string }> = {
   openai: { 
-    flagship: "o3", 
-    models: ["o3", "o3-pro", "o4-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4o-mini"],
-    lastUpdate: "2024-12-20"
+    flagship: "gpt-5.2", 
+    models: ["gpt-5.2", "gpt-5.2-pro", "gpt-5.2-instant", "gpt-5.2-codex", "gpt-5.1", "gpt-5", "gpt-5-mini", "gpt-5-nano", "o3", "o3-pro", "o4-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "gpt-4o", "gpt-4o-mini"],
+    lastUpdate: "2025-12-11"
   },
   anthropic: { 
     flagship: "claude-sonnet-4.5", 
@@ -90,9 +90,9 @@ const LATEST_MODELS_MANIFEST: Record<AIProvider, { flagship: string; models: str
     lastUpdate: "2024-10-01"
   },
   zhipu: { 
-    flagship: "glm-4.6", 
-    models: ["glm-4.6", "glm-4.6v", "glm-4-long", "codegeex-4"],
-    lastUpdate: "2024-11-01"
+    flagship: "glm-4.6v", 
+    models: ["glm-4.6", "glm-4.6v", "glm-4.6v-flash", "glm-4-long", "codegeex-4"],
+    lastUpdate: "2024-12-09"
   },
   sarvam: { 
     flagship: "sarvam-m", 

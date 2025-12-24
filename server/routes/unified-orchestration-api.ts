@@ -5,6 +5,7 @@ import { ALL_MARKET360_AGENTS, getAgentsByVertical, getAgentsByROMALevel, Vertic
 import { PROVIDER_MANIFESTS, selectOptimalModel } from "../services/llm-provider-manifest";
 import { llmModelAutoUpdater } from "../services/llm-model-auto-updater";
 import { LLM_REGISTRY_VERSION, LLM_REGISTRY_LAST_UPDATED } from "../services/enhanced-ai-service";
+import { difyIntegration, DIFY_CAPABILITIES } from "../services/dify-integration";
 
 const router = Router();
 const waiOrchestration = new WAISDKOrchestration();
@@ -384,6 +385,153 @@ router.get("/models/provider/:provider", async (req: Request, res: Response) => 
       lastUpdate,
       ...models
     });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/dify/status", async (req: Request, res: Response) => {
+  try {
+    const status = difyIntegration.getStatus();
+    res.json({
+      ...status,
+      capabilities: DIFY_CAPABILITIES,
+      integration: "Dify Agentic Workflow Platform"
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/dify/workflow/run", async (req: Request, res: Response) => {
+  try {
+    const { inputs, responseMode = "blocking", user, files } = req.body;
+    
+    if (!user) {
+      return res.status(400).json({ error: "User identifier is required" });
+    }
+    
+    const result = await difyIntegration.runWorkflow({
+      inputs: inputs || {},
+      responseMode,
+      user,
+      files
+    });
+    
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/dify/chat", async (req: Request, res: Response) => {
+  try {
+    const { inputs, query, responseMode = "blocking", conversationId, user, files } = req.body;
+    
+    if (!query) {
+      return res.status(400).json({ error: "Query is required" });
+    }
+    if (!user) {
+      return res.status(400).json({ error: "User identifier is required" });
+    }
+    
+    const result = await difyIntegration.sendChatMessage({
+      inputs: inputs || {},
+      query,
+      responseMode,
+      conversationId,
+      user,
+      files
+    });
+    
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/dify/completion", async (req: Request, res: Response) => {
+  try {
+    const { inputs, responseMode = "blocking", user } = req.body;
+    
+    if (!user) {
+      return res.status(400).json({ error: "User identifier is required" });
+    }
+    
+    const result = await difyIntegration.createCompletion({
+      inputs: inputs || {},
+      responseMode,
+      user
+    });
+    
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/dify/conversations", async (req: Request, res: Response) => {
+  try {
+    const { user, limit = "20", last_id } = req.query;
+    
+    if (!user) {
+      return res.status(400).json({ error: "User identifier is required" });
+    }
+    
+    const result = await difyIntegration.getConversations(
+      user as string,
+      parseInt(limit as string),
+      last_id as string | undefined
+    );
+    
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/dify/conversations/:conversationId/messages", async (req: Request, res: Response) => {
+  try {
+    const { conversationId } = req.params;
+    const { user, limit = "20", first_id } = req.query;
+    
+    if (!user) {
+      return res.status(400).json({ error: "User identifier is required" });
+    }
+    
+    const result = await difyIntegration.getConversationMessages(
+      conversationId,
+      user as string,
+      parseInt(limit as string),
+      first_id as string | undefined
+    );
+    
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/dify/conversations/:conversationId", async (req: Request, res: Response) => {
+  try {
+    const { conversationId } = req.params;
+    const { user } = req.body;
+    
+    if (!user) {
+      return res.status(400).json({ error: "User identifier is required" });
+    }
+    
+    const result = await difyIntegration.deleteConversation(conversationId, user);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/dify/parameters", async (req: Request, res: Response) => {
+  try {
+    const result = await difyIntegration.getAppParameters();
+    res.json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

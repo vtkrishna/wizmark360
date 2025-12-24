@@ -86,12 +86,25 @@ export const MODEL_TIERS: Record<ModelTier, ModelTierConfig> = {
 };
 
 export const LLM_REGISTRY: LLMModel[] = [
-  // OpenAI Models (Latest: o3, o4-mini, GPT-4.1 - Dec 2024)
-  { id: "o3", name: "o3 Reasoning", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 15, outputCostPer1M: 60, capabilities: ["advanced-reasoning", "code", "math", "agentic"], languages: ["en"], isMultilingual: false, supportsVoice: false },
-  { id: "o3-pro", name: "o3 Pro", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 30, outputCostPer1M: 120, capabilities: ["advanced-reasoning", "code", "math", "deep-thinking"], languages: ["en"], isMultilingual: false, supportsVoice: false },
-  { id: "o4-mini", name: "o4 Mini", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 1.1, outputCostPer1M: 4.4, capabilities: ["reasoning", "code", "math", "fast"], languages: ["en"], isMultilingual: false, supportsVoice: false },
-  { id: "gpt-4.1", name: "GPT-4.1", provider: "openai", contextWindow: 128000, maxOutput: 32768, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "code", "instruction-following", "web-dev"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "gpt-4.1-mini", name: "GPT-4.1 Mini", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.4, outputCostPer1M: 1.6, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  // OpenAI GPT-5 Series (Latest: GPT-5.2 - Dec 2025)
+  { id: "gpt-5.2", name: "GPT-5.2 Thinking", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 5, outputCostPer1M: 20, capabilities: ["advanced-reasoning", "code", "agents", "professional-work", "long-running"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 15, outputCostPer1M: 60, capabilities: ["advanced-reasoning", "code", "agents", "deep-thinking", "xhigh-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-5.2-instant", name: "GPT-5.2 Instant", provider: "openai", contextWindow: 200000, maxOutput: 32768, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "code", "fast", "conversational"], languages: ["en"], isMultilingual: true, supportsVoice: true },
+  { id: "gpt-5.2-codex", name: "GPT-5.2 Codex", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 10, outputCostPer1M: 40, capabilities: ["code", "agents", "swe-bench", "cybersecurity", "refactoring"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "gpt-5.1", name: "GPT-5.1 Thinking", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 5, outputCostPer1M: 20, capabilities: ["advanced-reasoning", "code", "conversational", "warmer-tone"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-5", name: "GPT-5", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 5, outputCostPer1M: 20, capabilities: ["advanced-reasoning", "code", "math", "unified-reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-5-mini", name: "GPT-5 Mini", provider: "openai", contextWindow: 200000, maxOutput: 32768, inputCostPer1M: 1.5, outputCostPer1M: 6, capabilities: ["reasoning", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-5-nano", name: "GPT-5 Nano", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.5, outputCostPer1M: 2, capabilities: ["text", "code", "ultra-fast", "classification"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  
+  // OpenAI Reasoning Models (o-series)
+  { id: "o3", name: "o3 Reasoning", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 15, outputCostPer1M: 60, capabilities: ["advanced-reasoning", "code", "math", "agentic", "visual-reasoning"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "o3-pro", name: "o3 Pro", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 30, outputCostPer1M: 120, capabilities: ["advanced-reasoning", "code", "math", "deep-thinking", "reliability"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  { id: "o4-mini", name: "o4 Mini", provider: "openai", contextWindow: 200000, maxOutput: 100000, inputCostPer1M: 1.1, outputCostPer1M: 4.4, capabilities: ["reasoning", "code", "math", "fast", "vision"], languages: ["en"], isMultilingual: false, supportsVoice: false },
+  
+  // OpenAI GPT-4 Series
+  { id: "gpt-4.1", name: "GPT-4.1", provider: "openai", contextWindow: 1000000, maxOutput: 32768, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "code", "instruction-following", "web-dev", "long-context"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-4.1-mini", name: "GPT-4.1 Mini", provider: "openai", contextWindow: 1000000, maxOutput: 16384, inputCostPer1M: 0.4, outputCostPer1M: 1.6, capabilities: ["text", "code", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "gpt-4.1-nano", name: "GPT-4.1 Nano", provider: "openai", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "classification", "autocompletion"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gpt-4o", name: "GPT-4o", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: true },
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "vision"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   
@@ -147,9 +160,10 @@ export const LLM_REGISTRY: LLMModel[] = [
   { id: "llama-3.2-90b-vision", name: "Llama 3.2 90B Vision", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 1.2, outputCostPer1M: 1.2, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "qwen-2.5-72b", name: "Qwen 2.5 72B", provider: "together", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.9, outputCostPer1M: 0.9, capabilities: ["text", "code", "multilingual"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   
-  // Zhipu GLM Models
+  // Zhipu GLM Models (Latest: GLM-4.6V Multimodal - Dec 2024)
   { id: "glm-4.6", name: "GLM-4.6", provider: "zhipu", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.6, outputCostPer1M: 2.2, capabilities: ["text", "code", "reasoning", "content-creation", "website-coding"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "glm-4.6v", name: "GLM-4.6V (Vision)", provider: "zhipu", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.9, capabilities: ["text", "vision", "multimodal", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "glm-4.6v", name: "GLM-4.6V (106B Multimodal)", provider: "zhipu", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.3, outputCostPer1M: 0.9, capabilities: ["text", "vision", "multimodal", "function-calling", "document-understanding", "design-to-code", "video-understanding", "content-generation"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "glm-4.6v-flash", name: "GLM-4.6V Flash (9B)", provider: "zhipu", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0, outputCostPer1M: 0, capabilities: ["text", "vision", "multimodal", "fast", "free"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "glm-4-long", name: "GLM-4-Long (1M Context)", provider: "zhipu", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.14, outputCostPer1M: 0.14, capabilities: ["text", "reasoning", "long-context"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "codegeex-4", name: "CodeGeeX 4", provider: "zhipu", contextWindow: 128000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.1, capabilities: ["code", "fast"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   
