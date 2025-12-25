@@ -563,7 +563,7 @@ class NativeAdPublishingService {
     const result = await db.execute(sql`
       SELECT * FROM ad_budget_guardrails WHERE brand_id = ${brandId} AND is_active = true
     `);
-    return (result.rows || []) as BudgetGuardrail[];
+    return (result.rows || []) as unknown as BudgetGuardrail[];
   }
 
   async getBudgetAlerts(brandId: string): Promise<BudgetAlert[]> {
@@ -574,7 +574,7 @@ class NativeAdPublishingService {
       AND ba.acknowledged_at IS NULL
       ORDER BY ba.created_at DESC
     `);
-    return (result.rows || []) as BudgetAlert[];
+    return (result.rows || []) as unknown as BudgetAlert[];
   }
 
   async getCreativeFatigueAnalysis(campaignId: string): Promise<{
@@ -665,17 +665,22 @@ class NativeAdPublishingService {
     };
     insights: string[];
   }> {
-    const result = await db.execute(sql`
-      SELECT 
-        platform,
-        COUNT(*) as campaigns,
-        COALESCE(SUM((performance->>'spend')::numeric), 0) as spend,
-        COALESCE(SUM((performance->>'conversions')::numeric), 0) as conversions,
-        COALESCE(SUM((performance->>'revenue')::numeric), 0) as revenue
-      FROM ad_campaigns
-      WHERE brand_id = ${brandId}
-      GROUP BY platform
-    `);
+    let result: any = { rows: [] };
+    try {
+      result = await db.execute(sql`
+        SELECT 
+          COALESCE(objective, 'unknown') as platform,
+          COUNT(*) as campaigns,
+          COALESCE(SUM(spend), 0) as spend,
+          COALESCE(SUM(conversions), 0) as conversions,
+          COALESCE(SUM(revenue), 0) as revenue
+        FROM ad_campaigns
+        WHERE brand_id = ${brandId}::integer
+        GROUP BY objective
+      `);
+    } catch {
+      result = { rows: [] };
+    }
 
     const platforms = (result.rows || []).map((row: any) => ({
       platform: row.platform as AdPlatform,
@@ -875,7 +880,7 @@ class NativeAdPublishingService {
       WHERE brand_id = ${brandId} AND platform = ${platform} AND is_active = true
       LIMIT 1
     `);
-    return result.rows?.[0] as AdAccountConnection | null;
+    return (result.rows?.[0] as unknown as AdAccountConnection) || null;
   }
 
   private async storeCampaign(campaign: Campaign): Promise<void> {

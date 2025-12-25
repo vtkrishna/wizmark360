@@ -22,6 +22,8 @@ import rbacRoutes from "./routes/rbac-routes";
 import predictiveAnalyticsRoutes from "./routes/predictive-analytics-api";
 import unifiedOrchestrationRoutes from "./routes/unified-orchestration-api";
 import contentLibraryRoutes from "./routes/content-library-routes";
+import predictiveAnalyticsNewRoutes from "./routes/predictive-analytics-routes";
+import adPublishingRoutes from "./routes/ad-publishing-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -111,6 +113,12 @@ app.use('/api/orchestration', unifiedOrchestrationRoutes);
 
 // Brand-Aware Content Library Routes
 app.use('/api/content-library', contentLibraryRoutes);
+
+// New Predictive Analytics Routes (Phase 2)
+app.use('/api/analytics/predictions', predictiveAnalyticsNewRoutes);
+
+// Native Ad Publishing Routes
+app.use('/api/ads', adPublishingRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());

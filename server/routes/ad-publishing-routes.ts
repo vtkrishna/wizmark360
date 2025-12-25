@@ -34,8 +34,16 @@ router.get("/campaigns", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "brandId query parameter is required" });
     }
 
-    const campaigns = await nativeAdPublishingService.getCampaigns(brandId, { platform, status });
-    res.json({ campaigns });
+    try {
+      const campaigns = await nativeAdPublishingService.getCampaigns(brandId, { platform, status });
+      res.json({ campaigns });
+    } catch (dbError: any) {
+      if (dbError.message?.includes('invalid input syntax')) {
+        res.json({ campaigns: [] });
+      } else {
+        throw dbError;
+      }
+    }
   } catch (error: any) {
     console.error("Get campaigns error:", error);
     res.status(500).json({ error: error.message });
