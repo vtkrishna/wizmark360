@@ -24,6 +24,7 @@ import unifiedOrchestrationRoutes from "./routes/unified-orchestration-api";
 import contentLibraryRoutes from "./routes/content-library-routes";
 import predictiveAnalyticsNewRoutes from "./routes/predictive-analytics-routes";
 import adPublishingRoutes from "./routes/ad-publishing-routes";
+import aiVisibilityRoutes from "./routes/ai-visibility-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -119,6 +120,9 @@ app.use('/api/analytics/predictions', predictiveAnalyticsNewRoutes);
 
 // Native Ad Publishing Routes
 app.use('/api/ads', adPublishingRoutes);
+
+// AI Visibility Tracker Routes (GEO - ChatGPT/Perplexity monitoring)
+app.use('/api/ai-visibility', aiVisibilityRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
