@@ -10,6 +10,8 @@ import { coreInterfacesRouter } from './core-interfaces';
 import wizardsRouter from './wizards-platform-routes';
 import authRouter from './auth-routes';
 import integrationsRouter from './integrations-routes';
+import predictiveAnalyticsRouter from './predictive-analytics-routes';
+import adPublishingRouter from './ad-publishing-routes';
 import { authenticateToken, requireAdmin } from '../middleware/auth';
 
 const router = Router();
@@ -31,6 +33,12 @@ router.use('/api/core', coreInterfacesRouter);
 
 // Mount integrations routes (CRM, Social, Inbox)
 router.use('/api/integrations', integrationsRouter);
+
+// Mount predictive analytics routes
+router.use('/api/analytics/predictions', predictiveAnalyticsRouter);
+
+// Mount ad publishing routes
+router.use('/api/ads', adPublishingRouter);
 
 // Mount provider status endpoint (alias for health/providers)
 router.use('/api/providers', (req, res, next) => {
