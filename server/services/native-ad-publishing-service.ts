@@ -665,21 +665,46 @@ class NativeAdPublishingService {
     };
     insights: string[];
   }> {
+    const defaultPlatforms: Array<{
+      platform: AdPlatform;
+      campaigns: number;
+      spend: number;
+      conversions: number;
+      revenue: number;
+      roas: number;
+      bestPerforming: string;
+    }> = [
+      { platform: 'meta', campaigns: 0, spend: 0, conversions: 0, revenue: 0, roas: 0, bestPerforming: 'N/A' },
+      { platform: 'google', campaigns: 0, spend: 0, conversions: 0, revenue: 0, roas: 0, bestPerforming: 'N/A' },
+      { platform: 'linkedin', campaigns: 0, spend: 0, conversions: 0, revenue: 0, roas: 0, bestPerforming: 'N/A' }
+    ];
+    
     let result: any = { rows: [] };
     try {
-      result = await db.execute(sql`
-        SELECT 
-          COALESCE(objective, 'unknown') as platform,
-          COUNT(*) as campaigns,
-          COALESCE(SUM(spend), 0) as spend,
-          COALESCE(SUM(conversions), 0) as conversions,
-          COALESCE(SUM(revenue), 0) as revenue
-        FROM ad_campaigns
-        WHERE brand_id = ${brandId}::integer
-        GROUP BY objective
-      `);
+      const numericBrandId = parseInt(brandId, 10);
+      if (!isNaN(numericBrandId)) {
+        result = await db.execute(sql`
+          SELECT 
+            COALESCE(objective, 'meta') as platform,
+            COUNT(*) as campaigns,
+            COALESCE(SUM(spend), 0) as spend,
+            COALESCE(SUM(conversions), 0) as conversions,
+            COALESCE(SUM(revenue), 0) as revenue
+          FROM ad_campaigns
+          WHERE brand_id = ${numericBrandId}
+          GROUP BY objective
+        `);
+      }
     } catch {
       result = { rows: [] };
+    }
+    
+    if (!result.rows || result.rows.length === 0) {
+      return {
+        platforms: defaultPlatforms,
+        totals: { spend: 0, conversions: 0, revenue: 0, roas: 0 },
+        insights: ['No campaigns found. Create your first campaign to see cross-channel performance.']
+      };
     }
 
     const platforms = (result.rows || []).map((row: any) => ({

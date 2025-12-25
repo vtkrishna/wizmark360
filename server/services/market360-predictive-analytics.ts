@@ -169,17 +169,18 @@ class Market360PredictiveAnalyticsService {
   async predictLeadScore(
     brandId: string,
     leadData: {
-      email: string;
+      email?: string;
       company?: string;
       jobTitle?: string;
       industry?: string;
       companySize?: string;
-      activities: Array<{ type: string; timestamp: Date; value?: number }>;
+      activities?: Array<{ type: string; timestamp: Date; value?: number }>;
       demographics?: Record<string, any>;
       firmographics?: Record<string, any>;
     }
   ): Promise<LeadScoreResult> {
-    const activityScore = this.calculateActivityScore(leadData.activities);
+    const activities = leadData.activities || [];
+    const activityScore = this.calculateActivityScore(activities);
     const demographicScore = this.calculateDemographicScore(leadData.demographics || {});
     const firmographicScore = this.calculateFirmographicScore(leadData.firmographics || {});
     
@@ -196,7 +197,7 @@ class Market360PredictiveAnalyticsService {
         value: activityScore,
         impact: activityScore > 50 ? 'positive' : activityScore < 30 ? 'negative' : 'neutral',
         weight: 0.4,
-        description: `Based on ${leadData.activities.length} interactions`
+        description: `Based on ${activities.length} interactions`
       },
       {
         name: 'Demographic Fit',
@@ -245,19 +246,21 @@ class Market360PredictiveAnalyticsService {
   async predictContentPerformance(
     brandId: string,
     contentData: {
-      contentId: string;
+      contentId?: string;
       platform: string;
-      contentType: 'post' | 'story' | 'reel' | 'video' | 'carousel' | 'article';
+      contentType?: 'post' | 'story' | 'reel' | 'video' | 'carousel' | 'article';
       text: string;
       hashtags?: string[];
       media?: { type: string; url?: string }[];
-      scheduledTime?: Date;
+      scheduledTime?: Date | string;
       historicalPerformance?: Array<{ metric: string; value: number }>;
     }
   ): Promise<ContentPerformanceResult> {
+    const contentType = contentData.contentType || 'post';
     const textAnalysis = await this.analyzeContentText(brandId, contentData.text, contentData.platform);
-    const platformBenchmarks = this.getPlatformBenchmarks(contentData.platform, contentData.contentType);
-    const timeAnalysis = this.analyzePostingTime(contentData.scheduledTime || new Date(), contentData.platform);
+    const platformBenchmarks = this.getPlatformBenchmarks(contentData.platform, contentType);
+    const scheduledTime = contentData.scheduledTime ? new Date(contentData.scheduledTime) : new Date();
+    const timeAnalysis = this.analyzePostingTime(scheduledTime, contentData.platform);
     
     const engagementMultiplier = this.calculateEngagementMultiplier(
       textAnalysis,
@@ -332,25 +335,30 @@ class Market360PredictiveAnalyticsService {
   async predictCampaignROI(
     brandId: string,
     campaignData: {
-      campaignId: string;
-      platform: 'meta' | 'google' | 'linkedin' | 'tiktok';
-      objective: string;
+      campaignId?: string;
+      platform?: 'meta' | 'google' | 'linkedin' | 'tiktok';
+      objective?: string;
       budget: number;
       duration: number;
-      targetAudience: {
+      targetAudience?: {
         size?: number;
         demographics?: Record<string, any>;
         interests?: string[];
         locations?: string[];
       };
-      creatives: Array<{ type: string; format: string }>;
+      creatives?: Array<{ type: string; format: string }>;
       historicalData?: Array<{ metric: string; value: number }>;
     }
   ): Promise<CampaignROIResult> {
-    const platformMetrics = this.getPlatformCampaignMetrics(campaignData.platform, campaignData.objective);
-    const audienceQuality = this.assessAudienceQuality(campaignData.targetAudience);
-    const creativeScore = this.assessCreativeQuality(campaignData.creatives);
-    const budgetEfficiency = this.calculateBudgetEfficiency(campaignData.budget, campaignData.duration, campaignData.platform);
+    const platform = campaignData.platform || 'meta';
+    const objective = campaignData.objective || 'conversions';
+    const targetAudience = campaignData.targetAudience || {};
+    const creatives = campaignData.creatives || [{ type: 'image', format: 'standard' }];
+    
+    const platformMetrics = this.getPlatformCampaignMetrics(platform, objective);
+    const audienceQuality = this.assessAudienceQuality(targetAudience);
+    const creativeScore = this.assessCreativeQuality(creatives);
+    const budgetEfficiency = this.calculateBudgetEfficiency(campaignData.budget, campaignData.duration, platform);
     
     const baseConversionRate = platformMetrics.avgConversionRate * (audienceQuality / 100) * (creativeScore / 100);
     const predictedConversions = Math.floor((campaignData.budget / platformMetrics.avgCPC) * baseConversionRate);
@@ -366,14 +374,14 @@ class Market360PredictiveAnalyticsService {
         value: audienceQuality,
         impact: audienceQuality > 70 ? 'positive' : 'neutral',
         weight: 0.3,
-        description: `Target audience size: ${campaignData.targetAudience.size?.toLocaleString() || 'Unknown'}`
+        description: `Target audience size: ${targetAudience?.size?.toLocaleString() || 'Unknown'}`
       },
       {
         name: 'Creative Quality',
         value: creativeScore,
         impact: creativeScore > 75 ? 'positive' : 'neutral',
         weight: 0.25,
-        description: `${campaignData.creatives.length} creatives prepared`
+        description: `${creatives.length} creatives prepared`
       },
       {
         name: 'Budget Efficiency',
@@ -387,7 +395,7 @@ class Market360PredictiveAnalyticsService {
         value: platformMetrics.fitScore,
         impact: platformMetrics.fitScore > 70 ? 'positive' : 'neutral',
         weight: 0.2,
-        description: `${campaignData.platform} for ${campaignData.objective}`
+        description: `${platform} for ${objective}`
       }
     ];
 
@@ -432,8 +440,8 @@ class Market360PredictiveAnalyticsService {
       recommendations: this.generateCampaignRecommendations(factors, optimizationOpportunities),
       forecast: this.generateCampaignForecast(campaignData.duration, predictedRevenue, predictedCost),
       metadata: {
-        platform: campaignData.platform,
-        objective: campaignData.objective,
+        platform,
+        objective,
         modelVersion: this.modelVersions.get('campaign_roi')
       },
       createdAt: new Date()
@@ -446,24 +454,32 @@ class Market360PredictiveAnalyticsService {
   async predictChurnRisk(
     brandId: string,
     customerData: {
-      customerId: string;
-      accountAge: number;
-      lastActivityDate: Date;
-      activityFrequency: number;
-      supportTickets: number;
+      customerId?: string;
+      accountAge?: number;
+      lastActivityDate?: Date | string;
+      activityFrequency?: number;
+      supportTickets?: number;
       nps?: number;
-      contractValue: number;
-      usageMetrics: Record<string, number>;
-      paymentHistory: Array<{ date: Date; status: string }>;
+      contractValue?: number;
+      usageMetrics?: Record<string, number>;
+      paymentHistory?: Array<{ date: Date | string; status: string }>;
     }
   ): Promise<ChurnRiskResult> {
+    const lastActivityDate = customerData.lastActivityDate ? new Date(customerData.lastActivityDate) : new Date();
+    const usageMetrics = customerData.usageMetrics || {};
+    const supportTickets = customerData.supportTickets || 0;
+    const paymentHistory = (customerData.paymentHistory || []).map(p => ({ 
+      date: new Date(p.date), 
+      status: p.status 
+    }));
+    
     const daysSinceActivity = Math.floor(
-      (Date.now() - customerData.lastActivityDate.getTime()) / (1000 * 60 * 60 * 24)
+      (Date.now() - lastActivityDate.getTime()) / (1000 * 60 * 60 * 24)
     );
     
-    const activityDecline = this.calculateActivityDecline(customerData.usageMetrics);
-    const supportSentiment = this.analyzeSuportSentiment(customerData.supportTickets, customerData.nps);
-    const paymentHealth = this.analyzePaymentHealth(customerData.paymentHistory);
+    const activityDecline = this.calculateActivityDecline(usageMetrics);
+    const supportSentiment = this.analyzeSuportSentiment(supportTickets, customerData.nps);
+    const paymentHealth = this.analyzePaymentHealth(paymentHistory);
     
     const churnFactors = [
       { factor: 'inactivity', weight: 0.3, value: Math.min(100, daysSinceActivity * 3) },
@@ -545,15 +561,15 @@ class Market360PredictiveAnalyticsService {
   async predictAdPerformance(
     brandId: string,
     adData: {
-      adId: string;
-      platform: 'meta' | 'google' | 'linkedin';
-      adType: string;
-      headline: string;
-      description: string;
-      creative: { type: string; format: string };
-      targetAudience: Record<string, any>;
-      bidStrategy: string;
-      budget: number;
+      adId?: string;
+      platform?: 'meta' | 'google' | 'linkedin';
+      adType?: string;
+      headline?: string;
+      description?: string;
+      creative?: { type: string; format: string };
+      targetAudience?: Record<string, any>;
+      bidStrategy?: string;
+      budget?: number;
       currentMetrics?: {
         impressions?: number;
         clicks?: number;
@@ -562,12 +578,21 @@ class Market360PredictiveAnalyticsService {
       };
     }
   ): Promise<AdPerformanceResult> {
-    const copyAnalysis = await this.analyzeAdCopy(brandId, adData.headline, adData.description);
-    const creativeScore = this.scoreAdCreative(adData.creative);
-    const audienceRelevance = this.calculateAudienceRelevance(adData.targetAudience, adData.platform);
-    const bidOptimality = this.assessBidStrategy(adData.bidStrategy, adData.platform, adData.budget);
+    const headline = adData.headline || 'Default Headline';
+    const description = adData.description || 'Default Description';
+    const platform = adData.platform || 'meta';
+    const adType = adData.adType || 'image';
+    const creative = adData.creative || { type: 'image', format: 'standard' };
+    const targetAudience = adData.targetAudience || {};
+    const bidStrategy = adData.bidStrategy || 'auto';
+    const budget = adData.budget || 100;
     
-    const platformBenchmarks = this.getAdPlatformBenchmarks(adData.platform, adData.adType);
+    const copyAnalysis = await this.analyzeAdCopy(brandId, headline, description);
+    const creativeScore = this.scoreAdCreative(creative);
+    const audienceRelevance = this.calculateAudienceRelevance(targetAudience, platform);
+    const bidOptimality = this.assessBidStrategy(bidStrategy, platform, budget);
+    
+    const platformBenchmarks = this.getAdPlatformBenchmarks(platform, adType);
     
     const qualityMultiplier = (copyAnalysis.score + creativeScore + audienceRelevance) / 300;
     const predictedCTR = platformBenchmarks.avgCTR * (0.5 + qualityMultiplier);
@@ -593,7 +618,7 @@ class Market360PredictiveAnalyticsService {
         value: creativeScore,
         impact: creativeScore > 75 ? 'positive' : 'neutral',
         weight: 0.3,
-        description: `${adData.creative.type} format`
+        description: `${creative.type} format`
       },
       {
         name: 'Audience Match',
@@ -607,7 +632,7 @@ class Market360PredictiveAnalyticsService {
         value: bidOptimality,
         impact: bidOptimality > 80 ? 'positive' : 'neutral',
         weight: 0.15,
-        description: `${adData.bidStrategy} strategy`
+        description: `${bidStrategy} strategy`
       }
     ];
 
@@ -638,8 +663,8 @@ class Market360PredictiveAnalyticsService {
         implementation: [opt]
       })),
       metadata: {
-        platform: adData.platform,
-        adType: adData.adType,
+        platform,
+        adType,
         modelVersion: this.modelVersions.get('ad_performance')
       },
       createdAt: new Date()
@@ -963,6 +988,7 @@ class Market360PredictiveAnalyticsService {
   }
 
   private assessAudienceQuality(targetAudience: any): number {
+    if (!targetAudience) return 60;
     let score = 60;
     if (targetAudience.size && targetAudience.size > 10000 && targetAudience.size < 1000000) score += 15;
     if (targetAudience.interests?.length > 2) score += 10;
@@ -971,7 +997,7 @@ class Market360PredictiveAnalyticsService {
   }
 
   private assessCreativeQuality(creatives: any[]): number {
-    if (!creatives.length) return 40;
+    if (!creatives || !creatives.length) return 40;
     let score = 50;
     if (creatives.length >= 3) score += 20;
     if (creatives.some(c => c.type === 'video')) score += 15;
