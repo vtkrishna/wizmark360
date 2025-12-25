@@ -25,6 +25,7 @@ import contentLibraryRoutes from "./routes/content-library-routes";
 import predictiveAnalyticsNewRoutes from "./routes/predictive-analytics-routes";
 import adPublishingRoutes from "./routes/ad-publishing-routes";
 import aiVisibilityRoutes from "./routes/ai-visibility-routes";
+import translationRoutes from "./routes/translation-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -123,6 +124,9 @@ app.use('/api/ads', adPublishingRoutes);
 
 // AI Visibility Tracker Routes (GEO - ChatGPT/Perplexity monitoring)
 app.use('/api/ai-visibility', aiVisibilityRoutes);
+
+// Translation Routes (Sarvam + Gemini for Indian languages)
+app.use('/api/translation', translationRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
