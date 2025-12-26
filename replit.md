@@ -71,12 +71,15 @@ The following production-grade enterprise services have been implemented with au
   - AI content generation
   - *Status: Ready for SMTP/ESP integration*
 
-- **Payment Service** (`/api/payments`) - Stripe integration
-  - Invoices with line items and tax
+- **Payment Service** (`/api/payments`) - Razorpay integration (India)
+  - Invoices with GST/IGST support and HSN/SAC codes
+  - Orders with signature verification
   - Subscriptions management
-  - Payment links
-  - Revenue analytics
-  - *Status: Awaiting Stripe API credentials*
+  - Payment links with SMS/Email notifications
+  - UPI, Cards, NetBanking, Wallets support
+  - Revenue analytics with payment method breakdown
+  - Webhook handling for real-time updates
+  - *Status: Awaiting Razorpay API credentials (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET)*
 
 - **Client Portal Service** (`/api/portal`) - White-label portals
   - Custom branding per client
