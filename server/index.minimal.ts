@@ -11,6 +11,7 @@ import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import { log, setupVite, serveStatic } from "./vite";
+import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import market360Router from "./routes/market360";
 import aiRouter from "./routes/ai";
 import brandsRouter from "./routes/brands";
@@ -26,6 +27,14 @@ import predictiveAnalyticsNewRoutes from "./routes/predictive-analytics-routes";
 import adPublishingRoutes from "./routes/ad-publishing-routes";
 import aiVisibilityRoutes from "./routes/ai-visibility-routes";
 import translationRoutes from "./routes/translation-routes";
+import whatsappRoutes from "./routes/whatsapp-routes";
+import crmRoutes from "./routes/crm-full-routes";
+import socialPublishingRoutes from "./routes/social-publishing-routes";
+import voiceRoutes from "./routes/voice-routes";
+import emailRoutes from "./routes/email-routes";
+import paymentRoutes from "./routes/payment-routes";
+import clientPortalRoutes from "./routes/client-portal-routes";
+import influencerRoutes from "./routes/influencer-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -128,6 +137,30 @@ app.use('/api/ai-visibility', aiVisibilityRoutes);
 // Translation Routes (Sarvam + Gemini for Indian languages)
 app.use('/api/translation', translationRoutes);
 
+// WhatsApp Business API Routes
+app.use('/api/whatsapp', whatsappRoutes);
+
+// CRM Integration Routes (Salesforce/HubSpot)
+app.use('/api/crm', crmRoutes);
+
+// Social Publishing Routes (Meta/LinkedIn/Twitter)
+app.use('/api/social', socialPublishingRoutes);
+
+// Voice Agent Routes (Sarvam STT/TTS)
+app.use('/api/voice', voiceRoutes);
+
+// Email Campaign Routes
+app.use('/api/email', emailRoutes);
+
+// Payment & Invoicing Routes (Stripe)
+app.use('/api/payments', paymentRoutes);
+
+// Client Portal Routes (White-label)
+app.use('/api/portal', clientPortalRoutes);
+
+// Influencer Marketplace Routes
+app.use('/api/influencers', influencerRoutes);
+
 // Audit middleware for logging API access
 app.use(auditMiddleware());
 
@@ -136,6 +169,11 @@ async function startServer() {
     console.log('🚀 Starting WAI SDK Platform - Minimal Mode');
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+    
+    // Setup authentication (MUST be before other routes)
+    await setupAuth(app);
+    registerAuthRoutes(app);
+    console.log('🔐 Authentication configured');
     
     // Setup Vite in development or serve static in production
     if (isProduction) {
@@ -154,6 +192,7 @@ async function startServer() {
     server.listen(port, "0.0.0.0", () => {
       console.log(`✅ Server running on http://0.0.0.0:${port}`);
       console.log(`🌐 Health check: http://localhost:${port}/api/health`);
+      console.log(`🔐 Auth: /api/login, /api/logout, /api/auth/user`);
       console.log(`📝 Note: Running in minimal mode - see replit.md for details`);
     });
     
