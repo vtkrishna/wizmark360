@@ -36,6 +36,15 @@ import paymentRoutes from "./routes/payment-routes";
 import clientPortalRoutes from "./routes/client-portal-routes";
 import influencerRoutes from "./routes/influencer-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
+import webSearchRoutes from "./routes/web-search-routes";
+import documentProcessingRoutes from "./routes/document-processing-routes";
+import notebookLLMRoutes from "./routes/notebook-llm-routes";
+import orchestrationPatternsRoutes from "./routes/orchestration-patterns-routes";
+import mem0EnhancedRoutes from "./routes/mem0-enhanced-routes";
+import camMonitoringRoutes from "./routes/cam-monitoring-routes";
+import grpoLearningRoutes from "./routes/grpo-learning-routes";
+import digitalTwinRoutes from "./routes/digital-twin-routes";
+import contentPipelineRoutes from "./routes/content-pipeline-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -160,6 +169,21 @@ app.use('/api/portal', clientPortalRoutes);
 
 // Influencer Marketplace Routes
 app.use('/api/influencers', influencerRoutes);
+
+// WAI SDK v3.1 P0 Enterprise Services
+app.use('/api/v3/web-search', webSearchRoutes);
+app.use('/api/v3/documents', documentProcessingRoutes);
+app.use('/api/v3/notebook', notebookLLMRoutes);
+app.use('/api/v3/orchestration', orchestrationPatternsRoutes);
+
+// WAI SDK v3.1 P1 Intelligence Layer
+app.use('/api/v3/memory', mem0EnhancedRoutes);
+app.use('/api/v3/monitoring', camMonitoringRoutes);
+app.use('/api/v3/learning', grpoLearningRoutes);
+
+// WAI SDK v3.1 P2 Advanced Features
+app.use('/api/v3/twins', digitalTwinRoutes);
+app.use('/api/v3/content', contentPipelineRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
