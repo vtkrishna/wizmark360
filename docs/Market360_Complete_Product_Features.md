@@ -1496,6 +1496,224 @@ All enterprise endpoints require authentication via session cookie.
 
 ---
 
+# WAI SDK v3.1 Enterprise Features (New)
+
+## Overview
+
+WAI SDK v3.1 brings advanced enterprise AI capabilities to Market360, enabling world-class agentic automation with comprehensive memory, monitoring, and continuous learning systems.
+
+## P0 Enterprise Services
+
+### Web Search Service
+**Endpoint:** `/api/v3/web-search`
+
+Multi-provider real-time web search for marketing research and competitive intelligence.
+
+| Feature | Description |
+|---------|-------------|
+| Perplexity AI | Deep web search with AI synthesis |
+| Google Custom Search | Structured search results |
+| Bing Web Search | Alternative search provider |
+| Automatic Fallback | Provider redundancy |
+| Rate Limiting | Request throttling |
+| Caching | Result caching for efficiency |
+
+### Document Processing Service
+**Endpoint:** `/api/v3/documents`
+
+Enterprise-grade document analysis supporting 15+ formats.
+
+| Format | Support |
+|--------|---------|
+| PDF | Full extraction, OCR |
+| Word (.docx) | Text and formatting |
+| Excel (.xlsx) | Data extraction |
+| PowerPoint (.pptx) | Slide content |
+| Images (PNG, JPEG, WebP) | OCR text extraction |
+| CSV, JSON, XML | Structured data |
+| HTML, Markdown | Web content |
+| EPUB, RTF | Document formats |
+
+### NotebookLLM Studio
+**Endpoint:** `/api/v3/notebook`
+
+Interactive document Q&A with source citations.
+
+| Feature | Description |
+|---------|-------------|
+| Document Q&A | Ask questions about uploaded documents |
+| Multi-Document | Support for multiple documents per session |
+| Citations | Source attribution for all answers |
+| Context Preservation | Session-based memory |
+
+### Advanced Orchestration Patterns
+**Endpoint:** `/api/v3/orchestration`
+
+Multi-agent workflow patterns for complex marketing operations.
+
+| Pattern | Use Case |
+|---------|----------|
+| Sequential | Step-by-step content pipeline |
+| Concurrent | Parallel campaign creation |
+| Supervisor | Quality oversight workflows |
+| Adaptive Network | Dynamic agent selection |
+| Handoff | Agent-to-agent task transfer |
+| Custom | User-defined patterns |
+
+**Pre-built Marketing Workflows:**
+- Content Pipeline (Strategy → Text → Image → Video)
+- Campaign Launch (Research → Creative → Targeting → Launch)
+- Competitor Analysis (Scrape → Analyze → Report)
+
+## P1 Intelligence Layer
+
+### Enhanced Mem0 Memory Service
+**Endpoint:** `/api/v3/memory`
+
+Cross-session memory with 90% token reduction.
+
+| Feature | Description |
+|---------|-------------|
+| User Memory | Per-user preferences and history |
+| Session Memory | Conversation context |
+| Agent Memory | Agent-specific learnings |
+| Workspace Memory | Shared organizational knowledge |
+| Semantic Search | Embedding-based retrieval |
+| Token Compression | 90% reduction in context tokens |
+| Versioning | Memory history tracking |
+| Feedback | Memory quality feedback loop |
+
+### CAM 2.0 Monitoring Service
+**Endpoint:** `/api/v3/monitoring`
+
+Real-time operations tracking and cost analytics.
+
+| Metric | Description |
+|--------|-------------|
+| Response Latency | P50, P95, P99 latency tracking |
+| Token Usage | Input/output token monitoring |
+| Cost Tracking | Per-operation cost analytics |
+| Quality Scoring | Accuracy, relevance, completeness |
+| Error Rate | Failure tracking and alerting |
+| Throughput | Requests per second |
+
+**Budget Controls:**
+- Daily budget limits
+- Monthly budget caps
+- Cost alerts and notifications
+- Provider cost comparison
+
+### GRPO Continuous Learning Service
+**Endpoint:** `/api/v3/learning`
+
+Reinforcement learning from user feedback.
+
+| Feature | Description |
+|---------|-------------|
+| Feedback Collection | User ratings and corrections |
+| Policy Optimization | Model behavior improvement |
+| Adaptive Routing | Learn optimal model selection |
+| A/B Testing | Experiment with model/prompt variants |
+| Performance Rankings | Task-specific model rankings |
+| Training Jobs | Periodic model fine-tuning |
+
+## P2 Advanced Features
+
+### Digital Twin Framework
+**Endpoint:** `/api/v3/twins`
+
+Real-time operational models for campaigns and customers.
+
+| Twin Type | Purpose |
+|-----------|---------|
+| Campaign Twin | Model campaign performance, test scenarios |
+| Customer Twin | Simulate customer behavior |
+| Operation Twin | Model marketing operations |
+
+**Capabilities:**
+- Predictive scenario simulation
+- Human-in-the-loop approvals
+- State change tracking
+- Notification system
+
+### Multi-Modal Content Pipeline
+**Endpoint:** `/api/v3/content`
+
+Strategy-to-content workflow orchestration.
+
+| Stage | Description |
+|-------|-------------|
+| Strategy | Define content goals and audience |
+| Text | Generate copy and messaging |
+| Image | Create visual assets |
+| Video | Produce video content |
+| Adaptation | Customize for each channel |
+
+**Supported Channels (9):**
+- Instagram Post, Instagram Story, Instagram Reels
+- Facebook Post, Facebook Story
+- LinkedIn Post
+- Twitter/X Post
+- YouTube
+- TikTok
+
+**Features:**
+- Brand guidelines enforcement
+- Content variations for A/B testing
+- Approval workflow
+- Multi-format export
+
+---
+
+# Platform Integrations (v4.0)
+
+## OAuth Integration Layer
+
+### Supported Platforms
+
+| Platform | OAuth Status | Features |
+|----------|--------------|----------|
+| Meta (Facebook/Instagram) | In Progress | Ads, Posts, Analytics, Pixel |
+| Google Ads | In Progress | Campaigns, Keywords, Conversions |
+| LinkedIn | In Progress | Ads, Posts, Company Pages |
+| TikTok | Planned | Ads, Analytics |
+| Twitter/X | Planned | Posts, Analytics |
+| Pinterest | Planned | Pins, Ads, Analytics |
+
+### Connection Wizard
+
+6-step wizard for platform connection:
+1. Select Platform
+2. Authenticate (OAuth)
+3. Select Accounts/Pages
+4. Configure Permissions
+5. Install Tracking (Pixel/Tags)
+6. Verify Connection
+
+## Conversion Tracking Service
+
+### Supported Pixels/Tags
+
+| Tag | Platform | Events |
+|-----|----------|--------|
+| Facebook Pixel | Meta | PageView, Lead, Purchase, AddToCart |
+| Google Tag | Google Ads | Conversion, Remarketing |
+| LinkedIn Insight | LinkedIn | Conversion, Audience |
+| TikTok Pixel | TikTok | PageView, CompletePayment |
+
+### Attribution Models
+
+| Model | Description |
+|-------|-------------|
+| Last Click | Credit to last touchpoint |
+| First Click | Credit to first touchpoint |
+| Linear | Equal credit distribution |
+| Time Decay | Recent touchpoints weighted |
+| Position Based | 40/20/40 distribution |
+| Data Driven | ML-based attribution |
+
+---
+
 # Conclusion
 
 **Market360** represents the next generation of marketing automation platforms, purpose-built for the Indian market with global capabilities. By combining:
