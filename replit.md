@@ -159,6 +159,49 @@ The following production-grade enterprise services have been implemented with au
   - Content approval workflow
   - *Status: Prototype (in-memory)*
 
+### Marketing Platform Services (New - v5.0)
+
+- **OAuth Integration Service** (`/api/platform-connections`) - Multi-platform OAuth
+  - Meta, Google, LinkedIn, TikTok, Twitter, Pinterest OAuth flows
+  - Token management with auto-refresh
+  - Connection status monitoring
+  - *Status: Ready for OAuth credentials*
+
+- **Conversion Tracking Service** (`/api/conversions`) - Pixel & Attribution
+  - Facebook Pixel, Google Tag, LinkedIn Insight, TikTok Pixel, GTM
+  - 6 attribution models (Last Click, First Click, Linear, Time Decay, Position-Based, Data-Driven)
+  - Server-side tracking (CAPI, Measurement Protocol)
+  - *Status: Fully functional*
+
+- **SEO Toolkit Service** (`/api/seo`) - Enterprise SEO
+  - Keyword research with difficulty scores
+  - Rank tracking across search engines
+  - Backlink analysis and monitoring
+  - Technical SEO audits with Core Web Vitals
+  - AI Visibility tracking (ChatGPT, Perplexity, Gemini, Claude, Copilot)
+  - *Status: Fully functional*
+
+- **Telegram Integration Service** (`/api/telegram`) - Bot Management
+  - Multi-bot management with webhooks
+  - Broadcast campaigns to subscribers
+  - Automation triggers and responses
+  - AI-powered conversational responses
+  - *Status: Ready for Bot tokens*
+
+- **Unified Analytics Service** (`/api/unified-analytics`) - Cross-vertical Analytics
+  - ROI/ROAS calculations across all channels
+  - 6 attribution models for conversion analysis
+  - KPI dashboards with alerts and recommendations
+  - Channel comparison and performance reports
+  - *Status: Fully functional*
+
+- **Marketing Agents Registry** - 300+ Specialized Agents
+  - 22-point enterprise system prompt framework
+  - ROMA L0-L4 autonomy levels
+  - Autonomous execution with guardrails
+  - Self-learning and collaboration capabilities
+  - *Status: Fully functional*
+
 ### Feature Roadmap (Priority)
 **Phase 1 (P0)**: ✅ CRM integrations (Salesforce/HubSpot bi-directional sync), ✅ Ad Platform APIs (Meta, Google), ✅ WhatsApp Business full stack, ✅ Social Publishing APIs.
 **Phase 2 (P1)**: ✅ Predictive Analytics Engine, ✅ AI Visibility Tracker (GEO for ChatGPT/Perplexity), Social Listening Engine, ✅ Omnichannel Smart Inbox.

@@ -45,6 +45,11 @@ import camMonitoringRoutes from "./routes/cam-monitoring-routes";
 import grpoLearningRoutes from "./routes/grpo-learning-routes";
 import digitalTwinRoutes from "./routes/digital-twin-routes";
 import contentPipelineRoutes from "./routes/content-pipeline-routes";
+import platformConnectionsRoutes from "./routes/platform-connections";
+import seoToolkitRoutes from "./routes/seo-toolkit-routes";
+import conversionTrackingRoutes from "./routes/conversion-tracking-routes";
+import telegramRoutes from "./routes/telegram-routes";
+import unifiedAnalyticsRoutes from "./routes/unified-analytics-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -184,6 +189,13 @@ app.use('/api/v3/learning', grpoLearningRoutes);
 // WAI SDK v3.1 P2 Advanced Features
 app.use('/api/v3/twins', digitalTwinRoutes);
 app.use('/api/v3/content', contentPipelineRoutes);
+
+// Platform v4.0 - Platform Integrations & OAuth
+app.use('/api/platform-connections', platformConnectionsRoutes);
+app.use('/api/seo', seoToolkitRoutes);
+app.use('/api/conversions', conversionTrackingRoutes);
+app.use('/api/telegram', telegramRoutes);
+app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
