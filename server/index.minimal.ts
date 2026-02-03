@@ -50,6 +50,8 @@ import seoToolkitRoutes from "./routes/seo-toolkit-routes";
 import conversionTrackingRoutes from "./routes/conversion-tracking-routes";
 import telegramRoutes from "./routes/telegram-routes";
 import unifiedAnalyticsRoutes from "./routes/unified-analytics-routes";
+import verticalWorkflowRoutes from "./routes/vertical-workflow-routes";
+import crossVerticalRoutes from "./routes/cross-vertical-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -196,6 +198,8 @@ app.use('/api/seo', seoToolkitRoutes);
 app.use('/api/conversions', conversionTrackingRoutes);
 app.use('/api/telegram', telegramRoutes);
 app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
+app.use('/api/vertical-workflows', verticalWorkflowRoutes);
+app.use('/api/cross-vertical', crossVerticalRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());

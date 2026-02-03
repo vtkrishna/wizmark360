@@ -11,6 +11,7 @@ import ContentLibraryPage from './pages/content-library';
 import AnalyticsPage from './pages/analytics';
 import SettingsPage from './pages/settings';
 import PlatformConnectionsPage from './pages/platform-connections';
+import UnifiedAnalyticsPage from './pages/unified-analytics';
 import NotFound from './pages/not-found';
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
               <Route path="/settings" component={SettingsPage} />
               <Route path="/settings/integrations" component={PlatformConnectionsPage} />
               <Route path="/platform-connections" component={PlatformConnectionsPage} />
+              <Route path="/unified-analytics" component={UnifiedAnalyticsPage} />
               <Route component={NotFound} />
             </Switch>
           </Router>

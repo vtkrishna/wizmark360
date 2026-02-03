@@ -202,6 +202,20 @@ The following production-grade enterprise services have been implemented with au
   - Self-learning and collaboration capabilities
   - *Status: Fully functional*
 
+- **Vertical Workflow Engine** (`/api/vertical-workflows`) - End-to-End Automation
+  - 7 complete vertical workflows (Social, SEO, Performance Ads, Sales/SDR, WhatsApp, LinkedIn, Telegram)
+  - Step-by-step orchestration with dependencies
+  - Parallel execution and conditional branching
+  - Mock mode for development without external API keys
+  - *Status: Fully functional*
+
+- **Cross-Vertical Orchestration** (`/api/cross-vertical`) - Intelligent Campaign Orchestration
+  - Multi-vertical campaign creation and execution
+  - Intelligent budget allocation algorithm
+  - 8 cross-vertical synergies mapped
+  - AI-powered optimization recommendations
+  - *Status: Fully functional*
+
 ### Feature Roadmap (Priority)
 **Phase 1 (P0)**: ✅ CRM integrations (Salesforce/HubSpot bi-directional sync), ✅ Ad Platform APIs (Meta, Google), ✅ WhatsApp Business full stack, ✅ Social Publishing APIs.
 **Phase 2 (P1)**: ✅ Predictive Analytics Engine, ✅ AI Visibility Tracker (GEO for ChatGPT/Perplexity), Social Listening Engine, ✅ Omnichannel Smart Inbox.
