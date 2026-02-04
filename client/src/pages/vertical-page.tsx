@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AppShell from "../components/layout/app-shell";
 import ChatWorkspace from "../components/chat/chat-workspace";
 import KPICard from "../components/dashboard/kpi-card";
+import SEOToolkitPanel from "../components/verticals/seo-toolkit-panel";
 import { 
   Megaphone, 
   Globe, 
@@ -283,7 +284,7 @@ interface MarketingAgent {
 }
 
 export default function VerticalPage({ vertical }: VerticalPageProps) {
-  const [activeTab, setActiveTab] = useState<"workspace" | "analytics" | "agents">("workspace");
+  const [activeTab, setActiveTab] = useState<"workspace" | "tools" | "analytics" | "agents">("workspace");
   const [marketingAgents, setMarketingAgents] = useState<MarketingAgent[]>([]);
   const [agentStats, setAgentStats] = useState<any>(null);
   const [loadingAgents, setLoadingAgents] = useState(false);
@@ -353,6 +354,7 @@ export default function VerticalPage({ vertical }: VerticalPageProps) {
           <div className="flex gap-6">
             {[
               { id: "workspace", label: "AI Workspace", icon: Sparkles },
+              { id: "tools", label: "Tools", icon: Settings },
               { id: "analytics", label: "Analytics", icon: BarChart3 },
               { id: "agents", label: "Agents", icon: Bot },
             ].map((tab) => (
@@ -376,6 +378,18 @@ export default function VerticalPage({ vertical }: VerticalPageProps) {
         <div className="flex-1 overflow-hidden">
           {activeTab === "workspace" ? (
             <ChatWorkspace vertical={vertical} brandId={1} />
+          ) : activeTab === "tools" ? (
+            <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-900">
+              {vertical === "seo" ? (
+                <SEOToolkitPanel brandId={1} />
+              ) : (
+                <div className="p-6 text-center text-gray-500">
+                  <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">Tools Coming Soon</h3>
+                  <p>Advanced {config.name} tools are being developed.</p>
+                </div>
+              )}
+            </div>
           ) : activeTab === "analytics" ? (
             <div className="p-6 bg-gray-50 dark:bg-gray-900 h-full overflow-auto">
               <div className="max-w-6xl mx-auto space-y-6">
