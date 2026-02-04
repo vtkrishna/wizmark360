@@ -251,6 +251,256 @@ All scripts are optimized for engagement and conversions.`;
         format: 'PDF',
         downloadUrl: '#'
       });
+    } else if (lowerMessage.includes('infographic') || lowerMessage.includes('chart') || lowerMessage.includes('data visual')) {
+      agentName = 'Data Visualization Specialist';
+      response = `I've created a comprehensive infographic package:
+
+**Infographic Types:**
+1. **Statistical Overview** - Key metrics and KPIs visualized
+2. **Process Flow** - Step-by-step workflow diagrams
+3. **Comparison Chart** - Feature/product comparisons
+4. **Timeline Infographic** - Milestones and progress tracking
+5. **Data Dashboard** - Real-time metrics visualization
+
+**Design Specifications:**
+- Brand colors and typography applied
+- High-resolution (300 DPI) for print
+- Web-optimized versions (72 DPI)
+- Editable source files included
+
+**Formats Included:**
+- PNG (web-ready)
+- PDF (print-ready)
+- SVG (scalable)
+- Canva/Figma source files
+
+All infographics follow data visualization best practices for clarity and impact.`;
+
+      generatedAssets.push({
+        id: `infographic-${Date.now()}`,
+        type: 'infographic',
+        title: 'Infographic Package',
+        description: '5 data visualizations with source files',
+        format: 'ZIP',
+        downloadUrl: '#'
+      });
+    } else if (lowerMessage.includes('strategy') || lowerMessage.includes('plan') || lowerMessage.includes('roadmap')) {
+      agentName = 'Marketing Strategist';
+      response = `I've developed a comprehensive marketing strategy:
+
+**Strategic Framework:**
+
+**1. Situation Analysis**
+- Market position assessment
+- SWOT analysis
+- Competitor landscape mapping
+- Customer journey mapping
+
+**2. Goals & Objectives**
+- SMART goal framework
+- OKRs for each quarter
+- Revenue and growth targets
+- Brand awareness metrics
+
+**3. Target Audience**
+- Primary and secondary segments
+- Buyer personas with pain points
+- Decision-making criteria
+- Preferred channels
+
+**4. Channel Strategy**
+- Paid media allocation
+- Organic content strategy
+- Social media mix
+- Email marketing cadence
+
+**5. Implementation Roadmap**
+- 90-day action plan
+- Resource allocation
+- Technology stack
+- Team responsibilities
+
+**6. Measurement Framework**
+- KPI dashboard setup
+- Attribution modeling
+- A/B testing schedule
+- Monthly review cadence
+
+The strategy is tailored to your industry and business objectives.`;
+
+      generatedAssets.push({
+        id: `strategy-${Date.now()}`,
+        type: 'document',
+        title: 'Marketing Strategy Document',
+        description: 'Comprehensive strategic plan with roadmap',
+        format: 'PDF',
+        downloadUrl: '#'
+      });
+    } else if (lowerMessage.includes('analytics') || lowerMessage.includes('performance') || lowerMessage.includes('roi') || lowerMessage.includes('report')) {
+      agentName = 'Analytics Specialist';
+      response = `I've generated a comprehensive performance analytics report:
+
+**Executive Summary:**
+- Overall campaign performance: +23% vs. previous period
+- Total spend: ₹5,00,000
+- Revenue attributed: ₹18,50,000
+- ROAS: 3.7x
+
+**Channel Performance:**
+| Channel | Spend | Revenue | ROAS | Conversions |
+|---------|-------|---------|------|-------------|
+| Meta Ads | ₹2,00,000 | ₹8,00,000 | 4.0x | 156 |
+| Google Ads | ₹1,50,000 | ₹5,50,000 | 3.7x | 112 |
+| LinkedIn | ₹1,00,000 | ₹3,50,000 | 3.5x | 45 |
+| Email | ₹50,000 | ₹1,50,000 | 3.0x | 78 |
+
+**Key Insights:**
+- Meta carousel ads outperformed single images by 45%
+- Morning (9-11 AM) showed highest conversion rates
+- Mobile traffic accounts for 68% of conversions
+- Remarketing audiences have 2.5x higher ROAS
+
+**Recommendations:**
+1. Increase Meta carousel budget by 20%
+2. Shift 15% of Google spend to Performance Max
+3. Test LinkedIn thought leadership content
+4. Implement abandoned cart email sequence
+
+Full interactive dashboard available for real-time monitoring.`;
+
+      generatedAssets.push({
+        id: `analytics-${Date.now()}`,
+        type: 'document',
+        title: 'Performance Analytics Report',
+        description: 'Comprehensive ROI and performance analysis',
+        format: 'PDF',
+        downloadUrl: '#'
+      });
+    } else if (lowerMessage.includes('automation') || lowerMessage.includes('workflow') || lowerMessage.includes('sequence')) {
+      agentName = 'Marketing Automation Specialist';
+      response = `I've designed comprehensive marketing automation workflows:
+
+**Workflow 1: Lead Nurturing Sequence**
+\`\`\`
+Trigger: Form submission
+↓
+Day 0: Welcome email (immediate)
+↓
+Day 2: Educational content
+↓
+Day 5: Case study / social proof
+↓
+Day 8: Product feature highlight
+↓
+Day 12: Special offer
+↓
+Day 15: Sales handoff (if engaged)
+\`\`\`
+
+**Workflow 2: Cart Abandonment**
+\`\`\`
+Trigger: Cart abandoned
+↓
+1 hour: Reminder email
+↓
+24 hours: Benefits recap
+↓
+48 hours: Discount offer
+↓
+72 hours: Final reminder
+\`\`\`
+
+**Workflow 3: Customer Onboarding**
+\`\`\`
+Trigger: Purchase completed
+↓
+Immediate: Thank you + receipt
+↓
+Day 1: Getting started guide
+↓
+Day 3: Tips and best practices
+↓
+Day 7: Feature highlight
+↓
+Day 14: Feedback request
+↓
+Day 30: Upsell opportunity
+\`\`\`
+
+**Technical Specifications:**
+- Behavioral triggers configured
+- Dynamic content personalization
+- A/B testing enabled
+- Analytics tracking embedded
+- CRM sync for lead scoring
+
+All workflows are ready for import into your marketing automation platform.`;
+
+      generatedAssets.push({
+        id: `automation-${Date.now()}`,
+        type: 'document',
+        title: 'Marketing Automation Workflows',
+        description: '3 complete automation sequences',
+        format: 'JSON',
+        downloadUrl: '#'
+      });
+    } else if (lowerMessage.includes('brand') || lowerMessage.includes('guideline') || lowerMessage.includes('style guide')) {
+      agentName = 'Brand Strategist';
+      response = `I've created a comprehensive brand guidelines document:
+
+**Brand Identity Manual**
+
+**1. Brand Foundation**
+- Mission statement
+- Vision statement
+- Core values
+- Brand personality traits
+- Tone of voice guidelines
+
+**2. Visual Identity**
+- Logo usage and spacing rules
+- Primary and secondary color palette (HEX, RGB, CMYK)
+- Typography system (headers, body, captions)
+- Iconography style
+- Photography guidelines
+
+**3. Logo Specifications**
+- Minimum size requirements
+- Clear space guidelines
+- Color variations (full color, mono, reversed)
+- Incorrect usage examples
+
+**4. Application Examples**
+- Business cards and stationery
+- Social media templates
+- Email signatures
+- Presentation templates
+- Website components
+- Advertising templates
+
+**5. Brand Voice**
+- Writing style guide
+- Do's and don'ts
+- Sample copy for different channels
+- Messaging framework
+
+**6. Digital Assets**
+- All logo files (AI, EPS, PNG, SVG)
+- Font files with licenses
+- Social media templates (Canva, Figma)
+- Email templates
+- Icon library
+
+The guidelines ensure brand consistency across all touchpoints.`;
+
+      generatedAssets.push({
+        id: `brand-${Date.now()}`,
+        type: 'document',
+        title: 'Brand Guidelines Document',
+        description: 'Complete brand identity manual with assets',
+        format: 'PDF',
+        downloadUrl: '#'
+      });
     } else {
       response = `I'm your Marketing AI Assistant, ready to help with any marketing task. Here's what I can do:
 
