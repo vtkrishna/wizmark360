@@ -233,6 +233,13 @@ Best regards,
         </Badge>
       </div>
 
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
+        <Sparkles className="w-4 h-4 text-amber-600" />
+        <span className="text-sm text-amber-800">
+          <strong>Demo Mode:</strong> Connect your LinkedIn account in Settings to enable live profile optimization and outreach.
+        </span>
+      </div>
+
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-5 w-full max-w-3xl">
           <TabsTrigger value="profile" className="flex items-center gap-2">

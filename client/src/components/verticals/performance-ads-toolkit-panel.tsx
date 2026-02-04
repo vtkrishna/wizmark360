@@ -194,6 +194,13 @@ export default function PerformanceAdsToolkitPanel({ brandId = 1 }: PerformanceA
         </Badge>
       </div>
 
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
+        <Sparkles className="w-4 h-4 text-amber-600" />
+        <span className="text-sm text-amber-800">
+          <strong>Demo Mode:</strong> Connect your Meta, Google, or LinkedIn Ads accounts in Settings to enable live campaign management.
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200">
           <div className="flex items-center justify-between">

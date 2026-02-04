@@ -107,10 +107,15 @@ export default function WhatsAppToolkitPanel({ brandId = 1 }: WhatsAppToolkitPan
     { code: "bn", name: "Bengali" },
     { code: "gu", name: "Gujarati" },
     { code: "pa", name: "Punjabi" },
+    { code: "ur", name: "Urdu" },
+    { code: "or", name: "Odia" },
   ];
 
   useEffect(() => {
     loadTemplates();
+    loadBroadcasts();
+    loadFlows();
+    loadConversations();
   }, []);
 
   const loadTemplates = async () => {

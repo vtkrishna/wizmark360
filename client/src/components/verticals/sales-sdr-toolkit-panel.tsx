@@ -211,6 +211,13 @@ export default function SalesSDRToolkitPanel({ brandId = 1 }: SalesSDRToolkitPan
         </Badge>
       </div>
 
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
+        <Sparkles className="w-4 h-4 text-amber-600" />
+        <span className="text-sm text-amber-800">
+          <strong>Demo Mode:</strong> Connect your CRM (Salesforce/HubSpot) in Settings to enable live lead and pipeline sync.
+        </span>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-green-200">
           <div className="flex items-center justify-between">
