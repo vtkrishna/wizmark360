@@ -132,12 +132,13 @@ export default function LandingPage() {
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold">
-                <span className="text-blue-600">Wizards</span>
-                <span className="text-purple-600">Tech</span>
+                <span className="text-blue-600">Wiz</span>
+                <span className="text-purple-600">Mark</span>
+                <span className="text-gray-800"> 360</span>
               </span>
               <Badge className="ml-2 bg-green-100 text-green-700 border-green-200">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
-                Agency Platform
+                AI Marketing OS
               </Badge>
             </div>
             <div className="hidden md:flex items-center gap-6">
@@ -170,11 +171,11 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
             >
               <Badge className="mb-4 bg-blue-100 text-blue-700 border-blue-200 text-sm px-4 py-2">
-                Wizards Tech Global Agency Platform
+                The World's First AI Marketing Operating System
               </Badge>
               
               <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                Self-Driving
+                267 AI Agents.
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Marketing Agency
@@ -532,10 +533,10 @@ export default function LandingPage() {
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
                   <Sparkles className="h-6 w-6 text-white" />
                 </div>
-                <span className="text-xl font-bold">Wizards Tech Global</span>
+                <span className="text-xl font-bold">WizMark 360</span>
               </div>
               <p className="text-gray-400 text-sm">
-                AI-powered self-driving marketing agency platform for brand management and marketing operations.
+                The world's first AI Marketing Operating System. 267 autonomous agents working 24/7 to drive your marketing success.
               </p>
             </div>
             <div>
@@ -565,7 +566,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-            © 2026 Wizards Tech Global. All rights reserved. | Enterprise Marketing Platform
+            © 2026 WizMark 360 by Wizards Tech Global. All rights reserved. | AI Marketing Operating System
           </div>
         </div>
       </footer>

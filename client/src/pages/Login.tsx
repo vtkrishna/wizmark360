@@ -177,16 +177,16 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               className="mx-auto w-20 h-20 mb-4 flex items-center justify-center rounded-full bg-gradient-to-br from-[hsl(217,91%,60%)] to-[hsl(270,75%,65%)] p-1"
             >
               <div className="w-full h-full rounded-full bg-[hsl(222,47%,15%)] flex items-center justify-center">
-                <span className="text-3xl font-bold bg-gradient-to-r from-[hsl(217,91%,60%)] to-[hsl(270,75%,65%)] bg-clip-text text-transparent">
-                  W
+                <span className="text-2xl font-bold bg-gradient-to-r from-[hsl(217,91%,60%)] to-[hsl(270,75%,65%)] bg-clip-text text-transparent">
+                  W360
                 </span>
               </div>
             </motion.div>
             <CardTitle className="text-2xl font-bold text-[hsl(0,0%,98%)]">
-              {isSignup ? 'Create Your Account' : 'Welcome to Wizards Incubator'}
+              {isSignup ? 'Join WizMark 360' : 'Welcome to WizMark 360'}
             </CardTitle>
             <CardDescription className="text-[hsl(220,9%,65%)]">
-              {isSignup ? 'Join the AI-powered startup accelerator' : 'Transform ideas into MVPs in 14 days'}
+              {isSignup ? 'Your AI Marketing Command Center awaits' : 'The World\'s First AI Marketing Operating System'}
             </CardDescription>
           </CardHeader>
 
