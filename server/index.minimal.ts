@@ -17,7 +17,7 @@ import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
 import { log, setupVite, serveStatic } from "./vite";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
+import { setupAuth, createAdminUser } from "./auth/local-auth";
 import market360Router from "./routes/market360";
 import aiRouter from "./routes/ai";
 import brandsRouter from "./routes/brands";
@@ -220,8 +220,8 @@ async function startServer() {
     
     // Setup authentication (MUST be before other routes)
     await setupAuth(app);
-    registerAuthRoutes(app);
-    console.log('🔐 Authentication configured');
+    await createAdminUser();
+    console.log('🔐 Authentication configured (username/password + Google OAuth)');
     
     // Setup Vite in development or serve static in production
     if (isProduction) {

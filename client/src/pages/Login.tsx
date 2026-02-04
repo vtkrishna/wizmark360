@@ -35,6 +35,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   const [isSignup, setIsSignup] = useState(false);
   const [oauthProviders, setOAuthProviders] = useState<OAuthProviders>({ google: false, github: false });
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
     name: ''
@@ -46,17 +47,29 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     const checkAuthAndProviders = async () => {
       try {
         // Check OAuth providers availability
-        const providersRes = await fetch('/api/auth/providers');
-        if (providersRes.ok) {
-          const data = await providersRes.json();
+        const statusRes = await fetch('/api/auth/status');
+        if (statusRes.ok) {
+          const data = await statusRes.json();
           setOAuthProviders({
-            google: data.google || false,
-            github: data.github || false
+            google: data.googleOAuthEnabled || false,
+            github: false
           });
+          if (data.authenticated && data.user) {
+            onLoginSuccess({
+              id: String(data.user.id),
+              name: data.user.username || data.user.email,
+              email: data.user.email || '',
+              avatar: data.user.avatarUrl,
+              role: data.user.role,
+              subscriptionTier: 'alpha',
+              subscriptionStatus: 'active'
+            });
+            return;
+          }
         }
 
-        // Check if user is already authenticated
-        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        // Check if user is already authenticated (backup check)
+        const meRes = await fetch('/api/auth/user', { credentials: 'include' });
         if (meRes.ok) {
           const data = await meRes.json();
           if (data.user) {
@@ -85,15 +98,18 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     setError(null);
 
     try {
-      const endpoint = isSignup ? '/api/auth/signup' : '/api/auth/login';
+      const endpoint = isSignup ? '/api/register' : '/api/login';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
+        body: JSON.stringify(isSignup ? {
+          username: formData.username,
           email: formData.email,
           password: formData.password,
-          ...(isSignup && { name: formData.name })
+        } : {
+          username: formData.username,
+          password: formData.password,
         }),
       });
 
@@ -110,8 +126,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
       onLoginSuccess({
         id: String(data.user.id),
-        name: data.user.name || data.user.email,
-        email: data.user.email,
+        name: data.user.username || data.user.email,
+        email: data.user.email || '',
         avatar: data.user.avatarUrl,
         role: data.user.role,
         subscriptionTier: 'alpha',
@@ -228,40 +244,43 @@ export default function Login({ onLoginSuccess }: LoginProps) {
             )}
 
             <form onSubmit={handleEmailAuth} className="space-y-4">
-              {isSignup && (
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-[hsl(0,0%,98%)]">Full Name</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Enter your name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="h-11 bg-[hsl(222,35%,20%)] border-[hsl(220,9%,46%)] text-[hsl(0,0%,98%)] placeholder:text-[hsl(220,9%,46%)]"
-                    data-testid="input-name"
-                    required={isSignup}
-                  />
-                </div>
-              )}
-
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-[hsl(0,0%,98%)]">Email</Label>
+                <Label htmlFor="username" className="text-[hsl(0,0%,98%)]">Username</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-[hsl(220,9%,46%)]" />
                   <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={formData.email}
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="Enter your username"
+                    value={formData.username}
                     onChange={handleInputChange}
                     className="pl-10 h-11 bg-[hsl(222,35%,20%)] border-[hsl(220,9%,46%)] text-[hsl(0,0%,98%)] placeholder:text-[hsl(220,9%,46%)]"
-                    data-testid="input-email"
+                    data-testid="input-username"
                     required
                   />
                 </div>
               </div>
+
+              {isSignup && (
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-[hsl(0,0%,98%)]">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-[hsl(220,9%,46%)]" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="pl-10 h-11 bg-[hsl(222,35%,20%)] border-[hsl(220,9%,46%)] text-[hsl(0,0%,98%)] placeholder:text-[hsl(220,9%,46%)]"
+                      data-testid="input-email"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-[hsl(0,0%,98%)]">Password</Label>

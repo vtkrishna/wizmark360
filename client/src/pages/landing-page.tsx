@@ -146,9 +146,9 @@ export default function LandingPage() {
               <a href="#brands" className="text-gray-600 hover:text-gray-900 font-medium">Brands</a>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" onClick={() => window.location.href = '/api/login'}>Sign In</Button>
+              <Button variant="ghost" onClick={() => window.location.href = '/login'}>Sign In</Button>
               <Button 
-                onClick={() => window.location.href = '/api/login'} 
+                onClick={() => window.location.href = '/login'} 
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 Launch Platform <ArrowRight className="ml-2 h-4 w-4" />

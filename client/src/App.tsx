@@ -14,6 +14,7 @@ import PlatformConnectionsPage from './pages/platform-connections';
 import UnifiedAnalyticsPage from './pages/unified-analytics';
 import GlobalMarketingChat from './pages/global-marketing-chat';
 import AdminLLMSettings from './pages/admin-llm-settings';
+import Login from './pages/Login';
 import NotFound from './pages/not-found';
 
 export default function App() {
@@ -42,6 +43,12 @@ export default function App() {
               <Route path="/marketing-chat" component={GlobalMarketingChat} />
               <Route path="/admin/llm-settings" component={AdminLLMSettings} />
               <Route path="/admin/agents" component={AdminLLMSettings} />
+              <Route path="/login">
+                {() => <Login onLoginSuccess={() => window.location.href = '/dashboard'} />}
+              </Route>
+              <Route path="/signin">
+                {() => <Login onLoginSuccess={() => window.location.href = '/dashboard'} />}
+              </Route>
               <Route component={NotFound} />
             </Switch>
           </Router>
