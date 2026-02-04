@@ -15,7 +15,9 @@ export const platformConfig = {
   },
   
   cors: {
-    origins: process.env.CORS_ORIGINS?.split(',') || ['*'],
+    origins: process.env.CORS_ORIGINS?.split(',') || (process.env.NODE_ENV === 'production' 
+      ? [process.env.BASE_URL || ''] 
+      : ['*']),
     credentials: true,
   },
   
@@ -26,7 +28,9 @@ export const platformConfig = {
   },
   
   session: {
-    secret: process.env.SESSION_SECRET || 'default-dev-secret-change-in-production',
+    secret: process.env.SESSION_SECRET || (process.env.NODE_ENV === 'production' 
+      ? (() => { throw new Error('SESSION_SECRET is required in production'); })() 
+      : 'dev-only-secret-not-for-production'),
     maxAge: parseInt(process.env.SESSION_MAX_AGE || '86400000', 10),
     secure: process.env.NODE_ENV === 'production',
   },
