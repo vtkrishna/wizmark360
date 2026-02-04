@@ -3,6 +3,12 @@ import AppShell from "../components/layout/app-shell";
 import ChatWorkspace from "../components/chat/chat-workspace";
 import KPICard from "../components/dashboard/kpi-card";
 import SEOToolkitPanel from "../components/verticals/seo-toolkit-panel";
+import SocialMediaToolkitPanel from "../components/verticals/social-media-toolkit-panel";
+import WhatsAppToolkitPanel from "../components/verticals/whatsapp-toolkit-panel";
+import PerformanceAdsToolkitPanel from "../components/verticals/performance-ads-toolkit-panel";
+import LinkedInToolkitPanel from "../components/verticals/linkedin-toolkit-panel";
+import SalesSDRToolkitPanel from "../components/verticals/sales-sdr-toolkit-panel";
+import WebDevToolkitPanel from "../components/verticals/webdev-toolkit-panel";
 import { 
   Megaphone, 
   Globe, 
@@ -380,15 +386,13 @@ export default function VerticalPage({ vertical }: VerticalPageProps) {
             <ChatWorkspace vertical={vertical} brandId={1} />
           ) : activeTab === "tools" ? (
             <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-900">
-              {vertical === "seo" ? (
-                <SEOToolkitPanel brandId={1} />
-              ) : (
-                <div className="p-6 text-center text-gray-500">
-                  <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-medium mb-2">Tools Coming Soon</h3>
-                  <p>Advanced {config.name} tools are being developed.</p>
-                </div>
-              )}
+              {vertical === "seo" && <SEOToolkitPanel brandId={1} />}
+              {vertical === "social" && <SocialMediaToolkitPanel brandId={1} />}
+              {vertical === "whatsapp" && <WhatsAppToolkitPanel brandId={1} />}
+              {vertical === "performance" && <PerformanceAdsToolkitPanel brandId={1} />}
+              {vertical === "linkedin" && <LinkedInToolkitPanel brandId={1} />}
+              {vertical === "sales" && <SalesSDRToolkitPanel brandId={1} />}
+              {vertical === "web" && <WebDevToolkitPanel brandId={1} />}
             </div>
           ) : activeTab === "analytics" ? (
             <div className="p-6 bg-gray-50 dark:bg-gray-900 h-full overflow-auto">
