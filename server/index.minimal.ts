@@ -52,6 +52,7 @@ import telegramRoutes from "./routes/telegram-routes";
 import unifiedAnalyticsRoutes from "./routes/unified-analytics-routes";
 import verticalWorkflowRoutes from "./routes/vertical-workflow-routes";
 import crossVerticalRoutes from "./routes/cross-vertical-routes";
+import marketingChatRoutes from "./routes/marketing-chat-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -200,6 +201,7 @@ app.use('/api/telegram', telegramRoutes);
 app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
 app.use('/api/vertical-workflows', verticalWorkflowRoutes);
 app.use('/api/cross-vertical', crossVerticalRoutes);
+app.use('/api/chat', marketingChatRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
