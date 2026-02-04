@@ -1,0 +1,51 @@
+ReferenceError: crypto is not defined
+    at randomBytes (file:///home/runner/workspace/node_modules/.pnpm/oauth4webapi@3.8.3/node_modules/oauth4webapi/build/index.js:342:17)
+    at Module.generateRandomCodeVerifier (file:///home/runner/workspace/node_modules/.pnpm/oauth4webapi@3.8.3/node_modules/oauth4webapi/build/index.js:345:12)
+    at Module.randomPKCECodeVerifier (file:///home/runner/workspace/node_modules/.pnpm/openid-client@6.8.1/node_modules/openid-client/build/index.js:97:18)
+    at Strategy.authorizationRequest (file:///home/runner/workspace/node_modules/.pnpm/openid-client@6.8.1/node_modules/openid-client/build/passport.js:118:41)
+    at Strategy.authenticate (file:///home/runner/workspace/node_modules/.pnpm/openid-client@6.8.1/node_modules/openid-client/build/passport.js:254:53)
+    at attempt (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/middleware/authenticate.js:378:16)
+    at authenticate (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/middleware/authenticate.js:379:7)
+    at file:///home/runner/workspace/server/replit_integrations/auth/replitAuth.ts:1:2430
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/route.js:149:13)
+    at Route.dispatch (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/route.js:119:3)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:284:15
+    at Function.process_params (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:280:10)
+    at strategy.pass (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/middleware/authenticate.js:355:9)
+    at SessionStrategy.authenticate (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/strategies/session.js:126:10)
+    at attempt (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/middleware/authenticate.js:378:16)
+    at authenticate (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/middleware/authenticate.js:379:7)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:328:13)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:280:10)
+    at initialize (/home/runner/workspace/node_modules/.pnpm/passport@0.7.0/node_modules/passport/lib/middleware/initialize.js:98:5)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:328:13)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:280:10)
+    at session (/home/runner/workspace/node_modules/.pnpm/express-session@1.18.2/node_modules/express-session/index.js:487:7)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:328:13)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:280:10)
+    at file:///home/runner/workspace/server/services/audit-logging-service.ts:1:5458
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:328:13)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:280:10)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:646:15
+    at next (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:265:14)
+    at Function.handle (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:175:3)
+    at router (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:47:12)
+    at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:328:13)
+    at /home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (/home/runner/workspace/node_modules/.pnpm/express@4.22.1/node_modules/express/lib/router/index.js:346:12)

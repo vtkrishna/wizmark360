@@ -6,6 +6,12 @@
  * are implemented, switch to server/index.ts via the dev:full script.
  */
 
+// Fix crypto not defined error for oauth4webapi/openid-client
+import { webcrypto } from 'crypto';
+if (typeof globalThis.crypto === 'undefined') {
+  (globalThis as any).crypto = webcrypto;
+}
+
 import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
