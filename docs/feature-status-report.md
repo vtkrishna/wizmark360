@@ -6,7 +6,7 @@
 ## Executive Summary
 
 WizMark 360 is a comprehensive AI Marketing Operating System with:
-- **285 AI Agents** across 8 marketing verticals
+- **285 AI Agents** across 8 marketing verticals (267 Market360 + 18 PR vertical)
 - **886 AI Models** from 24 LLM providers
 - **8 Marketing Verticals** with specialized toolkit panels
 - **22 Indian Languages** supported for content generation
@@ -14,11 +14,23 @@ WizMark 360 is a comprehensive AI Marketing Operating System with:
 
 ---
 
+## Agent Count Reconciliation
+
+| Source | Agents | Verticals | Notes |
+|--------|--------|-----------|-------|
+| Market360 Spec | 267 | 7 | Original Market360_Complete_Product_Features.md |
+| WizMark 360 | 285 | 8 | +18 PR agents in new PR & Communications vertical |
+| API `/api/marketing-agents` | 267 | - | Market360 agents (PR agents pending integration) |
+
+**Note:** The PR & Communications vertical with 18 specialized agents is a WizMark 360 enhancement beyond the original Market360 specification. PR agents are defined in `server/agents/pr-vertical-agents.ts` but pending integration with the main marketing-agents API.
+
+---
+
 ## Platform Metrics
 
 | Metric | Count | Status |
 |--------|-------|--------|
-| AI Agents | 285 | ✅ Active |
+| AI Agents | 285 (267 integrated + 18 PR pending) | ⚠️ PR integration pending |
 | LLM Providers | 24 | ✅ Configured |
 | AI Models | 886 | ✅ Tracked |
 | Marketing Verticals | 8 | ✅ Complete |
@@ -39,7 +51,7 @@ WizMark 360 is a comprehensive AI Marketing Operating System with:
 | Sales/SDR | 35 | ✅ sales-sdr-toolkit-panel.tsx | Working |
 | WhatsApp | 40 | ✅ whatsapp-toolkit-panel.tsx | Working |
 | LinkedIn | 32 | ✅ linkedin-toolkit-panel.tsx | Working |
-| PR & Communications | 18 | ✅ pr-toolkit-panel.tsx | Working |
+| PR & Communications | 18 | ✅ pr-toolkit-panel.tsx | Working (agents pending API integration) |
 
 ---
 
@@ -73,16 +85,24 @@ WizMark 360 is a comprehensive AI Marketing Operating System with:
 | GRPO Learning | `/api/v3/learning/experiments` | ✅ Auth Required | Working |
 | Digital Twins | `/api/v3/twins/list` | ✅ Auth Required | Working |
 
-### Routes Not Wired (Returning HTML 404)
+### Routes Requiring Parameters (Returning HTML without brandId)
+
+Routes are defined in `server/index.minimal.ts` but require specific parameters:
+
+| Service | Correct Endpoint | Router File | Notes |
+|---------|------------------|-------------|-------|
+| WhatsApp Templates | `/api/whatsapp/templates/:brandId` | whatsapp-routes.ts | Requires brandId param |
+| Voice Capabilities | `/api/voice/*` | voice routes | STT/TTS endpoints available |
+| SEO Keywords | `/api/seo/keywords/research` | seo-toolkit-routes.ts | Query params required |
+| Unified Analytics | `/api/unified-analytics/*` | unified-analytics-routes.ts | Multiple endpoints |
+| Vertical Workflows | `/api/vertical-workflows/*` | vertical-workflow-routes.ts | Workflow endpoints |
+
+### Endpoints Requiring Implementation
 
 | Service | Endpoint | Issue | Priority |
 |---------|----------|-------|----------|
-| WhatsApp Templates | `/api/whatsapp/templates` | Route not defined | P1 |
-| Voice Capabilities | `/api/voice/capabilities` | Route not defined | P1 |
-| SEO Keywords | `/api/seo/keywords` | Route not defined | P1 |
-| Unified Analytics Overview | `/api/unified-analytics/overview` | Route not defined | P2 |
-| Vertical Workflows | `/api/vertical-workflows` | Route not defined | P2 |
 | Predictive Metrics | `/api/predictive/metrics` | Route not defined | P2 |
+| Voice Capabilities | `/api/voice/capabilities` | Specific endpoint missing | P2 |
 
 ---
 
