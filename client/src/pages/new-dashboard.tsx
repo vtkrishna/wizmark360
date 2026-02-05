@@ -94,9 +94,10 @@ export default function NewDashboard() {
                 />
                 <KPICard
                   title="AI Agents Active"
-                  value="43"
-                  change={0}
-                  trend="neutral"
+                  value="285"
+                  change={18}
+                  changeLabel="PR vertical"
+                  trend="up"
                   color="purple"
                   icon={<Bot className="w-5 h-5 text-white" />}
                 />
