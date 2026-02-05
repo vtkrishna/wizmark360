@@ -21,7 +21,8 @@ import {
   TrendingUp,
   Zap,
   Menu,
-  X
+  X,
+  Newspaper
 } from "lucide-react";
 
 interface AppShellProps {
@@ -38,6 +39,7 @@ const verticals = [
   { id: "whatsapp", name: "WhatsApp", icon: MessageCircle, color: "text-emerald-500" },
   { id: "linkedin", name: "LinkedIn", icon: Linkedin, color: "text-sky-500" },
   { id: "performance", name: "Performance", icon: TrendingUp, color: "text-purple-500" },
+  { id: "pr", name: "PR & Comms", icon: Newspaper, color: "text-rose-500" },
 ];
 
 export default function AppShell({ children, currentBrand, onBrandSwitch }: AppShellProps) {

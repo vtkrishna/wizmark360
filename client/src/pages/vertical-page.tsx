@@ -9,6 +9,7 @@ import PerformanceAdsToolkitPanel from "../components/verticals/performance-ads-
 import LinkedInToolkitPanel from "../components/verticals/linkedin-toolkit-panel";
 import SalesSDRToolkitPanel from "../components/verticals/sales-sdr-toolkit-panel";
 import WebDevToolkitPanel from "../components/verticals/webdev-toolkit-panel";
+import PRToolkitPanel from "../components/verticals/pr-toolkit-panel";
 import { 
   Megaphone, 
   Globe, 
@@ -27,7 +28,9 @@ import {
   Calendar,
   Settings,
   Play,
-  Pause
+  Pause,
+  Newspaper,
+  Shield
 } from "lucide-react";
 
 interface VerticalPageProps {
@@ -276,6 +279,38 @@ const verticalConfig: Record<string, {
       { title: "Budget Pacing", description: "Intelligent budget allocation and pacing to maximize ROI throughout campaigns", icon: Target },
       { title: "Competitor Ad Monitor", description: "Track competitor ad spend, creatives, and messaging strategies", icon: Globe }
     ]
+  },
+  pr: {
+    name: "PR & Communications",
+    icon: Newspaper,
+    color: "rose",
+    bgGradient: "from-rose-500 to-pink-600",
+    description: "Press releases, media relations, crisis management, and brand communications",
+    agentCount: 18,
+    kpis: [
+      { title: "Media Reach", value: "9.8M", change: 28, trend: "up" },
+      { title: "Coverage", value: "45", change: 12, trend: "up" },
+      { title: "Sentiment", value: "78%", change: 5, trend: "up" },
+      { title: "Share of Voice", value: "24%", change: 3, trend: "up" },
+    ],
+    agents: [
+      { name: "PR Director", status: "active" },
+      { name: "Crisis Manager", status: "idle" },
+      { name: "Media Relations", status: "working" },
+    ],
+    quickActions: [
+      { label: "Draft Press Release", icon: FileText },
+      { label: "Media Monitoring", icon: Globe },
+      { label: "Crisis Alert", icon: Shield },
+    ],
+    specializedFeatures: [
+      { title: "AI Press Release Generator", description: "Create AP-style press releases with AI-optimized headlines and distribution", icon: FileText, highlight: true },
+      { title: "Crisis Command Center", description: "Real-time crisis detection, response management, and reputation protection", icon: Shield },
+      { title: "Media Relations CRM", description: "Journalist database with relationship scoring and personalized outreach", icon: Users },
+      { title: "Sentiment Analysis", description: "Real-time brand sentiment tracking across all media channels", icon: TrendingUp },
+      { title: "Multilingual PR", description: "Translate and localize press content for 12 Indian languages and global markets", icon: Globe },
+      { title: "Investor Relations", description: "Earnings communications, SEC compliance, and stakeholder messaging", icon: BarChart3 }
+    ]
   }
 };
 
@@ -393,6 +428,7 @@ export default function VerticalPage({ vertical }: VerticalPageProps) {
               {vertical === "linkedin" && <LinkedInToolkitPanel brandId={1} />}
               {vertical === "sales" && <SalesSDRToolkitPanel brandId={1} />}
               {vertical === "web" && <WebDevToolkitPanel brandId={1} />}
+              {vertical === "pr" && <PRToolkitPanel brandId={1} />}
             </div>
           ) : activeTab === "analytics" ? (
             <div className="p-6 bg-gray-50 dark:bg-gray-900 h-full overflow-auto">
