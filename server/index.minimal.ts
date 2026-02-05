@@ -59,6 +59,7 @@ import unifiedAnalyticsRoutes from "./routes/unified-analytics-routes";
 import verticalWorkflowRoutes from "./routes/vertical-workflow-routes";
 import crossVerticalRoutes from "./routes/cross-vertical-routes";
 import marketingChatRoutes from "./routes/marketing-chat-routes";
+import waiSDKv32Routes from "./routes/wai-sdk-v32-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -208,6 +209,7 @@ app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
 app.use('/api/vertical-workflows', verticalWorkflowRoutes);
 app.use('/api/cross-vertical', crossVerticalRoutes);
 app.use('/api/chat', marketingChatRoutes);
+app.use('/api/wai-sdk/v3.2', waiSDKv32Routes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());

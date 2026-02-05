@@ -1,0 +1,84 @@
+1. Dify
+URL: https://github.com/langgenius/dify.git
+
+Advantages: Provides a sophisticated Visual Workflow Canvas and an "App-as-a-Service" model. It excels in enterprise-grade operations, including built-in log analysis, cost tracking per application, and a very mature RAG (Retrieval-Augmented Generation) pipeline.
+
+2. RAGFlow
+URL: https://github.com/infiniflow/ragflow.git
+
+Advantages: Specialized in Deep Document Understanding. It can extract structured data from complex PDF layouts and tables with higher precision than standard parsers, which is critical for WAI’s "Legal" and "Finance" agent tiers.
+
+3. Flowise
+URL: https://github.com/FlowiseAI/Flowise.git
+
+Advantages: Offers the most accessible Low-Code/No-Code UI for orchestrating LangChain and LlamaIndex. It allows for rapid prototyping of agentic "mesh" topologies without deep backend changes.
+
+4. CopilotKit
+URL: https://github.com/CopilotKit/CopilotKit.git
+
+Advantages: Pioneer of Generative UI (AG-UI). It allows agents to not just talk, but to interactively modify the application's frontend state, making the AI feel like a native part of the software rather than just a sidebar chat.
+
+5. Composio
+URL: https://github.com/ComposioHQ/composio.git
+
+Advantages: Provides 100+ high-quality tool integrations with robust authentication management. It solves the "tool fatigue" problem by standardizing how agents interact with external APIs like GitHub, Slack, and Salesforce.
+
+6. AgenticSeek
+URL: https://github.com/Fosowl/agenticSeek.git
+
+Advantages: Focuses on Fully Local Autonomous Intelligence. It demonstrates how to run "Manus-style" agents (web browsing, coding, and thinking) locally to eliminate high API costs and ensure data privacy for sensitive enterprise clients.
+
+7. MaxKB
+URL: https://github.com/1Panel-dev/MaxKB.git
+
+Advantages: A streamlined Knowledge Base Management System. It is optimized for multi-model switching within a single knowledge base, allowing for easy "AB Testing" of different LLMs on the same corporate data.
+
+8. Keploy
+URL: https://github.com/keploy/keploy.git
+
+Advantages: Provides Autonomous E2E Testing. It can record real user traffic and auto-generate API tests and mocks, allowing WAI SDK's "QA Lab" to verify agent-built code with 90% less manual effort.
+
+9. Claude-Flow
+URL: https://github.com/ruvnet/claude-flow.git
+
+Advantages: Highly optimized for Distributed Swarm Intelligence specifically using Anthropic’s Claude models. It features native support for the MCP (Model Context Protocol) and autonomous swarm coordination.
+
+10. ValueCell
+URL: https://github.com/ValueCell-ai/valuecell.git
+
+Advantages: A domain-specific framework for Financial Multi-Agent Systems. It includes specialized agents for stock market analysis, equity research, and quantitative portfolio management.
+
+11. Git-MCP
+URL: https://github.com/idosal/git-mcp.git
+
+Advantages: Eliminates Code Hallucinations. It provides a remote MCP server that allows agents to read and "understand" GitHub repositories directly, ensuring they are working with the actual code context.
+
+12. ART (Agent Reinforcement Trainer)
+URL: https://github.com/OpenPipe/ART.git
+
+Advantages: Provides the Reinforcement Learning Pipeline for agents. It uses GRPO (Group Relative Policy Optimization) to give agents "on-the-job training," significantly improving their performance on multi-step reasoning tasks.
+
+13. Agent-Squad
+URL: https://github.com/awslabs/agent-squad.git
+
+Advantages: An AWS-backed framework designed for Scaling Multi-Agent Conversations. It provides a very flexible structure for managing agent "squads" that can handle complex, long-running enterprise dialogues.
+
+14. Swarms
+URL: https://github.com/kyegomez/swarms.git
+
+Advantages: The gold standard for Enterprise Swarm Orchestration. It offers 100+ swarm topologies and the Agent Trade Protocol (ATP) for autonomous billing and resource settlement between agents.
+
+15. Vision-Agents
+URL: https://github.com/GetStream/Vision-Agents.git
+
+Advantages: Optimized for Ultra-Low Latency Video AI. It uses an edge network to process video data in real-time, which is essential for WAI’s computer vision and real-time monitoring agents.
+
+16. Manifest
+URL: https://github.com/mnfst/manifest.git
+
+Advantages: A specialized UI Library for ChatGPT-style Apps. It uses shadcn/ui to provide a "clean-slate" design system that WAI can use to standardize its various studio dashboards.
+
+17. AgentDock
+URL: https://github.com/AgentDock/AgentDock.git
+
+Advantages: Focuses on the Deployment Infrastructure for agents. It provides a natural language agent builder and a "docking" system to scale agents in the cloud efficiently.

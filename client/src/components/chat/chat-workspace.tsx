@@ -112,7 +112,7 @@ export default function ChatWorkspace({ vertical = "general", brandId = 1, brand
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, generate content, analyze performance, and orchestrate your 267 marketing agents across 7 verticals.\n\nWhat would you like to work on today?",
+      content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, generate content, analyze performance, and orchestrate your 285 marketing agents across 8 verticals.\n\nWhat would you like to work on today?",
       timestamp: new Date(),
       agentName: "Chief of Staff",
       model: "GPT-4"

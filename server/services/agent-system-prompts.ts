@@ -1,6 +1,6 @@
 import { SupportedLanguage, INDIAN_LANGUAGES } from "./enhanced-ai-service";
 
-export type AgentCategory = "social" | "seo" | "web" | "sales" | "whatsapp" | "linkedin" | "performance";
+export type AgentCategory = "social" | "seo" | "web" | "sales" | "whatsapp" | "linkedin" | "performance" | "pr";
 export type AgentTier = "L0" | "L1" | "L2" | "L3" | "L4";
 export type Jurisdiction = "india" | "uae" | "saudi_arabia" | "singapore" | "global";
 

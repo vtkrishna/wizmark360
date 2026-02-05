@@ -140,7 +140,7 @@ router.get("/marketing-agents", async (req: Request, res: Response) => {
 router.get("/marketing-agents/category/:category", async (req: Request, res: Response) => {
   try {
     const { category } = req.params;
-    const validCategories = ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance"];
+    const validCategories = ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance", "pr"];
     
     if (!validCategories.includes(category)) {
       return res.status(400).json({ 

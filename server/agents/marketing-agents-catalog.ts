@@ -1,4 +1,5 @@
 import { AgentSystemPrompt, AgentCategory, generateSystemPrompt } from '../services/agent-system-prompts';
+import { PR_VERTICAL_AGENTS, PR_VERTICAL_SUMMARY, PRAgentDefinition } from './pr-vertical-agents';
 
 export interface MarketingAgent {
   id: string;
@@ -410,6 +411,24 @@ ${agent.tools.map(tool => `- ${tool}`).join('\n')}
 - Never execute campaigns without proper authorization`;
 }
 
+// Convert PR agents from PRAgentDefinition to MarketingAgent format
+const romaToTier: Record<string, "L0" | "L1" | "L2" | "L3" | "L4"> = {
+  'L0': 'L0', 'L1': 'L1', 'L2': 'L2', 'L3': 'L3', 'L4': 'L4'
+};
+
+const PR_AGENTS: MarketingAgent[] = PR_VERTICAL_AGENTS.map(prAgent => ({
+  id: prAgent.id,
+  name: prAgent.name,
+  category: 'pr' as const,
+  tier: romaToTier[prAgent.romaLevel] || 'L2',
+  description: prAgent.description,
+  mission: `${prAgent.category}: ${prAgent.description}`,
+  objectives: prAgent.capabilities.slice(0, 3),
+  skills: prAgent.capabilities,
+  tools: prAgent.tools,
+  systemPrompt: prAgent.systemPrompt
+}));
+
 export const ALL_MARKETING_AGENTS: MarketingAgent[] = [
   ...SOCIAL_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) })),
   ...SEO_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) })),
@@ -417,7 +436,8 @@ export const ALL_MARKETING_AGENTS: MarketingAgent[] = [
   ...SALES_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) })),
   ...WHATSAPP_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) })),
   ...LINKEDIN_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) })),
-  ...PERFORMANCE_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) }))
+  ...PERFORMANCE_AGENTS.map(a => ({ ...a, systemPrompt: buildSystemPrompt(a) })),
+  ...PR_AGENTS
 ];
 
 export function getAgentsByCategory(category: AgentCategory): MarketingAgent[] {
@@ -440,7 +460,8 @@ export const AGENT_COUNTS = {
   whatsapp: WHATSAPP_AGENTS.length,
   linkedin: LINKEDIN_AGENTS.length,
   performance: PERFORMANCE_AGENTS.length,
+  pr: PR_AGENTS.length,
   total: ALL_MARKETING_AGENTS.length
 };
 
-console.log(`Marketing Agent Catalog Loaded: ${AGENT_COUNTS.total} agents across 7 verticals`);
+console.log(`Marketing Agent Catalog Loaded: ${AGENT_COUNTS.total} agents across 8 verticals (including ${AGENT_COUNTS.pr} PR agents)`);

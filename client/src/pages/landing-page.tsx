@@ -78,16 +78,16 @@ const verticals = [
 ];
 
 const stats = [
-  { value: '267', label: 'AI Agents', sublabel: 'Autonomous Marketing' },
-  { value: '23', label: 'LLM Providers', sublabel: '752+ Models' },
-  { value: '12', label: 'Indian Languages', sublabel: 'Sarvam AI' },
-  { value: '7', label: 'Verticals', sublabel: 'Full Stack Marketing' },
+  { value: '285', label: 'AI Agents', sublabel: 'Autonomous Marketing' },
+  { value: '24', label: 'LLM Providers', sublabel: '886+ Models' },
+  { value: '22', label: 'Indian Languages', sublabel: 'Sarvam AI' },
+  { value: '8', label: 'Verticals', sublabel: 'Full Stack Marketing' },
 ];
 
 const features = [
   { 
     icon: Bot, 
-    title: '267 Autonomous Agents', 
+    title: '285 Autonomous Agents', 
     description: 'AI agents for every marketing task - from content creation to bid optimization, working 24/7.' 
   },
   { 
@@ -175,7 +175,7 @@ export default function LandingPage() {
               </Badge>
               
               <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                267 AI Agents.
+                285 AI Agents.
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Marketing Agency
@@ -185,9 +185,9 @@ export default function LandingPage() {
               </h1>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                267 autonomous AI agents across 7 marketing verticals. 
-                Create content in 12 Indian languages. Voice AI for WhatsApp. 
-                Built on 23 LLM providers with 752+ models.
+                285 autonomous AI agents across 8 marketing verticals. 
+                Create content in 22 Indian languages. Voice AI for WhatsApp. 
+                Built on 24 LLM providers with 886+ models.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -240,7 +240,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <div className="text-white font-semibold">Chief of Staff AI</div>
-                      <div className="text-white/70 text-sm">23 LLMs | 267 Agents | 12 Languages</div>
+                      <div className="text-white/70 text-sm">24 LLMs | 285 Agents | 22 Languages</div>
                     </div>
                   </div>
                 </div>
@@ -251,7 +251,7 @@ export default function LandingPage() {
                     </div>
                     <div className="bg-gray-100 rounded-2xl rounded-tl-md p-4 text-sm">
                       नमस्ते! I'm your Chief of Staff AI. I can help you manage campaigns, 
-                      generate content in 12 Indian languages, and orchestrate 267 marketing agents. 
+                      generate content in 12 Indian languages, and orchestrate 285 marketing agents. 
                       What would you like to accomplish today?
                     </div>
                   </div>
@@ -334,7 +334,7 @@ export default function LandingPage() {
             <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">7 Marketing Verticals</Badge>
             <h2 className="text-4xl font-bold mb-4">One Platform. Complete Marketing Stack.</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              267 AI agents organized across 7 specialized verticals, each with dedicated tools and workflows.
+              285 AI agents organized across 7 specialized verticals, each with dedicated tools and workflows.
             </p>
           </div>
 
@@ -470,7 +470,7 @@ export default function LandingPage() {
                   <Briefcase className="h-6 w-6 text-purple-600" />
                 </div>
                 <h3 className="font-bold mb-2">Service Packages</h3>
-                <p className="text-gray-600 text-sm">Full or partial marketing services across 7 verticals</p>
+                <p className="text-gray-600 text-sm">Full or partial marketing services across 8 verticals</p>
               </CardContent>
             </Card>
             <Card className="border-gray-200 hover:shadow-lg transition-shadow">
