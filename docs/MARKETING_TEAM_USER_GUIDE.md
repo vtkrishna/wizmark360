@@ -19,23 +19,25 @@
 
 ## Platform Overview
 
-Market360 is an enterprise-grade AI-powered marketing platform that enables "self-driving" marketing operations across 7 verticals:
+Market360 is an enterprise-grade AI-powered marketing platform that enables "self-driving" marketing operations across 8 verticals:
 
 | Vertical | Description | Key Features |
 |----------|-------------|--------------|
 | **Social Media** | Content creation, scheduling, and engagement | Multi-platform publishing, content calendar, viral content creation |
 | **SEO/GEO** | Search engine and AI visibility optimization | Keyword research, rank tracking, AI visibility monitoring |
+| **Web Development** | Landing pages and conversion optimization | A/B testing, CRO, performance optimization |
 | **Performance Ads** | Paid advertising across platforms | Campaign management, budget optimization, ROAS tracking |
 | **Sales/SDR** | Lead generation and nurturing | Lead scoring, outreach automation, CRM integration |
 | **WhatsApp** | Business messaging and automation | Broadcast campaigns, chatbots, voice messages |
 | **LinkedIn B2B** | Professional networking and lead generation | Thought leadership, InMail campaigns, SSI improvement |
-| **Telegram** | Bot management and community building | Broadcast campaigns, automation triggers |
+| **PR & Communications** | Press releases and media relations | Crisis management, media outreach, brand reputation |
 
 ### Technology Stack
 - **24 LLM Providers** with 886+ models across 4 tiers
-- **267 Specialized Marketing Agents** with 22-point enterprise framework
-- **WAI-SDK v3.1.1** orchestration backbone
+- **285 Specialized Marketing Agents** (267 Market360 + 18 PR) with 22-point enterprise framework
+- **WAI-SDK v3.2.0** orchestration backbone with Vision Agents, Swarm Intelligence, GRPO, Deep RAG
 - **Real-time analytics** with 6 attribution models
+- **22 Indian Languages** supported via Sarvam AI
 
 ---
 

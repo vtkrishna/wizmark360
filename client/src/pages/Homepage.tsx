@@ -330,7 +330,7 @@ export default function Homepage() {
                 <span className="text-xl font-bold">Wizards Tech Global</span>
               </div>
               <p className="text-sm text-gray-400">
-                World's first self-driving marketing agency platform. 267 AI agents across 7 verticals.
+                World's first self-driving marketing agency platform. 285 AI agents across 8 verticals.
               </p>
             </div>
             <div>

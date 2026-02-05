@@ -83,7 +83,7 @@ const verticalConfig: Record<string, {
       { title: "Multi-Platform Publishing", description: "Simultaneously publish to Instagram, Facebook, Twitter, and 5+ platforms with platform-optimized formatting", icon: Globe, highlight: true },
       { title: "AI Content Calendar", description: "Smart scheduling based on audience engagement patterns and optimal posting times", icon: Calendar },
       { title: "Trend Detection Engine", description: "Real-time trending hashtag and topic identification for viral content creation", icon: TrendingUp },
-      { title: "Engagement Auto-Response", description: "AI-powered comment and DM responses in 12 Indian languages", icon: MessageCircle },
+      { title: "Engagement Auto-Response", description: "AI-powered comment and DM responses in 22 Indian languages", icon: MessageCircle },
       { title: "Visual Content Studio", description: "Generate branded images, carousels, and video thumbnails with AI", icon: Sparkles },
       { title: "Competitor Analysis", description: "Track competitor posts, engagement rates, and content strategies", icon: Target }
     ]
@@ -113,7 +113,7 @@ const verticalConfig: Record<string, {
     ],
     specializedFeatures: [
       { title: "GEO (Generative Engine Optimization)", description: "Optimize for AI search engines like ChatGPT, Perplexity, and Google AI Overviews", icon: Sparkles, highlight: true },
-      { title: "Multilingual SEO", description: "Keyword research and content optimization in 12 Indian languages for regional markets", icon: Globe },
+      { title: "Multilingual SEO", description: "Keyword research and content optimization in 22 Indian languages for regional markets", icon: Globe },
       { title: "Technical SEO Auditor", description: "Automated crawling, indexation analysis, and Core Web Vitals optimization", icon: Code },
       { title: "Content Gap Analysis", description: "Identify missing topics and keywords competitors rank for", icon: Target },
       { title: "Backlink Intelligence", description: "AI-powered link building opportunities and outreach automation", icon: Zap },
@@ -209,7 +209,7 @@ const verticalConfig: Record<string, {
     ],
     specializedFeatures: [
       { title: "Visual Flow Builder", description: "Drag-and-drop automation builder for complex conversational journeys", icon: Zap, highlight: true },
-      { title: "Voice Message AI", description: "Sarvam-powered STT/TTS for voice messages in 12 Indian languages with 24 voices", icon: MessageCircle },
+      { title: "Voice Message AI", description: "Sarvam-powered STT/TTS for voice messages in 22 Indian languages with 24 voices", icon: MessageCircle },
       { title: "Broadcast Campaigns", description: "Send personalized bulk messages with dynamic content and scheduling", icon: Megaphone },
       { title: "Catalog Integration", description: "Sync product catalogs and enable in-chat shopping experiences", icon: FileText },
       { title: "Payment Links", description: "Generate and send payment links within conversations for seamless checkout", icon: Target },
@@ -308,7 +308,7 @@ const verticalConfig: Record<string, {
       { title: "Crisis Command Center", description: "Real-time crisis detection, response management, and reputation protection", icon: Shield },
       { title: "Media Relations CRM", description: "Journalist database with relationship scoring and personalized outreach", icon: Users },
       { title: "Sentiment Analysis", description: "Real-time brand sentiment tracking across all media channels", icon: TrendingUp },
-      { title: "Multilingual PR", description: "Translate and localize press content for 12 Indian languages and global markets", icon: Globe },
+      { title: "Multilingual PR", description: "Translate and localize press content for 22 Indian languages and global markets", icon: Globe },
       { title: "Investor Relations", description: "Earnings communications, SEC compliance, and stakeholder messaging", icon: BarChart3 }
     ]
   }

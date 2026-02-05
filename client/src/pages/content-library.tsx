@@ -545,7 +545,7 @@ export default function ContentLibraryPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Multilingual Content Support</h3>
-                  <p className="text-white/80 text-sm">Create and manage content in 12 Indian languages with AI-powered translation</p>
+                  <p className="text-white/80 text-sm">Create and manage content in 22 Indian languages with AI-powered translation</p>
                 </div>
                 <div className="flex flex-wrap gap-2 max-w-xl">
                   {indianLanguages.slice(0, 6).map((lang) => (

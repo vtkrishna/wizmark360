@@ -7,7 +7,7 @@ import {
   Zap, Users, Globe, Bot, LineChart, Shield, 
   Sparkles, ArrowRight, Check, Play, TrendingUp,
   MessageCircle, Search, Code2, Briefcase, Share2,
-  Languages, Mic, Brain, Target, BarChart3, Mail
+  Languages, Mic, Brain, Target, BarChart3, Mail, Newspaper
 } from 'lucide-react';
 import { useLocation } from 'wouter';
 
@@ -75,6 +75,15 @@ const verticals = [
     description: 'Multi-platform ads, bid optimization, ROAS',
     features: ['Bid Optimizer', 'Creative Factory', 'Budget Allocator', 'Attribution Analyst']
   },
+  { 
+    id: 'pr', 
+    icon: Newspaper, 
+    name: 'PR & Comms', 
+    color: 'from-rose-500 to-pink-500',
+    agents: 18,
+    description: 'Press releases, media relations, crisis management',
+    features: ['Press Release Writer', 'Media Outreach', 'Crisis Manager', 'Brand Reputation']
+  },
 ];
 
 const stats = [
@@ -92,7 +101,7 @@ const features = [
   },
   { 
     icon: Languages, 
-    title: '12 Indian Languages', 
+    title: '22 Indian Languages', 
     description: 'Create content in Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam & more via Sarvam AI.' 
   },
   { 
@@ -251,7 +260,7 @@ export default function LandingPage() {
                     </div>
                     <div className="bg-gray-100 rounded-2xl rounded-tl-md p-4 text-sm">
                       नमस्ते! I'm your Chief of Staff AI. I can help you manage campaigns, 
-                      generate content in 12 Indian languages, and orchestrate 285 marketing agents. 
+                      generate content in 22 Indian languages, and orchestrate 285 marketing agents. 
                       What would you like to accomplish today?
                     </div>
                   </div>

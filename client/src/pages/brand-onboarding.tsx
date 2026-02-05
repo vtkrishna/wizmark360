@@ -28,6 +28,7 @@ const verticals = [
   { id: "whatsapp", name: "WhatsApp", icon: "💬", agents: 28, description: "Commerce, support, automation" },
   { id: "linkedin", name: "LinkedIn B2B", icon: "🔗", agents: 35, description: "Thought leadership, networking" },
   { id: "performance", name: "Performance Ads", icon: "📊", agents: 37, description: "Paid media, ROAS optimization" },
+  { id: "pr", name: "PR & Comms", icon: "📰", agents: 18, description: "Press releases, media relations, crisis management" },
 ];
 
 const industries = [
@@ -207,7 +208,7 @@ export default function BrandOnboarding() {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Brand Onboarding</h1>
-          <p className="text-white/60">Set up your brand for AI-powered marketing across 7 verticals</p>
+          <p className="text-white/60">Set up your brand for AI-powered marketing across 8 verticals</p>
         </div>
 
         <div className="mb-8">
@@ -623,7 +624,7 @@ export default function BrandOnboarding() {
 
                 <div className="grid md:grid-cols-3 gap-4">
                   {[
-                    { id: "full_service", name: "Full Service", desc: "All 7 verticals, dedicated team", badge: "Recommended" },
+                    { id: "full_service", name: "Full Service", desc: "All 8 verticals, dedicated team", badge: "Recommended" },
                     { id: "partial", name: "Partial Service", desc: "Choose specific verticals", badge: null },
                     { id: "project_based", name: "Project Based", desc: "One-time campaigns", badge: null },
                   ].map((pkg) => (
@@ -671,7 +672,7 @@ export default function BrandOnboarding() {
                     ))}
                   </div>
                   {formData.packageType === "full_service" && (
-                    <p className="text-sm text-blue-600 mt-2">Full Service includes all 7 verticals (267 AI agents)</p>
+                    <p className="text-sm text-blue-600 mt-2">Full Service includes all 8 verticals (285 AI agents)</p>
                   )}
                 </div>
 

@@ -177,7 +177,7 @@ interface ChatMessage {
 
 function ChiefOfStaffChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "assistant", content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, analyze performance, generate content, and orchestrate your 267+ marketing agents across 23 LLMs and 12 Indian languages. How can I help you today?" }
+    { role: "assistant", content: "Hello! I'm your Chief of Staff AI. I can help you manage campaigns, analyze performance, generate content, and orchestrate your 285 marketing agents across 24 LLMs and 22 Indian languages. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
   const [provider, setProvider] = useState<string>("openai");

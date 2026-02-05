@@ -7,6 +7,7 @@
 | v2.0.0 | 2025-12-01 | Market360 267 Agents Integration | Released |
 | v3.0.0 | 2026-01-15 | Enterprise Services (WhatsApp, CRM, Email, Payments) | Released |
 | v3.1.0 | 2026-02-01 | WAI SDK v3.1 Integration (P0-P2 Features) | Released |
+| v3.2.0 | 2026-02-05 | WAI SDK v3.2 + PR Vertical (285 Agents, 8 Verticals) | Released |
 | v4.0.0 | 2026-02-15 | Platform Integrations & OAuth Layer | In Progress |
 | v4.1.0 | 2026-03-01 | SEO Toolkit & Advanced Analytics | Planned |
 | v5.0.0 | 2026-03-15 | Full Production Release | Planned |
@@ -76,7 +77,7 @@
 
 ## Architecture Overview
 
-### 7 Marketing Verticals
+### 8 Marketing Verticals
 1. **Social Media Marketing** - Content creation, scheduling, publishing, analytics
 2. **SEO/GEO Optimization** - Keyword research, rank tracking, AI visibility
 3. **Web Development** - Landing pages, A/B testing, conversion optimization
@@ -84,12 +85,14 @@
 5. **WhatsApp Marketing** - Broadcast campaigns, chatbot flows, voice messages
 6. **LinkedIn B2B** - Profile optimization, lead generation, InMail automation
 7. **Performance Advertising** - Meta Ads, Google Ads, LinkedIn Ads, programmatic
+8. **PR & Communications** - Press releases, media relations, crisis management, investor relations
 
 ### Agent Architecture
-- **Total Agents**: 300+ (Marketing-specialized)
+- **Total Agents**: 285 (267 Market360 + 18 PR Vertical)
 - **ROMA Levels**: L0-L4 (Reactive to Self-Evolving)
 - **22-Point Framework**: Full enterprise system prompts
 - **Protocols**: A2A, MCP, ROMA, AG-UI, OpenAgent, Parlant, BMAD
+- **WAI-SDK Version**: v3.2.0 with Vision Agents, Swarm Intelligence, GRPO, Deep RAG, MCP Protocol
 
 ### Platform Integrations
 | Platform | OAuth Status | API Version | Features |
@@ -171,5 +174,5 @@
 
 ---
 
-*Last Updated: February 1, 2026*
-*Next Review: February 8, 2026*
+*Last Updated: February 5, 2026*
+*Next Review: February 12, 2026*

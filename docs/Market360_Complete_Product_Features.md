@@ -5,13 +5,14 @@
 
 # Executive Summary
 
-**Market360** is India's first AI-native, self-driving marketing agency platform that combines the power of **24 LLMs**, **886 AI models**, and **267 autonomous agents** to deliver end-to-end marketing automation across 7 verticals. Built on the WAI SDK Orchestration Platform, Market360 eliminates the need for traditional agency teams by automating strategy, content creation, campaign execution, and performance optimization.
+**Market360** is India's first AI-native, self-driving marketing agency platform that combines the power of **24 LLMs**, **886 AI models**, and **285 autonomous agents** to deliver end-to-end marketing automation across 8 verticals. Built on the WAI SDK v3.2.0 Orchestration Platform, Market360 eliminates the need for traditional agency teams by automating strategy, content creation, campaign execution, and performance optimization.
 
 **Key Differentiators:**
 - First Multi-LLM Marketing Platform (24 providers, 886 models)
-- 267 Autonomous Agents across 7 Marketing Verticals
+- 285 Autonomous Agents across 8 Marketing Verticals (267 Market360 + 18 PR)
 - ROMA L0-L4 Progressive Automation Levels
 - 22 Indian Languages + Voice Agents (Sarvam AI)
+- WAI-SDK v3.2.0 with Vision Agents, Swarm Intelligence, GRPO, Deep RAG, MCP Protocol
 - Razorpay Payment Integration with GST/IGST Compliance
 - Production-Grade Enterprise Services
 
@@ -21,7 +22,7 @@
 
 1. [Platform Overview](#platform-overview)
 2. [Unique Selling Propositions (USPs)](#unique-selling-propositions)
-3. [7 Marketing Verticals - Detailed Flows](#7-marketing-verticals)
+3. [8 Marketing Verticals - Detailed Flows](#8-marketing-verticals)
 4. [AI Infrastructure](#ai-infrastructure)
 5. [Enterprise Services](#enterprise-services)
 6. [Payment & Invoicing (Razorpay)](#payment--invoicing-razorpay)
@@ -48,7 +49,7 @@ Market360 is a **Self-Driving Agency Platform** that transforms how brands manag
 |------------|-------------|
 | **24 LLM Providers** | OpenAI GPT-4o/o1/o3, Anthropic Claude 4, Google Gemini 2.5, Groq, Cohere, Sarvam AI, DeepSeek, Mistral, Perplexity, Together AI, OpenRouter (400+ models), xAI Grok, and more |
 | **886 AI Models** | From direct providers and aggregators for every use case |
-| **267 Autonomous Agents** | Distributed across 7 marketing verticals |
+| **285 Autonomous Agents** | Distributed across 8 marketing verticals (267 Market360 + 18 PR) |
 | **22+ Indian Languages** | Full multilingual support via Sarvam AI |
 | **Voice Agents** | Text-to-Speech (Bulbul v1), Speech-to-Text (Saarika v2), WhatsApp voice |
 | **MCP Protocol** | 156+ registered tools for advanced orchestration |
