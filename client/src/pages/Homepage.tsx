@@ -11,7 +11,7 @@ import { useLocation } from 'wouter';
 
 export default function Homepage() {
   const [, setLocation] = useLocation();
-  const activeAgents = "267+";
+  const activeAgents = "285+";
 
   const studios = [
     { icon: Sparkles, name: 'Ideation Lab', description: 'AI-powered idea validation & market research', agents: 25 },
@@ -26,20 +26,20 @@ export default function Homepage() {
   ];
 
   const features = [
-    { title: '267+ AI Agents', description: '105 WAI Core + 79 Geminiflow + 83+ specialized agents working for you 24/7', icon: Bot },
-    { title: '23+ LLM Providers', description: '752+ models including GPT-4, Claude, Gemini, KIMI K2 for 90% cost savings', icon: Zap },
-    { title: '14-Day MVPs', description: 'From idea to production-ready MVP in 2 weeks vs 3+ months manual development', icon: Rocket },
-    { title: 'Autonomous Execution', description: 'AI agents handle design, code, testing, deployment automatically', icon: Sparkles },
-    { title: 'Multi-Cloud Deploy', description: 'One-click deployment to AWS, GCP, Azure with auto-scaling', icon: Globe },
-    { title: 'Enterprise Security', description: 'SOC2, GDPR, CCPA compliant with encryption at rest & in transit', icon: Shield },
+    { title: '285+ Enterprise Agents', description: 'Specialized AI workforce across 8 verticals: Sales, Marketing, Development, Analytics, Support & more. ROMA L0-L4 autonomy levels.', icon: Bot },
+    { title: '24 LLM Providers, 886+ Models', description: 'Claude Opus 4.6, Claude Sonnet 5.0, GPT-5.2, Gemini 3 Pro + 20 others. Dynamic routing for optimal cost & performance.', icon: Zap },
+    { title: '14-Day Enterprise MVP', description: 'Production-ready systems from concept to deployment. Enterprise-grade architecture built automatically.', icon: Rocket },
+    { title: 'Full Autonomous Execution', description: 'Multi-agent orchestration handles architecture, development, testing, deployment with zero human intervention required.', icon: Sparkles },
+    { title: 'Enterprise Deployment', description: 'Multi-cloud (AWS, GCP, Azure), on-premise, hybrid. Auto-scaling, load balancing, disaster recovery included.', icon: Globe },
+    { title: 'Enterprise-Grade Security', description: 'SOC2 Type II, HIPAA, GDPR, CCPA compliance. End-to-end encryption, audit logs, role-based access control.', icon: Shield },
   ];
 
 
   const stats = [
-    { value: '267+', label: 'AI Agents', sublabel: 'Working 24/7' },
-    { value: '14', label: 'Days', sublabel: 'Idea to MVP' },
-    { value: '23+', label: 'LLM Providers', sublabel: '752+ models' },
-    { value: '90%', label: 'Cost Savings', sublabel: 'Via KIMI K2' },
+    { value: '285+', label: 'AI Agents', sublabel: '8 verticals' },
+    { value: '24', label: 'LLM Providers', sublabel: '886+ models' },
+    { value: '22', label: 'Indian Languages', sublabel: 'Full Indic support' },
+    { value: '14', label: 'Days', sublabel: 'Enterprise MVP' },
   ];
 
   return (
@@ -94,18 +94,18 @@ export default function Homepage() {
             </Badge>
             
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight" data-testid="text-hero-title">
-              Transform Ideas into
+              Enterprise AI Agency Platform for
               <br />
               <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Production MVPs
+                Autonomous Execution
               </span>
               <br />
               in 14 Days
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto" data-testid="text-hero-subtitle">
-              Powered by 267+ AI agents, 23+ LLM providers, and autonomous execution.
-              Join the accelerator that builds, tests, and deploys your startup while you sleep.
+              Enterprise platform powered by 285+ autonomous AI agents across 8 verticals, 24 LLM providers (886+ models), and 22 Indian languages.
+              Build production systems 10x faster with multi-cloud deployment, SOC2 compliance, and zero human intervention.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -116,7 +116,7 @@ export default function Homepage() {
                 data-testid="button-start-building"
               >
                 <Rocket className="mr-2 h-5 w-5" />
-                Start Building
+                Launch Enterprise Platform
               </Button>
               <Button 
                 size="lg"
@@ -157,10 +157,10 @@ export default function Homepage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="text-features-title">
-              Why Choose Wizards?
+              Enterprise AI Execution Platform
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              The only accelerator with autonomous AI agents that code, test, and deploy your product 24/7
+              The only platform with 285+ autonomous AI agents delivering production-ready systems in 14 days with enterprise-grade security and compliance
             </p>
           </div>
 
@@ -193,10 +193,10 @@ export default function Homepage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="text-studios-title">
-              10 Specialized Studios
+              9 Enterprise Execution Studios
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Each studio powered by AI agents trained for specific tasks in your startup journey
+              Specialized autonomous AI studios for architecture, development, testing, deployment, and business operations with zero human intervention
             </p>
           </div>
 
@@ -237,10 +237,10 @@ export default function Homepage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4" data-testid="text-verticals-title">
-              7 Marketing Verticals
+              8 Enterprise Verticals with AI Agents
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Complete coverage across all marketing channels with specialized AI agents
+              Complete enterprise coverage: Sales, Marketing, Development, Analytics, Support, and more with specialized autonomous AI agents across all verticals
             </p>
           </div>
 
@@ -253,6 +253,7 @@ export default function Homepage() {
               { name: 'WhatsApp', agents: 28, icon: '💬', color: 'from-green-600/20 to-green-500/20' },
               { name: 'LinkedIn B2B', agents: 35, icon: '🔗', color: 'from-blue-600/20 to-blue-500/20' },
               { name: 'Performance Ads', agents: 37, icon: '📈', color: 'from-red-500/20 to-pink-500/20' },
+              { name: 'PR & Comms', agents: 18, icon: '📰', color: 'from-rose-500/20 to-pink-500/20' },
             ].map((vertical, i) => (
               <motion.div
                 key={vertical.name}
@@ -274,7 +275,7 @@ export default function Homepage() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <p className="text-gray-400 text-sm">Total: 267 specialized agents across ROMA L0-L4 autonomy levels</p>
+            <p className="text-gray-400 text-sm">Total: 285 specialized agents across ROMA L0-L4 autonomy levels</p>
           </div>
         </div>
       </section>
@@ -289,10 +290,10 @@ export default function Homepage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6" data-testid="text-cta-title">
-              Ready to Build the Future?
+              Ready to Launch Your Enterprise System?
             </h2>
             <p className="text-xl text-gray-400 mb-8">
-              Join 500+ founders using AI to build, launch, and scale their startups
+              Join industry leaders building production systems 10x faster with 285+ autonomous AI agents and enterprise-grade infrastructure
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
@@ -301,7 +302,7 @@ export default function Homepage() {
                 className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 data-testid="button-start-free"
               >
-                Start Free Today
+                Start Enterprise Trial
               </Button>
               <Button 
                 size="lg"
@@ -330,7 +331,7 @@ export default function Homepage() {
                 <span className="text-xl font-bold">Wizards Tech Global</span>
               </div>
               <p className="text-sm text-gray-400">
-                World's first self-driving marketing agency platform. 285 AI agents across 8 verticals.
+                Enterprise AI execution platform. 285+ autonomous agents across 8 verticals, 24 LLM providers (886+ models), 22 Indian languages, SOC2 compliance.
               </p>
             </div>
             <div>

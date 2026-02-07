@@ -107,20 +107,20 @@ function MetricCard({ title, value, change, changePercent, icon: Icon, format = 
     : formatNumber(value);
 
   return (
-    <Card>
+    <Card className="hover:shadow-lg hover:border-primary/20 transition-all duration-200 cursor-default">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold">{formattedValue}</p>
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{title}</p>
+            <p className="text-2xl font-bold mt-2">{formattedValue}</p>
             {changePercent !== undefined && (
-              <div className={`flex items-center text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                {isPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+              <div className={`flex items-center text-sm mt-2 font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                {isPositive ? <ArrowUpRight className="h-4 w-4 mr-1" /> : <ArrowDownRight className="h-4 w-4 mr-1" />}
                 <span>{Math.abs(changePercent).toFixed(1)}% vs last period</span>
               </div>
             )}
           </div>
-          <div className={`p-3 rounded-full ${isPositive ? 'bg-green-100' : 'bg-blue-100'}`}>
+          <div className={`p-3 rounded-lg ml-4 flex-shrink-0 ${isPositive ? 'bg-green-100' : 'bg-blue-100'}`}>
             <Icon className={`h-6 w-6 ${isPositive ? 'text-green-600' : 'text-blue-600'}`} />
           </div>
         </div>
@@ -134,42 +134,46 @@ function ChannelPerformanceTable({ channels }: { channels: UnifiedMetrics['byCha
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b">
-            <th className="text-left p-3 font-medium">Channel</th>
-            <th className="text-right p-3 font-medium">Spend</th>
-            <th className="text-right p-3 font-medium">Revenue</th>
-            <th className="text-right p-3 font-medium">ROAS</th>
-            <th className="text-right p-3 font-medium">Conversions</th>
-            <th className="text-right p-3 font-medium">CPA</th>
-            <th className="text-right p-3 font-medium">CTR</th>
-            <th className="text-right p-3 font-medium">Contribution</th>
+          <tr className="border-b bg-muted/30">
+            <th className="text-left p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">Channel</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">Spend</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">Revenue</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">ROAS</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">Conversions</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">CPA</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">CTR</th>
+            <th className="text-right p-4 font-semibold text-sm uppercase tracking-wide text-muted-foreground">Contribution</th>
           </tr>
         </thead>
         <tbody>
           {channels.map((channel, idx) => (
-            <tr key={idx} className="border-b hover:bg-muted/50">
-              <td className="p-3">
+            <tr key={idx} className="border-b hover:bg-muted/50 transition-colors">
+              <td className="p-4">
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${
-                    channel.roas >= 3 ? 'bg-green-500' : channel.roas >= 2 ? 'bg-yellow-500' : 'bg-red-500'
+                    channel.roas >= 2 ? 'bg-green-500' : channel.roas >= 1 ? 'bg-yellow-500' : 'bg-red-500'
                   }`} />
-                  <span className="capitalize font-medium">{channel.channel.replace('_', ' ')}</span>
+                  <span className="capitalize font-medium text-sm">{channel.channel.replace('_', ' ')}</span>
                 </div>
               </td>
-              <td className="text-right p-3">{formatCurrency(channel.spend)}</td>
-              <td className="text-right p-3">{formatCurrency(channel.revenue)}</td>
-              <td className="text-right p-3">
-                <Badge variant={channel.roas >= 3 ? 'default' : channel.roas >= 2 ? 'secondary' : 'destructive'}>
+              <td className="text-right p-4 text-sm">{formatCurrency(channel.spend)}</td>
+              <td className="text-right p-4 text-sm">{formatCurrency(channel.revenue)}</td>
+              <td className="text-right p-4">
+                <Badge className={`${
+                  channel.roas >= 2 ? 'bg-green-100 text-green-700 hover:bg-green-200' : 
+                  channel.roas >= 1 ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 
+                  'bg-red-100 text-red-700 hover:bg-red-200'
+                }`}>
                   {channel.roas.toFixed(2)}x
                 </Badge>
               </td>
-              <td className="text-right p-3">{channel.conversions}</td>
-              <td className="text-right p-3">{formatCurrency(channel.cpa)}</td>
-              <td className="text-right p-3">{channel.ctr.toFixed(2)}%</td>
-              <td className="text-right p-3">
+              <td className="text-right p-4 text-sm">{channel.conversions}</td>
+              <td className="text-right p-4 text-sm">{formatCurrency(channel.cpa)}</td>
+              <td className="text-right p-4 text-sm">{channel.ctr.toFixed(2)}%</td>
+              <td className="text-right p-4">
                 <div className="flex items-center gap-2">
                   <Progress value={channel.contribution} className="w-16 h-2" />
-                  <span className="text-sm">{channel.contribution.toFixed(0)}%</span>
+                  <span className="text-sm text-muted-foreground">{channel.contribution.toFixed(0)}%</span>
                 </div>
               </td>
             </tr>
@@ -315,7 +319,7 @@ export default function UnifiedAnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">Unified Analytics</h1>
-              <p className="text-muted-foreground">Cross-vertical ROI/ROAS performance dashboard</p>
+              <p className="text-muted-foreground">Enterprise Marketing Intelligence — Cross-vertical ROI, ROAS & Performance Analytics</p>
             </div>
             <div className="flex items-center gap-4">
               <Select value={dateRange} onValueChange={setDateRange}>
@@ -408,7 +412,7 @@ export default function UnifiedAnalyticsPage() {
               <TabsList>
                 <TabsTrigger value="channels">Channel Performance</TabsTrigger>
                 <TabsTrigger value="verticals">Vertical Performance</TabsTrigger>
-                <TabsTrigger value="insights">AI Insights</TabsTrigger>
+                <TabsTrigger value="insights">AI-Powered Insights</TabsTrigger>
               </TabsList>
 
               <TabsContent value="channels">

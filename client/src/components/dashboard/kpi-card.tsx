@@ -28,11 +28,11 @@ export default function KPICard({
   color = "blue" 
 }: KPICardProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">{title}</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{value}</p>
           
           {change !== undefined && (
             <div className="flex items-center gap-1 mt-2">

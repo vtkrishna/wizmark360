@@ -178,8 +178,20 @@ export const LLM_REGISTRY: LLMModel[] = [
 export const LLM_REGISTRY_VERSION = "2024.12.24";
 export const LLM_REGISTRY_LAST_UPDATED = new Date().toISOString();
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+let openai: OpenAI | null = null;
+try {
+  if (process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+} catch {}
+
+let anthropic: Anthropic | null = null;
+try {
+  if (process.env.ANTHROPIC_API_KEY) {
+    anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+} catch {}
+
 const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 let groq: Groq | null = null;
@@ -337,8 +349,9 @@ export class EnhancedAIService {
   }
 
   private async chatWithOpenAI(messages: ChatMessage[], model?: string): Promise<EnhancedAIResponse> {
+    if (!openai) throw new Error('OpenAI provider not configured. Please set OPENAI_API_KEY.');
     const response = await openai.chat.completions.create({
-      model: model || "gpt-5",
+      model: model || "gpt-5.2",
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
       max_completion_tokens: 4096,
     });
@@ -346,7 +359,7 @@ export class EnhancedAIService {
     return {
       content: response.choices[0].message.content || "",
       provider: "openai",
-      model: model || "gpt-5",
+      model: model || "gpt-5.2",
       tokensUsed: response.usage?.total_tokens,
     };
   }
@@ -355,8 +368,9 @@ export class EnhancedAIService {
     const systemMessage = messages.find((m) => m.role === "system");
     const chatMessages = messages.filter((m) => m.role !== "system");
 
+    if (!anthropic) throw new Error('Anthropic provider not configured. Please set ANTHROPIC_API_KEY.');
     const response = await anthropic.messages.create({
-      model: model || "claude-sonnet-4-20250514",
+      model: model || "claude-sonnet-5-0",
       max_tokens: 4096,
       system: systemMessage?.content,
       messages: chatMessages.map((m) => ({

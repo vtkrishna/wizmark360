@@ -52,14 +52,14 @@ export default function NewDashboard() {
 
         {/* Content */}
         {activeTab === "overview" ? (
-          <div className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-gray-900">
-            <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex-1 overflow-auto p-8 bg-gray-50 dark:bg-gray-900">
+            <div className="max-w-7xl mx-auto space-y-8">
               {/* Welcome Section */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white">
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold">Good morning!</h1>
-                    <p className="text-blue-100 mt-1">Here's what's happening with {currentBrand.name} today.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Welcome Back</h1>
+                    <p className="text-blue-100 mt-2 text-lg">Your marketing command center — real-time insights across all verticals.</p>
                   </div>
                   <button
                     onClick={() => setActiveTab("chat")}
@@ -73,7 +73,7 @@ export default function NewDashboard() {
               </div>
 
               {/* KPI Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 <KPICard
                   title="Active Campaigns"
                   value="12"
@@ -95,8 +95,8 @@ export default function NewDashboard() {
                 <KPICard
                   title="AI Agents Active"
                   value="285"
-                  change={18}
-                  changeLabel="PR vertical"
+                  change={8}
+                  changeLabel="across 8 verticals"
                   trend="up"
                   color="purple"
                   icon={<Bot className="w-5 h-5 text-white" />}
@@ -113,22 +113,22 @@ export default function NewDashboard() {
               </div>
 
               {/* Main Content Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
                 {/* Activity Feed */}
                 <div className="lg:col-span-2">
                   <ActivityFeed />
                 </div>
 
                 {/* Quick Actions */}
-                <div className="space-y-4">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+                <div className="space-y-5">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-sm tracking-tight">Quick Actions</h3>
                     <div className="space-y-2">
                       {[
                         { label: "Create Campaign", icon: Megaphone, color: "text-pink-500" },
                         { label: "Generate Content", icon: Sparkles, color: "text-blue-500" },
-                        { label: "View Analytics", icon: BarChart3, color: "text-purple-500" },
-                        { label: "Schedule Post", icon: Calendar, color: "text-green-500" },
+                        { label: "Cross-Vertical Analytics", icon: BarChart3, color: "text-purple-500" },
+                        { label: "Schedule & Publish", icon: Calendar, color: "text-green-500" },
                       ].map((action) => (
                         <button
                           key={action.label}
@@ -143,7 +143,7 @@ export default function NewDashboard() {
                   </div>
 
                   {/* Agent Status */}
-                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-gray-900 dark:text-white">Agent Status</h3>
                       <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">All Systems Go</span>

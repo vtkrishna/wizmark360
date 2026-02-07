@@ -33,14 +33,14 @@ export class GPT5Integration {
 
   private async initializeGPT5(): Promise<void> {
     try {
-      // Check if GPT-5 is available (fallback to GPT-4o if not)
+      // Check if GPT-5.2 is available (fallback to GPT-4o if not)
       const models = await this.openai.models.list();
-      this.isGPT5Available = models.data.some(model => model.id.includes('gpt-5'));
+      this.isGPT5Available = models.data.some(model => model.id.includes('gpt-5.2'));
       
       if (!this.isGPT5Available) {
-        console.log('📢 GPT-5 not yet available, using GPT-4o with enhanced reasoning simulation');
+        console.log('📢 GPT-5.2 not yet available, using GPT-4o with enhanced reasoning simulation');
       } else {
-        console.log('🚀 GPT-5 integration activated - 95% coding, 96% reasoning capabilities');
+        console.log('🚀 GPT-5.2 integration activated - 95% coding, 96% reasoning capabilities');
       }
     } catch (error) {
       console.error('GPT-5 initialization failed:', error);
@@ -60,9 +60,9 @@ export class GPT5Integration {
     documentation: string;
     performance_score: number;
   }> {
-    const model = this.isGPT5Available ? 'gpt-5' : 'gpt-4o';
+    const model = this.isGPT5Available ? 'gpt-5.2' : 'gpt-4o';
     
-    const systemPrompt = `You are GPT-5 level AI with 95% coding capability and 96% reasoning ability.
+    const systemPrompt = `You are GPT-5.2 level AI with 95% coding capability and 96% reasoning ability.
     Generate production-ready, enterprise-grade code with:
     - Advanced architectural patterns
     - Comprehensive error handling
@@ -119,9 +119,9 @@ export class GPT5Integration {
     recommendations: string[];
     confidence_score: number;
   }> {
-    const model = this.isGPT5Available ? 'gpt-5' : 'gpt-4o';
+    const model = this.isGPT5Available ? 'gpt-5.2' : 'gpt-4o';
 
-    const systemPrompt = `You are GPT-5 with 96% reasoning capability. Perform multi-step reasoning:
+    const systemPrompt = `You are GPT-5.2 with 96% reasoning capability. Perform multi-step reasoning:
     1. Deep contextual analysis
     2. Constraint identification and impact assessment
     3. Multi-dimensional solution exploration
@@ -172,7 +172,7 @@ export class GPT5Integration {
         unit: 'tokens',
         metadata: { 
           operation, 
-          model: this.isGPT5Available ? 'gpt-5' : 'gpt-4o-enhanced',
+          model: this.isGPT5Available ? 'gpt-5.2' : 'gpt-4o-enhanced',
           timestamp: new Date().toISOString()
         },
         timestamp: new Date()
@@ -266,7 +266,7 @@ export class ClaudeCodeTerminalIntegration {
     Provide JSON response with: output, exitCode, executionTime, suggestions, nextCommands.`;
 
     const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-5-0',
       max_tokens: 4096,
       system: systemPrompt,
       messages: [
@@ -328,7 +328,7 @@ export class ClaudeCodeTerminalIntegration {
     JSON format: generatedCode, terminalCommands, setupInstructions, testCommands.`;
 
     const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-5-0',
       max_tokens: 8192,
       system: systemPrompt,
       messages: [

@@ -9,7 +9,7 @@ I prefer iterative development, with a focus on delivering functional components
 ## System Architecture
 
 ### UI/UX Decisions
-The platform features a "Market360 God Mode Dashboard" as its central command center, complemented by 7 vertical-specific dashboards. Key UI elements include a professional landing page, a 6-step brand onboarding wizard, a Command Center with unified search (`Ctrl+K`), a multilingual Content Library, and a Visual Flow Builder for WhatsApp automation.
+The platform features an enterprise-grade "Marketing Command Center" dashboard complemented by 8 vertical-specific dashboards and a Unified Analytics page. Key UI elements include a professional landing page with enterprise messaging, a 6-step brand onboarding wizard, a Command Center with unified search (`Ctrl+K`), a multilingual Content Library, a Visual Flow Builder for WhatsApp automation, and an AI Platform section with Agent Registry (22-point system prompts), LLM Settings (24 providers), and Unified Analytics (cross-vertical ROI/ROAS).
 
 ### Technical Implementations
 WizMark 360 is built with React for the frontend and Express for the backend, utilizing a PostgreSQL database managed by Drizzle ORM. It runs on a unified server (Port 5000) with Vite middleware. The system includes full CRUD APIs, sample data seeding, real-time KPI metrics, and a 4-Tier Model Architecture with a Smart Router for intelligent LLM selection. All 285 agents adhere to a standardized 6-part system prompt structure, supporting a Dual-Model Workflow Architecture (e.g., Claude for planning, Gemini for execution).
@@ -18,8 +18,10 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 - **AI Infrastructure**: Integration with 24 LLM providers, 50+ flagship models, and an LLM Auto-Update system.
 - **Intelligent Model Router**: Multi-factor scoring for optimal model selection based on task complexity, cost, and quality.
 - **Market360 Agents**: 285 specialized agents across 8 verticals (Social Media, SEO/GEO, Web Development, Sales/SDR, WhatsApp Marketing, LinkedIn B2B, Performance Advertising, PR & Communications) with ROMA (Reactive, Proactive, Autonomous, Collaborative, Self-Evolving) levels.
-- **Multilingual Support**: Content generation, chat, and translation in 12 Indian languages.
-- **Voice Capabilities**: Speech-to-Text (Sarvam Saarika v2) and Text-to-Speech (Sarvam Bulbul v1).
+- **Multilingual Support**: Content generation, chat, and translation in 22 Indian languages.
+- **Voice Capabilities**: Speech-to-Text (Sarvam Saarika v3) and Text-to-Speech (Sarvam Bulbul v2).
+- **Centralized LLM Configuration**: All models, providers, costs, and capabilities defined in `shared/llm-config.ts` — no hardcoded model names.
+- **Claude Marketing Tools**: 10 specialized tool-use capabilities (Competitor Intelligence, Visual Brand Monitor, Ad Creative Generator, Market Research Agent, SEO Audit Automation, etc.) via Claude Opus 4.6 and Sonnet 5.0.
 - **Enterprise Marketing Features**: AI-powered workflow automation, multi-touch campaign orchestration, predictive lead scoring, real-time performance dashboards, AI content generation, and lead management.
 - **Multimodal Content Pipeline**: Strategy-to-text-to-image-to-video workflow.
 - **Brand-Aware Content Library**: Content management with brand context.

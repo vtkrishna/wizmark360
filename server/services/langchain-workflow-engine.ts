@@ -102,16 +102,16 @@ export class LangChainWorkflowEngine {
       maxTokens: 8192
     });
 
-    this.models.set('claude-4', {
+    this.models.set('claude-sonnet-5-0', {
       provider: 'anthropic',
-      modelName: 'claude-sonnet-4-20250514',
+      modelName: 'claude-sonnet-5-0',
       temperature: 0.7,
       maxTokens: 8192
     });
 
     this.models.set('gemini-2.5', {
       provider: 'gemini',
-      modelName: 'gemini-2.5-pro',
+      modelName: 'gemini-3-pro',
       temperature: 0.7,
       maxOutputTokens: 8192
     });
@@ -135,7 +135,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'outline',
           type: 'llm',
-          model: 'claude-4',
+          model: 'claude-sonnet-5-0',
           prompt: 'Create a detailed outline based on research: {research_output}',
           dependencies: ['research']
         },
@@ -147,7 +147,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'optimize',
           type: 'llm',
-          model: 'gemini-2.5',
+          model: 'gemini-3-pro',
           prompt: 'Optimize for SEO and engagement: {draft_content}',
           dependencies: ['write']
         }
@@ -177,7 +177,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'architecture',
           type: 'llm',
-          model: 'claude-4',
+          model: 'claude-sonnet-5-0',
           prompt: 'Design architecture for: {requirements}\nConsider scalability and best practices.',
           temperature: 0.2
         },
@@ -196,7 +196,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'optimization',
           type: 'llm',
-          model: 'gemini-2.5',
+          model: 'gemini-3-pro',
           prompt: 'Optimize for performance and security: {code}',
           dependencies: ['implementation']
         }
@@ -230,7 +230,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'competitor-analysis',
           type: 'llm',
-          model: 'claude-4',
+          model: 'claude-sonnet-5-0',
           prompt: 'Analyze competitors in {industry} focusing on {aspects}',
           dependencies: ['market-research']
         },
@@ -266,7 +266,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'concept',
           type: 'llm',
-          model: 'claude-4',
+          model: 'claude-sonnet-5-0',
           prompt: 'Generate creative campaign concept for {brand} targeting {audience}',
           temperature: 0.9
         },
@@ -403,7 +403,7 @@ export class LangChainWorkflowEngine {
     });
 
     const bodyChain = new LLMChain({
-      llm: this.models.get('claude-4'),
+      llm: this.models.get('claude-sonnet-5-0'),
       prompt: PromptTemplate.fromTemplate('Write the main content based on intro: {intro}'),
       outputKey: 'body'
     });
@@ -555,7 +555,7 @@ Generated automatically by LangChain Workflow Engine
       )
     ]);
 
-    const model = this.models.get('claude-4');
+    const model = this.models.get('claude-sonnet-5-0');
     const chain = new LLMChain({ llm: model, prompt });
     
     const result = await chain.call({ description, context: JSON.stringify(context) });
@@ -643,7 +643,7 @@ Generate:
 3. Optimal chain sequencing
 `;
 
-    const model = this.models.get('claude-4');
+    const model = this.models.get('claude-sonnet-5-0');
     const result = await model.predict(prompt);
     
     // Parse and create template

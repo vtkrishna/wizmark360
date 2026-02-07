@@ -24,20 +24,29 @@ import {
   AlertTriangle,
   Info,
   Search,
-  Filter
+  Filter,
+  Wrench
 } from "lucide-react";
+import {
+  LLM_PROVIDERS,
+  CLAUDE_MARKETING_TOOLS,
+  TWENTY_TWO_POINT_AGENT_FRAMEWORK,
+  PLATFORM_STATS,
+  MODEL_ROUTING,
+  AGENT_MODEL_DEFAULTS
+} from "@shared/llm-config";
 
-interface LLMProvider {
+interface LLMProviderDisplay {
   id: string;
   name: string;
   tier: string;
   modelCount: number;
   isActive: boolean;
   apiKeyConfigured: boolean;
-  models: LLMModel[];
+  models: LLMModelDisplay[];
 }
 
-interface LLMModel {
+interface LLMModelDisplay {
   id: string;
   name: string;
   contextWindow: number;
@@ -59,88 +68,61 @@ interface Agent {
   taskCount: number;
 }
 
-const providers: LLMProvider[] = [
-  {
-    id: "openai",
-    name: "OpenAI",
-    tier: "Tier 1 - Premium",
-    modelCount: 18,
-    isActive: true,
-    apiKeyConfigured: true,
-    models: [
-      { id: "gpt-5.2", name: "GPT-5.2 Thinking", contextWindow: 200000, inputCost: 5, outputCost: 20, capabilities: ["text", "vision", "reasoning"], isDefault: true, isActive: true },
-      { id: "gpt-5.2-pro", name: "GPT-5.2 Pro", contextWindow: 200000, inputCost: 15, outputCost: 60, capabilities: ["reasoning", "code"], isDefault: false, isActive: true },
-      { id: "gpt-5.2-instant", name: "GPT-5.2 Instant", contextWindow: 200000, inputCost: 2.5, outputCost: 10, capabilities: ["text", "fast"], isDefault: false, isActive: true },
-      { id: "o3", name: "o3 Reasoning", contextWindow: 200000, inputCost: 15, outputCost: 60, capabilities: ["reasoning"], isDefault: false, isActive: true },
-      { id: "o4-mini", name: "o4 Mini", contextWindow: 200000, inputCost: 1.1, outputCost: 4.4, capabilities: ["reasoning", "fast"], isDefault: false, isActive: true }
-    ]
-  },
-  {
-    id: "anthropic",
-    name: "Anthropic",
-    tier: "Tier 1 - Premium",
-    modelCount: 6,
-    isActive: true,
-    apiKeyConfigured: true,
-    models: [
-      { id: "claude-sonnet-4", name: "Claude 4 Sonnet", contextWindow: 200000, inputCost: 3, outputCost: 15, capabilities: ["text", "vision", "code"], isDefault: true, isActive: true },
-      { id: "claude-opus-4", name: "Claude 4 Opus", contextWindow: 200000, inputCost: 15, outputCost: 75, capabilities: ["reasoning", "code"], isDefault: false, isActive: true },
-      { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", contextWindow: 200000, inputCost: 0.8, outputCost: 4, capabilities: ["text", "fast"], isDefault: false, isActive: true }
-    ]
-  },
-  {
-    id: "gemini",
-    name: "Google Gemini",
-    tier: "Tier 1 - Premium",
-    modelCount: 8,
-    isActive: true,
-    apiKeyConfigured: true,
-    models: [
-      { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1000000, inputCost: 0.075, outputCost: 0.3, capabilities: ["text", "vision", "fast"], isDefault: true, isActive: true },
-      { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", contextWindow: 2000000, inputCost: 1.25, outputCost: 5, capabilities: ["text", "reasoning"], isDefault: false, isActive: true }
-    ]
-  },
-  {
-    id: "kimi",
-    name: "Moonshot (Kimi K2.5)",
-    tier: "Tier 2 - Cost-Optimized",
-    modelCount: 4,
-    isActive: true,
-    apiKeyConfigured: true,
-    models: [
-      { id: "kimi-k2.5", name: "Kimi K2.5", contextWindow: 128000, inputCost: 0.12, outputCost: 0.12, capabilities: ["text", "agentic", "multilingual"], isDefault: true, isActive: true },
-      { id: "kimi-k2-instruct", name: "Kimi K2 Instruct", contextWindow: 128000, inputCost: 0.12, outputCost: 0.12, capabilities: ["text", "code"], isDefault: false, isActive: true }
-    ]
-  },
-  {
-    id: "openrouter",
-    name: "OpenRouter",
-    tier: "Tier 4 - Free/Budget",
-    modelCount: 343,
-    isActive: true,
-    apiKeyConfigured: true,
-    models: [
-      { id: "llama-3.3-70b", name: "Llama 3.3 70B", contextWindow: 131072, inputCost: 0.12, outputCost: 0.3, capabilities: ["text", "code"], isDefault: true, isActive: true },
-      { id: "qwen-2.5-72b", name: "Qwen 2.5 72B", contextWindow: 131072, inputCost: 0.35, outputCost: 0.4, capabilities: ["text", "code"], isDefault: false, isActive: true },
-      { id: "deepseek-v3", name: "DeepSeek V3", contextWindow: 64000, inputCost: 0.14, outputCost: 0.28, capabilities: ["text", "reasoning"], isDefault: false, isActive: true }
-    ]
-  }
-];
+const providers: LLMProviderDisplay[] = LLM_PROVIDERS.map(p => ({
+  id: p.id,
+  name: p.name,
+  tier: p.tier,
+  modelCount: p.models.length,
+  isActive: p.isActive,
+  apiKeyConfigured: p.isActive && p.apiKeyEnv !== '',
+  models: p.models.map(m => ({
+    id: m.id,
+    name: m.name,
+    contextWindow: m.contextWindow,
+    inputCost: m.inputCostPer1M,
+    outputCost: m.outputCostPer1M,
+    capabilities: m.capabilities,
+    isDefault: m.isDefault ?? false,
+    isActive: true
+  }))
+}));
 
 const sampleAgents: Agent[] = [
-  { id: "sm-001", name: "Content Strategist", vertical: "Social Media", romaLevel: "L2", systemPrompt: "You are an expert social media content strategist...", model: "claude-sonnet-4", isActive: true, taskCount: 1250 },
-  { id: "sm-002", name: "Viral Content Creator", vertical: "Social Media", romaLevel: "L1", systemPrompt: "You are a creative content specialist...", model: "gpt-5.2", isActive: true, taskCount: 890 },
-  { id: "seo-001", name: "SEO Director", vertical: "SEO/GEO", romaLevel: "L4", systemPrompt: "You are an SEO director overseeing all optimization...", model: "claude-opus-4", isActive: true, taskCount: 456 },
-  { id: "seo-002", name: "Keyword Researcher", vertical: "SEO/GEO", romaLevel: "L1", systemPrompt: "You are a keyword research specialist...", model: "gemini-2.5-flash", isActive: true, taskCount: 2100 },
-  { id: "ads-001", name: "Performance Director", vertical: "Performance Ads", romaLevel: "L4", systemPrompt: "You are a performance advertising director...", model: "gpt-5.2-pro", isActive: true, taskCount: 678 },
-  { id: "sales-001", name: "Lead Scoring Expert", vertical: "Sales/SDR", romaLevel: "L2", systemPrompt: "You are a lead scoring and qualification expert...", model: "claude-sonnet-4", isActive: true, taskCount: 1890 },
-  { id: "wa-001", name: "WhatsApp Automation", vertical: "WhatsApp", romaLevel: "L3", systemPrompt: "You are a WhatsApp automation specialist...", model: "kimi-k2.5", isActive: true, taskCount: 3400 },
-  { id: "li-001", name: "LinkedIn Strategist", vertical: "LinkedIn B2B", romaLevel: "L2", systemPrompt: "You are a LinkedIn B2B marketing strategist...", model: "claude-sonnet-4", isActive: true, taskCount: 567 }
+  { id: "sm-001", name: "Content Strategist", vertical: "Social Media", romaLevel: "L2", systemPrompt: "You are an expert social media content strategist...", model: "claude-sonnet-5-0", isActive: true, taskCount: 1250 },
+  { id: "sm-002", name: "Viral Content Creator", vertical: "Social Media", romaLevel: "L1", systemPrompt: "You are a creative content specialist...", model: "gpt-5-2", isActive: true, taskCount: 890 },
+  { id: "seo-001", name: "SEO Director", vertical: "SEO/GEO", romaLevel: "L4", systemPrompt: "You are an SEO director overseeing all optimization...", model: "claude-opus-4-6", isActive: true, taskCount: 456 },
+  { id: "seo-002", name: "Keyword Researcher", vertical: "SEO/GEO", romaLevel: "L1", systemPrompt: "You are a keyword research specialist...", model: "gemini-3-flash", isActive: true, taskCount: 2100 },
+  { id: "ads-001", name: "Performance Director", vertical: "Performance Ads", romaLevel: "L4", systemPrompt: "You are a performance advertising director...", model: "gpt-5-2-pro", isActive: true, taskCount: 678 },
+  { id: "sales-001", name: "Lead Scoring Expert", vertical: "Sales/SDR", romaLevel: "L2", systemPrompt: "You are a lead scoring and qualification expert...", model: "claude-sonnet-5-0", isActive: true, taskCount: 1890 },
+  { id: "wa-001", name: "WhatsApp Automation", vertical: "WhatsApp", romaLevel: "L3", systemPrompt: "You are a WhatsApp automation specialist...", model: "gemini-3-flash", isActive: true, taskCount: 3400 },
+  { id: "li-001", name: "LinkedIn Strategist", vertical: "LinkedIn B2B", romaLevel: "L2", systemPrompt: "You are a LinkedIn B2B marketing strategist...", model: "claude-sonnet-5-0", isActive: true, taskCount: 567 },
+  { id: "pr-001", name: "PR & Communications Lead", vertical: "PR & Comms", romaLevel: "L3", systemPrompt: "You are a PR and communications specialist managing crisis comms...", model: "claude-opus-4-6", isActive: true, taskCount: 340 }
 ];
+
+const routingEntries = [
+  { task: "Complex Reasoning", model: `${MODEL_ROUTING.complexReasoning.primary} / ${MODEL_ROUTING.complexReasoning.fallback}`, priority: "Quality" },
+  { task: "Content Generation", model: `${MODEL_ROUTING.contentGeneration.primary} / ${MODEL_ROUTING.contentGeneration.fallback}`, priority: "Balanced" },
+  { task: "Quick Responses", model: `${MODEL_ROUTING.quickResponses.primary} / ${MODEL_ROUTING.quickResponses.fallback}`, priority: "Speed" },
+  { task: "Bulk Processing", model: `${MODEL_ROUTING.bulkProcessing.primary} / ${MODEL_ROUTING.bulkProcessing.fallback}`, priority: "Cost" },
+  { task: "Indian Languages", model: `${MODEL_ROUTING.indianLanguages.primary} / ${MODEL_ROUTING.indianLanguages.fallback}`, priority: "Specialized" },
+  { task: "Code Generation", model: `${MODEL_ROUTING.codeGeneration.primary} / ${MODEL_ROUTING.codeGeneration.fallback}`, priority: "Quality" },
+  { task: "Search & Research", model: `${MODEL_ROUTING.searchResearch.primary} / ${MODEL_ROUTING.searchResearch.fallback}`, priority: "Quality" },
+  { task: "Visual Analysis", model: `${MODEL_ROUTING.visualAnalysis.primary} / ${MODEL_ROUTING.visualAnalysis.fallback}`, priority: "Quality" },
+  { task: "SEO Optimization", model: `${MODEL_ROUTING.seoOptimization.primary} / ${MODEL_ROUTING.seoOptimization.fallback}`, priority: "Balanced" },
+  { task: "Social Media", model: `${MODEL_ROUTING.socialMedia.primary} / ${MODEL_ROUTING.socialMedia.fallback}`, priority: "Balanced" }
+];
+
+const categoryColors: Record<string, string> = {
+  marketing: "bg-pink-100 text-pink-700",
+  analysis: "bg-blue-100 text-blue-700",
+  automation: "bg-amber-100 text-amber-700",
+  research: "bg-green-100 text-green-700",
+  creative: "bg-purple-100 text-purple-700"
+};
 
 export default function AdminLLMSettings() {
   const [activeTab, setActiveTab] = useState<"providers" | "agents" | "routing">("providers");
-  const [expandedProvider, setExpandedProvider] = useState<string | null>("openai");
+  const [expandedProvider, setExpandedProvider] = useState<string | null>("anthropic");
   const [searchQuery, setSearchQuery] = useState("");
   const [editingAgent, setEditingAgent] = useState<string | null>(null);
   const [agents, setAgents] = useState(sampleAgents);
@@ -151,7 +133,7 @@ export default function AdminLLMSettings() {
     a.vertical.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const verticals = ["All", "Social Media", "SEO/GEO", "Performance Ads", "Sales/SDR", "WhatsApp", "LinkedIn B2B", "Telegram"];
+  const verticals = ["All", "Social Media", "SEO/GEO", "Performance Ads", "Sales/SDR", "WhatsApp", "LinkedIn B2B", "Telegram", "PR & Comms"];
   const [selectedVertical, setSelectedVertical] = useState("All");
 
   const displayedAgents = selectedVertical === "All" 
@@ -198,11 +180,11 @@ export default function AdminLLMSettings() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm">
                   <Check className="h-4 w-4" />
-                  24 Providers Configured
+                  {PLATFORM_STATS.totalProviders} Providers Configured
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm">
                   <Layers className="h-4 w-4" />
-                  886+ Models Available
+                  {PLATFORM_STATS.totalModels}+ Models Available
                 </div>
               </div>
               <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
@@ -330,7 +312,7 @@ export default function AdminLLMSettings() {
                   <h3 className="font-medium text-blue-900 dark:text-blue-100">Cost Optimization Strategy</h3>
                   <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
                     The platform uses <strong>Kimi K2.5</strong> and <strong>OpenRouter free models</strong> for routine tasks, achieving 90% cost reduction.
-                    Premium models (GPT-5.2, Claude 4) are used only for complex reasoning and high-stakes content.
+                    Premium models (GPT-5.2, Claude Opus 4.6) are used only for complex reasoning and high-stakes content.
                   </p>
                   <div className="flex gap-4 mt-3">
                     <div className="text-sm">
@@ -425,20 +407,37 @@ export default function AdminLLMSettings() {
               ))}
             </div>
 
+            <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800 p-4">
+              <h3 className="font-medium text-orange-900 dark:text-orange-100 flex items-center gap-2 mb-3">
+                <Wrench className="h-5 w-5" />
+                Claude Marketing Tools ({CLAUDE_MARKETING_TOOLS.length} Capabilities)
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                {CLAUDE_MARKETING_TOOLS.map(tool => (
+                  <div key={tool.id} className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-sm text-gray-900 dark:text-white">{tool.name}</span>
+                      <span className={`px-1.5 py-0.5 text-xs rounded ${categoryColors[tool.category] || "bg-gray-100 text-gray-700"}`}>
+                        {tool.category}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mb-2">{tool.description}</p>
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <Cpu className="h-3 w-3" />
+                      <span>{tool.requiredModel}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800 p-4">
               <h3 className="font-medium text-purple-900 dark:text-purple-100 flex items-center gap-2">
                 <Bot className="h-5 w-5" />
                 22-Point Enterprise Agent Framework
               </h3>
               <div className="grid grid-cols-4 gap-2 mt-3 text-xs">
-                {[
-                  "Autonomous Execution", "Guardrails", "Self-Learning", "Capability Awareness",
-                  "Collaboration", "Parallel Execution", "Swarm Coordination", "LLM Intelligence",
-                  "Context Engineering", "Multimodal Processing", "Hierarchy", "Multi-Language",
-                  "Behavioral Intelligence", "Cost Optimization", "Memory", "Tools",
-                  "Error Recovery", "Monitoring", "Security", "Audit Logging",
-                  "Version Control", "Continuous Learning"
-                ].map(feature => (
+                {TWENTY_TWO_POINT_AGENT_FRAMEWORK.map(feature => (
                   <div key={feature} className="flex items-center gap-1 text-purple-700 dark:text-purple-300">
                     <Check className="h-3 w-3" />
                     {feature}
@@ -461,14 +460,7 @@ export default function AdminLLMSettings() {
                 <div className="space-y-4">
                   <h3 className="font-medium text-gray-700 dark:text-gray-300">Task-Based Routing</h3>
                   <div className="space-y-2">
-                    {[
-                      { task: "Complex Reasoning", model: "gpt-5.2-pro / claude-opus-4", priority: "Quality" },
-                      { task: "Content Generation", model: "claude-sonnet-4 / gpt-5.2", priority: "Balanced" },
-                      { task: "Quick Responses", model: "gemini-2.5-flash / kimi-k2.5", priority: "Speed" },
-                      { task: "Bulk Processing", model: "kimi-k2.5 / openrouter-llama", priority: "Cost" },
-                      { task: "Indian Languages", model: "sarvam-m / kimi-k2.5", priority: "Specialized" },
-                      { task: "Code Generation", model: "claude-sonnet-4 / gpt-5.2-codex", priority: "Quality" }
-                    ].map(route => (
+                    {routingEntries.map(route => (
                       <div key={route.task} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white text-sm">{route.task}</p>

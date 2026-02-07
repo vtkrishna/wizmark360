@@ -203,11 +203,11 @@ export class AgentRegistryService extends EventEmitter {
         {
           id: 'gemini-pro-orchestrator',
           name: 'Gemini Pro Orchestrator',
-          description: 'Orchestrates complex multi-agent workflows using Gemini 2.5 Pro',
+          description: 'Orchestrates complex multi-agent workflows using Gemini 3 Pro',
           tier: 'executive',
           romaLevel: 'L4',
           status: 'active',
-          model: 'gemini-2.5-pro',
+          model: 'gemini-3-pro',
           capabilities: ['orchestration', 'multi-agent-coordination', 'workflow-management'],
           systemPrompt: 'You are an expert orchestrator. Coordinate multiple AI agents to solve complex problems efficiently.',
           category: 'Vertex AI',
@@ -221,7 +221,7 @@ export class AgentRegistryService extends EventEmitter {
           tier: 'executive',
           romaLevel: 'L3',
           status: 'active',
-          model: 'gemini-2.5-pro',
+          model: 'gemini-3-pro',
           capabilities: ['advanced-reasoning', 'logical-analysis', 'problem-solving'],
           systemPrompt: 'You are an expert reasoner. Analyze complex problems, apply logical reasoning, and provide well-structured solutions.',
           category: 'Vertex AI',
@@ -252,7 +252,7 @@ export class AgentRegistryService extends EventEmitter {
           // Map to valid Agent tiers
           const tier: Agent['tier'] = i < 4 ? 'executive' : (i < 8 ? 'development' : 'domain');
           const romaLevel: Agent['romaLevel'] = i < 4 ? 'L4' : (i < 8 ? 'L3' : 'L2');
-          const model = i < 4 ? 'gemini-2.5-pro' : (i < 8 ? 'gemini-2.0-flash-exp' : 'gemini-1.5-flash');
+          const model = i < 4 ? 'gemini-3-pro' : (i < 8 ? 'gemini-3-flash' : 'gemini-2-5-flash');
 
           const agent: Agent = {
             id: agentId,

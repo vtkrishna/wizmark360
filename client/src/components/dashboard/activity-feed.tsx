@@ -70,26 +70,26 @@ const typeStyles = {
 
 export default function ActivityFeed() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-      <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900 dark:text-white">Recent Activity</h3>
-        <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View all</button>
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
+      <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-sm tracking-tight">Recent Activity</h3>
+        <button className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors">View all →</button>
       </div>
       
       <div className="divide-y divide-gray-100 dark:divide-gray-700">
         {activities.map((activity) => (
-          <div key={activity.id} className="px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+          <div key={activity.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-750/50 transition-colors cursor-pointer">
             <div className="flex gap-3">
               <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${typeStyles[activity.type]}`}>
                 {activity.icon ? <activity.icon className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
               </div>
               
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.title}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{activity.description}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white leading-snug">{activity.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{activity.description}</p>
               </div>
               
-              <span className="text-xs text-gray-400 flex-shrink-0">{activity.time}</span>
+              <span className="text-xs text-gray-400 flex-shrink-0 whitespace-nowrap ml-2">{activity.time}</span>
             </div>
           </div>
         ))}

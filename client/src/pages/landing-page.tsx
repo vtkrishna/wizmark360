@@ -88,41 +88,41 @@ const verticals = [
 
 const stats = [
   { value: '285', label: 'AI Agents', sublabel: 'Autonomous Marketing' },
-  { value: '24', label: 'LLM Providers', sublabel: '886+ Models' },
-  { value: '22', label: 'Indian Languages', sublabel: 'Sarvam AI' },
-  { value: '8', label: 'Verticals', sublabel: 'Full Stack Marketing' },
+  { value: '24', label: 'LLMs', sublabel: '886+ Models' },
+  { value: '22', label: 'Languages', sublabel: 'Indian Language Support' },
+  { value: '8', label: 'Verticals', sublabel: 'Complete Marketing Stack' },
 ];
 
 const features = [
   { 
     icon: Bot, 
     title: '285 Autonomous Agents', 
-    description: 'AI agents for every marketing task - from content creation to bid optimization, working 24/7.' 
+    description: 'Specialized AI agents for every marketing task - from content creation to bid optimization, powered by Claude Opus 4.6, GPT-5.2, and Gemini 3.' 
   },
   { 
     icon: Languages, 
     title: '22 Indian Languages', 
-    description: 'Create content in Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam & more via Sarvam AI.' 
+    description: 'Create enterprise-grade content in Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam & more via Sarvam AI.' 
   },
   { 
     icon: Mic, 
     title: 'Voice AI Integration', 
-    description: 'Speech-to-text and text-to-speech for WhatsApp voice messages in 22 Indian languages.' 
+    description: 'Advanced speech-to-text and text-to-speech capabilities for WhatsApp voice commerce in 22 Indian languages.' 
   },
   { 
     icon: Brain, 
     title: 'Context Engineering', 
-    description: 'Smart AI that understands your brand voice, audience, and campaign goals for personalized outputs.' 
+    description: 'Enterprise-grade AI that deeply understands your brand voice, market positioning, and campaign objectives for consistently on-brand outputs.' 
   },
   { 
     icon: Target, 
-    title: 'Smart Model Routing', 
-    description: '4-tier architecture automatically selects the best AI model for each task - optimizing cost and quality.' 
+    title: 'Intelligent Model Routing', 
+    description: '4-tier architecture intelligently routes requests to optimal models (Claude Opus 4.6, GPT-5.2, Gemini 3) - maximizing performance and cost efficiency.' 
   },
   { 
     icon: Shield, 
-    title: 'Enterprise Compliance', 
-    description: 'GDPR, DPDP Act (India), TRA (UAE), PDPA (Singapore) compliant with jurisdiction-aware guardrails.' 
+    title: 'Enterprise Compliance & Security', 
+    description: 'GDPR, DPDP Act (India), TRA (UAE), PDPA (Singapore) compliant with jurisdiction-aware guardrails and enterprise-grade security.' 
   },
 ];
 
@@ -184,13 +184,13 @@ export default function LandingPage() {
               </Badge>
               
               <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                285 AI Agents.
+                AI-Powered
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Marketing Agency
+                  Marketing Operating
                 </span>
                 <br />
-                for Your Brands
+                System
               </h1>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
@@ -206,7 +206,7 @@ export default function LandingPage() {
                   className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
                   <Zap className="mr-2 h-5 w-5" />
-                  Onboard New Brand
+                  Start Your Journey
                 </Button>
                 <Button 
                   size="lg"
@@ -215,7 +215,7 @@ export default function LandingPage() {
                   className="text-lg px-8 py-6 border-gray-300 hover:bg-gray-50"
                 >
                   <Play className="mr-2 h-5 w-5" />
-                  Go to Dashboard
+                  Launch Platform
                 </Button>
               </div>
 
@@ -340,10 +340,10 @@ export default function LandingPage() {
       <section id="verticals" className="py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">7 Marketing Verticals</Badge>
+            <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">8 Marketing Verticals</Badge>
             <h2 className="text-4xl font-bold mb-4">One Platform. Complete Marketing Stack.</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              285 AI agents organized across 7 specialized verticals, each with dedicated tools and workflows.
+              285 AI agents organized across 8 specialized verticals, each with dedicated tools and workflows.
             </p>
           </div>
 
@@ -479,7 +479,7 @@ export default function LandingPage() {
                   <Briefcase className="h-6 w-6 text-purple-600" />
                 </div>
                 <h3 className="font-bold mb-2">Service Packages</h3>
-                <p className="text-gray-600 text-sm">Full or partial marketing services across 8 verticals</p>
+                <p className="text-gray-600 text-sm">Full or partial marketing services across 8 verticals with PR & Comms</p>
               </CardContent>
             </Card>
             <Card className="border-gray-200 hover:shadow-lg transition-shadow">
@@ -507,10 +507,10 @@ export default function LandingPage() {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Ready to Onboard a New Brand?
+            Ready to Transform Your Marketing Operations?
           </h2>
           <p className="text-xl text-white/80 mb-8">
-            Start the brand onboarding process to configure services, upload assets, and begin marketing operations.
+            Launch your enterprise marketing platform with 285 AI agents, advanced compliance, and full multi-brand management.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -519,7 +519,7 @@ export default function LandingPage() {
               className="text-lg px-8 py-6 bg-white text-blue-600 hover:bg-gray-100"
             >
               <Zap className="mr-2 h-5 w-5" />
-              Onboard New Brand
+              Start Your Journey
             </Button>
             <Button 
               size="lg"
@@ -528,7 +528,7 @@ export default function LandingPage() {
               className="text-lg px-8 py-6 border-white/30 text-white hover:bg-white/10"
             >
               <Play className="mr-2 h-5 w-5" />
-              View Dashboard
+              Launch Platform
             </Button>
           </div>
         </div>
@@ -545,7 +545,7 @@ export default function LandingPage() {
                 <span className="text-xl font-bold">WizMark 360</span>
               </div>
               <p className="text-gray-400 text-sm">
-                The world's first AI Marketing Operating System. 267 autonomous agents working 24/7 to drive your marketing success.
+                The world's first AI-powered Marketing Operating System. 285 autonomous agents delivering enterprise-grade marketing automation across 8 verticals.
               </p>
             </div>
             <div>

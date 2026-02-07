@@ -350,9 +350,9 @@ Keep your entire response concise and under 800 characters to ensure completenes
     console.log(`🌐 Language: ${languageName} (${language})`)
 
     try {
-      // Try Gemini 2.5 Pro in English
+      // Try Gemini 3 Pro in English
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3-pro" });
 
       const result = await model.generateContent({
         systemInstruction: systemPromptEnglish,
@@ -364,7 +364,7 @@ Keep your entire response concise and under 800 characters to ensure completenes
 
       const candidate = result.response.candidates?.[0];
       const aiResponse = candidate?.content?.parts?.map(p => p.text).join(" ") || result.response.text?.();
-      if (!aiResponse) throw new Error("Gemini 2.5 Pro returned no response");
+      if (!aiResponse) throw new Error("Gemini 3 Pro returned no response");
 
       let finalResponse = aiResponse;
 
@@ -477,7 +477,7 @@ Keep your entire response concise and under 800 characters to ensure completenes
 
     try {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3-pro" });
 
       const cleanInput = input.split('\n\nContext:')[0].trim();
 

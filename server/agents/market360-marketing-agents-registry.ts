@@ -234,13 +234,13 @@ ${agent.capabilities.map(c => `- ✅ ${formatCapability(c)}`).join('\n')}
 ### Model Selection (Priority Order)
 | Priority | Model | Use Case |
 |----------|-------|----------|
-| 1 | Claude Sonnet 4 | Complex content and strategy |
-| 2 | GPT-4o | Multi-faceted analysis |
-| 3 | Gemini 2.5 Pro | Large context processing |
-| 4 | DeepSeek R1 | Cost-effective tasks |
+| 1 | Claude Sonnet 5.0 | Complex content and strategy |
+| 2 | GPT-5.2 | Multi-faceted analysis |
+| 3 | Gemini 3 Pro | Large context processing |
+| 4 | DeepSeek R2 | Cost-effective tasks |
 
 ### Fallback Chain
-Claude Sonnet 4 → GPT-4o → Gemini 2.5 Flash → DeepSeek R1
+Claude Sonnet 5.0 → GPT-5.2 → Gemini 3 Flash → DeepSeek R2
 
 ---
 
@@ -1447,8 +1447,8 @@ function buildAgentDefinition(partial: Partial<MarketingAgentDefinition>): Marke
     capabilities: partial.capabilities!,
     tools: getToolsForCategory(partial.category!),
     protocols: ['A2A', 'MCP', `ROMA-${partial.romaLevel}`, 'AG-UI', 'OpenAgent', 'Parlant', 'BMAD'],
-    preferredModels: ['claude-sonnet-4', 'gpt-4o', 'gemini-2.5-pro'],
-    fallbackModels: ['claude-haiku-3.5', 'gpt-4-turbo', 'deepseek-r1'],
+    preferredModels: ['claude-sonnet-5-0', 'gpt-5-2', 'gemini-3-pro'],
+    fallbackModels: ['claude-haiku-4-5', 'gpt-5-2-pro', 'deepseek-r2'],
     operationModes: {
       autonomous: partial.romaLevel === 'L3' || partial.romaLevel === 'L4',
       supervised: true,

@@ -1154,7 +1154,7 @@ Respond as AVA would - professional, knowledgeable, and focused on helping with 
       console.log('🧠 Creating direct multimodal prompt for Gemini...');
 
       // Get model instance
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-3-pro' });
 
       // Get language name for clear instruction
       const languageName = this.getLanguageName(language);
@@ -1277,7 +1277,7 @@ How may I help you today?`;
       // For production use, consider using Google Cloud Speech-to-Text API instead
       
       try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-pro' });
 
         const result = await model.generateContent([
           {

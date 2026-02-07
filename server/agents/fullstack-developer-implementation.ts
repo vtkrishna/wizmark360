@@ -475,7 +475,7 @@ This implementation demonstrates how the Fullstack Developer agent operates as a
       ],
 
       // Preferred LLM Models (Cost-Optimized)
-      preferredModels: ['kimi', 'anthropic', 'openai'], // KIMI K2 first for 70% cost reduction
+      preferredModels: ['deepseek-r2', 'claude-sonnet-5-0', 'gpt-5-2'], // DeepSeek R2 first for cost optimization
 
       // Task Categories
       taskTypes: [
