@@ -62,3 +62,24 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 -   **Payment Gateway**: Razorpay.
 -   **Web Search APIs**: Perplexity AI, Google Custom Search, Bing Web Search.
 -   **Telegram API**.
+
+## Document Structure
+
+### Active Documents
+- **`replit.md`** (this file) — Core tracking document for project status, changelog, architecture decisions, feature development, and user preferences. This is the single source of truth for all project tracking.
+- **`README.md`** — Public-facing project overview.
+- **`docs/WizMark-360-Product-Note.md`** — Complete marketing product note (1,230+ lines) covering all features, architecture, agents, verticals, integrations, and competitive positioning.
+- **`docs/WizMark-360-Investor-Presentation.md`** — Series A investor presentation (1,000+ lines) covering market opportunity, technology MOAT, revenue model, go-to-market strategy, and investment thesis.
+- **`packages/memory/README.md`**, **`packages/tools/README.md`** — Package-specific READMEs (kept in place for developer reference).
+
+### Archived Documents
+- **`documents_archive/`** — All legacy and superseded documentation, organized by original location:
+  - `documents_archive/root/` — 34 files from the root directory (phase plans, status reports, audits, old feature docs)
+  - `documents_archive/docs/` — 13 files from the old docs/ folder (old product features, PDFs, guides, master plan)
+  - `documents_archive/server/` — 4 files (migration guides, setup docs)
+  - `documents_archive/packages/` — 4 files (test results, benchmarks)
+  - `documents_archive/system-prompts/` — 1 file (prompt patterns extraction)
+
+## Recent Changes
+- **Feb 8, 2026**: Document cleanup — moved 56 old/superseded documents to `documents_archive/`, keeping only the two new comprehensive documents in `docs/`. Identified `replit.md` as the core project tracking document.
+- **Feb 8, 2026**: Created WizMark-360-Product-Note.md (1,230+ lines) and WizMark-360-Investor-Presentation.md (1,000+ lines) with architect-reviewed accuracy fixes (service modules terminology, data source disclaimers).
