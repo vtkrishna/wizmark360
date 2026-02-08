@@ -33,7 +33,9 @@ import {
   Share2,
   Zap,
   Brain,
-  ChevronDown
+  ChevronDown,
+  ClipboardCopy,
+  Link
 } from "lucide-react";
 
 interface Message {
@@ -174,12 +176,12 @@ export default function GlobalMarketingChat() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: generateMockResponse(inputMessage),
+        content: "Unable to connect to AI. Please check your API configuration and try again.",
         timestamp: new Date(),
         agentName: "Marketing AI Assistant",
         model: selectedModel.name,
         provider: selectedModel.provider,
-        generatedAssets: generateMockAssets(inputMessage)
+        error: true
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -187,58 +189,38 @@ export default function GlobalMarketingChat() {
     }
   };
 
-  const generateMockResponse = (query: string): string => {
-    const lowerQuery = query.toLowerCase();
-    if (lowerQuery.includes("presentation") || lowerQuery.includes("pitch")) {
-      return "I've created a professional 10-slide presentation for your request. The presentation includes:\n\n1. **Title Slide** - Brand overview and value proposition\n2. **Problem Statement** - Market challenges\n3. **Solution Overview** - Your unique approach\n4. **Key Features** - Product/service highlights\n5. **Market Opportunity** - TAM/SAM/SOM analysis\n6. **Competitive Advantage** - Differentiation points\n7. **Business Model** - Revenue streams\n8. **Traction** - Key metrics and milestones\n9. **Team** - Leadership profiles\n10. **Call to Action** - Next steps\n\nYou can download the presentation in PowerPoint or PDF format below.";
+  const handleExportFormat = async (messageContent: string, format: string) => {
+    try {
+      const response = await fetch("/api/export/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "Exported Content",
+          content: messageContent,
+          type: format.toLowerCase()
+        })
+      });
+      const data = await response.json();
+      if (data.success && data.document?.id) {
+        window.open(`/api/export/${data.document.id}/download`, "_blank");
+      }
+    } catch (err) {
     }
-    if (lowerQuery.includes("proposal") || lowerQuery.includes("rfp")) {
-      return "I've drafted a comprehensive business proposal. The document includes:\n\n**Executive Summary**\n- Project overview and objectives\n- Proposed solution and approach\n\n**Scope of Work**\n- Detailed deliverables\n- Timeline and milestones\n\n**Pricing & Investment**\n- Cost breakdown\n- Payment terms\n\n**Team & Capabilities**\n- Relevant experience\n- Case studies\n\nDownload the proposal below in your preferred format.";
-    }
-    if (lowerQuery.includes("image") || lowerQuery.includes("visual") || lowerQuery.includes("graphic")) {
-      return "I've generated marketing visuals based on your requirements. The images are optimized for:\n\n- **Social Media** (1080x1080, 1200x628, 1080x1920)\n- **Web** (1920x1080 hero, 800x600 thumbnails)\n- **Print** (A4, Letter sizes at 300 DPI)\n\nAll images include your brand colors and can be edited further. Download options available below.";
-    }
-    if (lowerQuery.includes("research") || lowerQuery.includes("analysis") || lowerQuery.includes("competitor")) {
-      return "I've completed a comprehensive market research analysis:\n\n**Market Overview**\n- Market size: ₹15,000 Cr (growing 18% YoY)\n- Key segments and trends\n\n**Competitor Analysis**\n- Top 5 competitors mapped\n- Feature comparison matrix\n- Pricing analysis\n\n**Opportunities**\n- Underserved segments identified\n- Recommended positioning\n\n**Recommendations**\n- Strategic priorities\n- Go-to-market approach\n\nFull report available for download.";
-    }
-    return "I've analyzed your request and prepared a comprehensive response. Based on our platform's capabilities, I can help you with:\n\n- **Content Creation**: Presentations, proposals, email campaigns\n- **Visual Design**: Marketing images, infographics, social graphics\n- **Research**: Market analysis, competitor insights, trend reports\n- **Strategy**: Marketing plans, campaign strategies, ROI projections\n\nHow would you like me to proceed?";
   };
 
-  const generateMockAssets = (query: string): GeneratedAsset[] => {
-    const lowerQuery = query.toLowerCase();
-    const assets: GeneratedAsset[] = [];
-    
-    if (lowerQuery.includes("presentation") || lowerQuery.includes("pitch")) {
-      assets.push({
-        id: "ppt-1",
-        type: "presentation",
-        title: "Marketing Pitch Deck",
-        description: "10-slide professional presentation",
-        format: "PPTX",
-        downloadUrl: "#"
+  const handleShare = async (assetId: string) => {
+    try {
+      const response = await fetch(`/api/export/${assetId}/share`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
       });
+      const data = await response.json();
+      if (data.success && data.shareUrl) {
+        const fullUrl = `${window.location.origin}${data.shareUrl}`;
+        await navigator.clipboard.writeText(fullUrl);
+      }
+    } catch (err) {
     }
-    if (lowerQuery.includes("proposal") || lowerQuery.includes("rfp")) {
-      assets.push({
-        id: "doc-1",
-        type: "proposal",
-        title: "Business Proposal",
-        description: "Comprehensive proposal document",
-        format: "DOCX",
-        downloadUrl: "#"
-      });
-    }
-    if (lowerQuery.includes("image") || lowerQuery.includes("visual")) {
-      assets.push({
-        id: "img-1",
-        type: "image",
-        title: "Marketing Visual Set",
-        description: "Multi-size marketing images",
-        format: "PNG",
-        downloadUrl: "#"
-      });
-    }
-    return assets;
   };
 
   const handleCapabilityClick = (capability: QuickCapability) => {
@@ -392,10 +374,10 @@ export default function GlobalMarketingChat() {
                   <Sparkles className="h-10 w-10 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Welcome to Marketing AI
+                  WizMark 360 Super Chat
                 </h2>
                 <p className="text-gray-500 max-w-md mx-auto mb-8">
-                  Your multimodal AI assistant for creating presentations, proposals, images, and comprehensive marketing assets.
+                  Your AI-powered marketing command center - create strategies, documents, presentations, and manage all verticals from one place
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
                   {capabilities.slice(0, 4).map(cap => (
@@ -475,19 +457,48 @@ export default function GlobalMarketingChat() {
                               <p className="text-xs text-gray-500">{asset.description} • {asset.format}</p>
                             </div>
                           </div>
-                          <button className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700">
+                          <a
+                            href={asset.downloadUrl}
+                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 px-3 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700"
+                          >
                             <Download className="h-4 w-4" />
                             Download
-                          </button>
+                          </a>
                         </div>
                       ))}
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xs text-gray-500">Export as:</span>
+                        {["PDF", "DOCX", "XLSX", "PPTX", "CSV"].map(fmt => (
+                          <button
+                            key={fmt}
+                            onClick={() => handleExportFormat(message.content, fmt)}
+                            className="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            {fmt}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
 
                   {message.role === "assistant" && (
                     <div className="flex items-center gap-2 mt-2">
-                      <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                      <button
+                        onClick={() => navigator.clipboard.writeText(message.content)}
+                        className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        title="Copy"
+                      >
                         <Copy className="h-4 w-4 text-gray-400" />
+                      </button>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(message.content)}
+                        className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        title="Copy as Markdown"
+                      >
+                        <ClipboardCopy className="h-4 w-4 text-gray-400" />
                       </button>
                       <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <ThumbsUp className="h-4 w-4 text-gray-400" />
@@ -498,6 +509,18 @@ export default function GlobalMarketingChat() {
                       <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <RotateCcw className="h-4 w-4 text-gray-400" />
                       </button>
+                      {message.generatedAssets && message.generatedAssets.length > 0 && (
+                        <button
+                          onClick={() => {
+                            const firstAsset = message.generatedAssets![0];
+                            if (firstAsset) handleShare(firstAsset.id);
+                          }}
+                          className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                          title="Share"
+                        >
+                          <Link className="h-4 w-4 text-gray-400" />
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -589,7 +612,7 @@ export default function GlobalMarketingChat() {
             </div>
             
             <p className="text-xs text-gray-500 text-center mt-2">
-              Powered by WAI-SDK v3.1.1 • 24 LLM Providers • 267 Specialized Agents
+              Powered by WizMark 360 • 24 LLM Providers • 285 Specialized Agents
             </p>
           </div>
         </div>

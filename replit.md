@@ -85,6 +85,16 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
   - `documents_archive/system-prompts/` — 1 file (prompt patterns extraction)
 
 ## Recent Changes
+- **Feb 8, 2026 (20:00 IST)**: Production-readiness upgrade — replaced all mock/placeholder data with real AI integrations:
+  - Built unified LLM service (`server/services/unified-llm-service.ts`) with real OpenAI, OpenRouter (free models), Anthropic, Gemini, Groq integration and graceful fallback
+  - Super Chat (Global Marketing Chat) now generates real AI content with downloadable documents (PDF/DOCX/PPTX/XLSX) via `server/services/document-generator.ts`
+  - Brand document auto-generation service produces brand books, style guides, and guidelines as PDFs after onboarding
+  - Strategy-to-execution pipeline with full lifecycle management (strategy creation, execution plans, task tracking, KPI monitoring)
+  - Command Center dashboard redesigned with 6 lifecycle tabs (Strategy, Planning, Execution, Content, Monitoring, Results) and "Live" vs "Estimated" data indicators
+  - Content Calendar page with monthly/weekly views, color-coded scheduling, and quick schedule modal
+  - Monitoring dashboard API serves real KPIs from database with clear data source attribution
+  - All KPI data returns `{value, dataSource}` objects for transparency; `kv()` helper extracts values safely
+  - Key files: `server/services/unified-llm-service.ts`, `server/services/document-generator.ts`, `server/services/brand-document-generator.ts`, `server/services/strategy-execution-pipeline.ts`, `server/routes/marketing-chat-routes.ts`, `server/routes/export-routes.ts`, `server/routes/strategy-pipeline-routes.ts`, `server/routes/monitoring-dashboard-routes.ts`, `client/src/pages/new-dashboard.tsx`, `client/src/pages/global-marketing-chat.tsx`, `client/src/pages/content-calendar.tsx`
 - **Feb 8, 2026 (15:00 IST)**: Generated professional PDF documents:
   - `docs/pdf/WizMark-360-Investor-Presentation.pdf` (1.19 MB) — Professional cover page, branded headers/footers, tables, code blocks
   - `docs/pdf/WizMark-360-Product-Note.pdf` (1.48 MB) — Full platform features with 2,191 lines of content

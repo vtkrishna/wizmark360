@@ -1,11 +1,8 @@
 import { Router, Request, Response } from 'express';
+import { generateResponse, generateMarketingContent, getAvailableProviders } from '../services/unified-llm-service';
+import { generateDocument } from '../services/document-generator';
 
 const router = Router();
-
-interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
 
 interface ChatRequest {
   message: string;
@@ -28,530 +25,201 @@ interface GeneratedAsset {
   format?: string;
 }
 
+interface IntentMatch {
+  type: string;
+  agentName: string;
+  documentType?: 'pdf' | 'docx' | 'pptx' | 'html';
+  assetType: GeneratedAsset['type'];
+  assetTitle: string;
+  assetDescription: string;
+  assetFormat: string;
+}
+
+function detectIntent(message: string): IntentMatch | null {
+  const lower = message.toLowerCase();
+
+  if (lower.includes('presentation') || lower.includes('pitch') || lower.includes('deck')) {
+    return {
+      type: 'presentation',
+      agentName: 'Presentation Specialist',
+      documentType: 'pptx',
+      assetType: 'presentation',
+      assetTitle: 'Marketing Pitch Deck',
+      assetDescription: 'AI-generated professional presentation',
+      assetFormat: 'PPTX',
+    };
+  }
+
+  if (lower.includes('proposal') || lower.includes('rfp') || lower.includes('quote')) {
+    return {
+      type: 'proposal',
+      agentName: 'Proposal Writer',
+      documentType: 'docx',
+      assetType: 'proposal',
+      assetTitle: 'Business Proposal',
+      assetDescription: 'AI-generated proposal document',
+      assetFormat: 'DOCX',
+    };
+  }
+
+  if (lower.includes('email') || lower.includes('campaign') || lower.includes('newsletter')) {
+    return {
+      type: 'email',
+      agentName: 'Email Marketing Specialist',
+      documentType: 'html',
+      assetType: 'email_template',
+      assetTitle: 'Email Campaign Templates',
+      assetDescription: 'AI-generated email sequence',
+      assetFormat: 'HTML',
+    };
+  }
+
+  if (lower.includes('social') || lower.includes('post') || lower.includes('content')) {
+    return {
+      type: 'social',
+      agentName: 'Social Media Strategist',
+      assetType: 'social_post',
+      assetTitle: 'Social Media Content Pack',
+      assetDescription: 'AI-generated social media content',
+      assetFormat: 'PDF',
+    };
+  }
+
+  if (lower.includes('research') || lower.includes('analysis') || lower.includes('competitor') || lower.includes('market')) {
+    return {
+      type: 'research',
+      agentName: 'Market Research Analyst',
+      documentType: 'pdf',
+      assetType: 'document',
+      assetTitle: 'Market Research Report',
+      assetDescription: 'AI-generated market analysis',
+      assetFormat: 'PDF',
+    };
+  }
+
+  if (lower.includes('strategy') || lower.includes('plan') || lower.includes('roadmap')) {
+    return {
+      type: 'strategy',
+      agentName: 'Brand Strategist',
+      assetType: 'document',
+      assetTitle: 'Marketing Strategy Document',
+      assetDescription: 'AI-generated strategic plan',
+      assetFormat: 'PDF',
+    };
+  }
+
+  if (lower.includes('image') || lower.includes('visual') || lower.includes('graphic') || lower.includes('design')) {
+    return {
+      type: 'social',
+      agentName: 'Social Media Strategist',
+      assetType: 'image',
+      assetTitle: 'Marketing Visual Concepts',
+      assetDescription: 'AI-generated visual content directions',
+      assetFormat: 'PDF',
+    };
+  }
+
+  if (lower.includes('video') || lower.includes('script') || lower.includes('reel')) {
+    return {
+      type: 'social',
+      agentName: 'Video Content Creator',
+      assetType: 'video_script',
+      assetTitle: 'Video Script Package',
+      assetDescription: 'AI-generated video production scripts',
+      assetFormat: 'PDF',
+    };
+  }
+
+  if (lower.includes('infographic') || lower.includes('chart') || lower.includes('data visual')) {
+    return {
+      type: 'social',
+      agentName: 'SEO Analyst',
+      assetType: 'infographic',
+      assetTitle: 'Infographic Concepts',
+      assetDescription: 'AI-generated data visualization concepts',
+      assetFormat: 'PDF',
+    };
+  }
+
+  if (lower.includes('brand') || lower.includes('guideline') || lower.includes('style guide')) {
+    return {
+      type: 'brand_guide',
+      agentName: 'Brand Strategist',
+      assetType: 'document',
+      assetTitle: 'Brand Guidelines Document',
+      assetDescription: 'AI-generated brand identity manual',
+      assetFormat: 'PDF',
+    };
+  }
+
+  return null;
+}
+
 router.post('/marketing', async (req: Request, res: Response) => {
   try {
     const { message, model, provider, context } = req.body as ChatRequest;
 
-    const lowerMessage = message.toLowerCase();
-    let response: string;
-    let agentName = 'Marketing AI Assistant';
+    if (!message || !message.trim()) {
+      return res.status(400).json({ success: false, error: 'Message is required' });
+    }
+
+    const intent = detectIntent(message);
+    const agentName = intent?.agentName || 'Marketing AI Assistant';
+    const contentType = intent?.type || 'strategy';
+
+    const llmResponse = await generateMarketingContent(
+      message,
+      contentType,
+      context?.brandContext
+    );
+
     const generatedAssets: GeneratedAsset[] = [];
 
-    if (lowerMessage.includes('presentation') || lowerMessage.includes('pitch') || lowerMessage.includes('deck')) {
-      agentName = 'Presentation Specialist';
-      response = `I've created a professional presentation based on your requirements. Here's the structure:
-
-**Slide Deck Overview:**
-1. **Title Slide** - Compelling headline with brand identity
-2. **Problem Statement** - Market challenges and pain points
-3. **Solution Overview** - Your unique value proposition
-4. **Key Features** - Product/service highlights with visuals
-5. **Market Opportunity** - TAM/SAM/SOM analysis
-6. **Competitive Advantage** - Differentiation matrix
-7. **Business Model** - Revenue streams and pricing
-8. **Traction** - Key metrics and milestones
-9. **Team** - Leadership profiles
-10. **Call to Action** - Next steps and contact info
-
-The presentation uses your brand colors and follows professional design principles. You can download it below.`;
-
-      generatedAssets.push({
-        id: `ppt-${Date.now()}`,
-        type: 'presentation',
-        title: 'Marketing Pitch Deck',
-        description: '10-slide professional presentation',
-        format: 'PPTX',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('proposal') || lowerMessage.includes('rfp') || lowerMessage.includes('quote')) {
-      agentName = 'Proposal Writer';
-      response = `I've drafted a comprehensive business proposal. The document includes:
-
-**Executive Summary**
-- Project overview and objectives
-- Proposed solution and approach
-- Investment summary
-
-**Detailed Scope**
-- Deliverables breakdown
-- Timeline and milestones
-- Resource allocation
-
-**Pricing & Terms**
-- Detailed cost breakdown
-- Payment terms and conditions
-- ROI projections
-
-**Team & Capabilities**
-- Relevant experience
-- Case studies from similar projects
-- Key team members
-
-The proposal is formatted professionally and ready for client presentation.`;
-
-      generatedAssets.push({
-        id: `doc-${Date.now()}`,
-        type: 'proposal',
-        title: 'Business Proposal',
-        description: 'Comprehensive proposal document',
-        format: 'DOCX',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('image') || lowerMessage.includes('visual') || lowerMessage.includes('graphic') || lowerMessage.includes('design')) {
-      agentName = 'Visual Designer';
-      response = `I've generated marketing visuals based on your requirements. The image set includes:
-
-**Formats Created:**
-- Social Media: 1080x1080 (Instagram), 1200x628 (Facebook/LinkedIn)
-- Stories: 1080x1920 (Instagram/Facebook Stories)
-- Web: 1920x1080 (Hero banner), 800x600 (Thumbnails)
-- Print-ready: A4 at 300 DPI
-
-**Design Elements:**
-- Your brand colors and typography
-- High-quality stock imagery
-- Professional layout and composition
-- Optimized for each platform
-
-All images are ready for immediate use across your marketing channels.`;
-
-      generatedAssets.push({
-        id: `img-${Date.now()}`,
-        type: 'image',
-        title: 'Marketing Visual Set',
-        description: 'Multi-size marketing images',
-        format: 'PNG',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('email') || lowerMessage.includes('campaign') || lowerMessage.includes('newsletter')) {
-      agentName = 'Email Marketing Specialist';
-      response = `I've created an email marketing campaign with the following components:
-
-**Email Sequence:**
-1. **Welcome Email** - Brand introduction and value proposition
-2. **Educational Email** - Industry insights and tips
-3. **Social Proof Email** - Customer testimonials and case studies
-4. **Offer Email** - Special promotion or discount
-5. **Follow-up Email** - Engagement check and additional resources
-
-**Technical Details:**
-- Mobile-responsive HTML templates
-- Personalization tokens for dynamic content
-- A/B testing variants for subject lines
-- Optimized send times based on your audience
-
-All templates are ready for import into your email platform.`;
-
-      generatedAssets.push({
-        id: `email-${Date.now()}`,
-        type: 'email_template',
-        title: 'Email Campaign Templates',
-        description: '5-part email sequence',
-        format: 'HTML',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('research') || lowerMessage.includes('analysis') || lowerMessage.includes('competitor') || lowerMessage.includes('market')) {
-      agentName = 'Market Research Analyst';
-      response = `I've completed a comprehensive market research analysis:
-
-**Market Overview**
-- Total Addressable Market: ₹15,000 Crores
-- Year-over-year growth: 18%
-- Key market drivers and trends
-
-**Competitor Analysis**
-- Top 5 competitors mapped with strengths/weaknesses
-- Feature comparison matrix
-- Pricing analysis and positioning
-- Market share distribution
-
-**Consumer Insights**
-- Target audience demographics
-- Buying behavior patterns
-- Pain points and unmet needs
-
-**Strategic Recommendations**
-- Market entry strategies
-- Differentiation opportunities
-- Risk mitigation approaches
-
-The full report includes charts, data tables, and actionable insights.`;
-
-      generatedAssets.push({
-        id: `report-${Date.now()}`,
-        type: 'document',
-        title: 'Market Research Report',
-        description: 'Comprehensive market analysis',
-        format: 'PDF',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('social') || lowerMessage.includes('post') || lowerMessage.includes('content')) {
-      agentName = 'Social Media Strategist';
-      response = `I've created a social media content package:
-
-**Content Calendar (30 days):**
-- 12 Educational posts
-- 8 Promotional posts
-- 6 Engagement posts (polls, questions)
-- 4 Behind-the-scenes content
-
-**Platform Breakdown:**
-- Instagram: 10 carousel posts, 5 reels concepts
-- LinkedIn: 8 articles, 7 short-form posts
-- Twitter: 20 tweets with thread ideas
-- Facebook: 10 posts with video suggestions
-
-**Includes:**
-- Compelling captions with CTAs
-- Strategic hashtag sets
-- Optimal posting schedule
-- Visual concepts and mockups
-
-All content is aligned with your brand voice and current trends.`;
-
-      generatedAssets.push({
-        id: `social-${Date.now()}`,
-        type: 'social_post',
-        title: 'Social Media Content Pack',
-        description: '30-day content calendar',
-        format: 'ZIP',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('video') || lowerMessage.includes('script') || lowerMessage.includes('reel')) {
-      agentName = 'Video Content Creator';
-      response = `I've created video content scripts for your campaign:
-
-**Video Scripts Created:**
-1. **Brand Introduction Video** (60 sec)
-   - Hook, value proposition, call-to-action
-   
-2. **Product Demo Video** (90 sec)
-   - Feature walkthrough with benefits
-   
-3. **Customer Testimonial Framework** (45 sec)
-   - Story arc with emotional connection
-   
-4. **Social Media Reels** (15-30 sec each)
-   - 5 trending format scripts
-
-**Includes:**
-- Scene-by-scene breakdown
-- Visual direction notes
-- Voiceover/dialogue scripts
-- Music and sound effect suggestions
-- B-roll recommendations
-
-All scripts are optimized for engagement and conversions.`;
-
-      generatedAssets.push({
-        id: `video-${Date.now()}`,
-        type: 'video_script',
-        title: 'Video Script Package',
-        description: 'Complete video production scripts',
-        format: 'PDF',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('infographic') || lowerMessage.includes('chart') || lowerMessage.includes('data visual')) {
-      agentName = 'Data Visualization Specialist';
-      response = `I've created a comprehensive infographic package:
-
-**Infographic Types:**
-1. **Statistical Overview** - Key metrics and KPIs visualized
-2. **Process Flow** - Step-by-step workflow diagrams
-3. **Comparison Chart** - Feature/product comparisons
-4. **Timeline Infographic** - Milestones and progress tracking
-5. **Data Dashboard** - Real-time metrics visualization
-
-**Design Specifications:**
-- Brand colors and typography applied
-- High-resolution (300 DPI) for print
-- Web-optimized versions (72 DPI)
-- Editable source files included
-
-**Formats Included:**
-- PNG (web-ready)
-- PDF (print-ready)
-- SVG (scalable)
-- Canva/Figma source files
-
-All infographics follow data visualization best practices for clarity and impact.`;
-
-      generatedAssets.push({
-        id: `infographic-${Date.now()}`,
-        type: 'infographic',
-        title: 'Infographic Package',
-        description: '5 data visualizations with source files',
-        format: 'ZIP',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('strategy') || lowerMessage.includes('plan') || lowerMessage.includes('roadmap')) {
-      agentName = 'Marketing Strategist';
-      response = `I've developed a comprehensive marketing strategy:
-
-**Strategic Framework:**
-
-**1. Situation Analysis**
-- Market position assessment
-- SWOT analysis
-- Competitor landscape mapping
-- Customer journey mapping
-
-**2. Goals & Objectives**
-- SMART goal framework
-- OKRs for each quarter
-- Revenue and growth targets
-- Brand awareness metrics
-
-**3. Target Audience**
-- Primary and secondary segments
-- Buyer personas with pain points
-- Decision-making criteria
-- Preferred channels
-
-**4. Channel Strategy**
-- Paid media allocation
-- Organic content strategy
-- Social media mix
-- Email marketing cadence
-
-**5. Implementation Roadmap**
-- 90-day action plan
-- Resource allocation
-- Technology stack
-- Team responsibilities
-
-**6. Measurement Framework**
-- KPI dashboard setup
-- Attribution modeling
-- A/B testing schedule
-- Monthly review cadence
-
-The strategy is tailored to your industry and business objectives.`;
-
-      generatedAssets.push({
-        id: `strategy-${Date.now()}`,
-        type: 'document',
-        title: 'Marketing Strategy Document',
-        description: 'Comprehensive strategic plan with roadmap',
-        format: 'PDF',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('analytics') || lowerMessage.includes('performance') || lowerMessage.includes('roi') || lowerMessage.includes('report')) {
-      agentName = 'Analytics Specialist';
-      response = `I've generated a comprehensive performance analytics report:
-
-**Executive Summary:**
-- Overall campaign performance: +23% vs. previous period
-- Total spend: ₹5,00,000
-- Revenue attributed: ₹18,50,000
-- ROAS: 3.7x
-
-**Channel Performance:**
-| Channel | Spend | Revenue | ROAS | Conversions |
-|---------|-------|---------|------|-------------|
-| Meta Ads | ₹2,00,000 | ₹8,00,000 | 4.0x | 156 |
-| Google Ads | ₹1,50,000 | ₹5,50,000 | 3.7x | 112 |
-| LinkedIn | ₹1,00,000 | ₹3,50,000 | 3.5x | 45 |
-| Email | ₹50,000 | ₹1,50,000 | 3.0x | 78 |
-
-**Key Insights:**
-- Meta carousel ads outperformed single images by 45%
-- Morning (9-11 AM) showed highest conversion rates
-- Mobile traffic accounts for 68% of conversions
-- Remarketing audiences have 2.5x higher ROAS
-
-**Recommendations:**
-1. Increase Meta carousel budget by 20%
-2. Shift 15% of Google spend to Performance Max
-3. Test LinkedIn thought leadership content
-4. Implement abandoned cart email sequence
-
-Full interactive dashboard available for real-time monitoring.`;
-
-      generatedAssets.push({
-        id: `analytics-${Date.now()}`,
-        type: 'document',
-        title: 'Performance Analytics Report',
-        description: 'Comprehensive ROI and performance analysis',
-        format: 'PDF',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('automation') || lowerMessage.includes('workflow') || lowerMessage.includes('sequence')) {
-      agentName = 'Marketing Automation Specialist';
-      response = `I've designed comprehensive marketing automation workflows:
-
-**Workflow 1: Lead Nurturing Sequence**
-\`\`\`
-Trigger: Form submission
-↓
-Day 0: Welcome email (immediate)
-↓
-Day 2: Educational content
-↓
-Day 5: Case study / social proof
-↓
-Day 8: Product feature highlight
-↓
-Day 12: Special offer
-↓
-Day 15: Sales handoff (if engaged)
-\`\`\`
-
-**Workflow 2: Cart Abandonment**
-\`\`\`
-Trigger: Cart abandoned
-↓
-1 hour: Reminder email
-↓
-24 hours: Benefits recap
-↓
-48 hours: Discount offer
-↓
-72 hours: Final reminder
-\`\`\`
-
-**Workflow 3: Customer Onboarding**
-\`\`\`
-Trigger: Purchase completed
-↓
-Immediate: Thank you + receipt
-↓
-Day 1: Getting started guide
-↓
-Day 3: Tips and best practices
-↓
-Day 7: Feature highlight
-↓
-Day 14: Feedback request
-↓
-Day 30: Upsell opportunity
-\`\`\`
-
-**Technical Specifications:**
-- Behavioral triggers configured
-- Dynamic content personalization
-- A/B testing enabled
-- Analytics tracking embedded
-- CRM sync for lead scoring
-
-All workflows are ready for import into your marketing automation platform.`;
-
-      generatedAssets.push({
-        id: `automation-${Date.now()}`,
-        type: 'document',
-        title: 'Marketing Automation Workflows',
-        description: '3 complete automation sequences',
-        format: 'JSON',
-        downloadUrl: '#'
-      });
-    } else if (lowerMessage.includes('brand') || lowerMessage.includes('guideline') || lowerMessage.includes('style guide')) {
-      agentName = 'Brand Strategist';
-      response = `I've created a comprehensive brand guidelines document:
-
-**Brand Identity Manual**
-
-**1. Brand Foundation**
-- Mission statement
-- Vision statement
-- Core values
-- Brand personality traits
-- Tone of voice guidelines
-
-**2. Visual Identity**
-- Logo usage and spacing rules
-- Primary and secondary color palette (HEX, RGB, CMYK)
-- Typography system (headers, body, captions)
-- Iconography style
-- Photography guidelines
-
-**3. Logo Specifications**
-- Minimum size requirements
-- Clear space guidelines
-- Color variations (full color, mono, reversed)
-- Incorrect usage examples
-
-**4. Application Examples**
-- Business cards and stationery
-- Social media templates
-- Email signatures
-- Presentation templates
-- Website components
-- Advertising templates
-
-**5. Brand Voice**
-- Writing style guide
-- Do's and don'ts
-- Sample copy for different channels
-- Messaging framework
-
-**6. Digital Assets**
-- All logo files (AI, EPS, PNG, SVG)
-- Font files with licenses
-- Social media templates (Canva, Figma)
-- Email templates
-- Icon library
-
-The guidelines ensure brand consistency across all touchpoints.`;
-
-      generatedAssets.push({
-        id: `brand-${Date.now()}`,
-        type: 'document',
-        title: 'Brand Guidelines Document',
-        description: 'Complete brand identity manual with assets',
-        format: 'PDF',
-        downloadUrl: '#'
-      });
-    } else {
-      response = `I'm your Marketing AI Assistant, ready to help with any marketing task. Here's what I can do:
-
-**Content Creation:**
-- Presentations and pitch decks
-- Business proposals and RFPs
-- Marketing images and graphics
-- Email campaigns and sequences
-- Social media content calendars
-- Video scripts and concepts
-
-**Research & Strategy:**
-- Market and competitor analysis
-- Customer persona development
-- Campaign strategy and planning
-- Performance analysis and optimization
-
-**Automation & Workflows:**
-- Marketing automation setup
-- Lead nurturing sequences
-- Cross-channel campaign orchestration
-
-How can I help you today? Just describe what you need, and I'll get started!`;
+    if (intent?.documentType) {
+      try {
+        const doc = await generateDocument({
+          title: intent.assetTitle,
+          content: llmResponse.content,
+          type: intent.documentType,
+          brandContext: context?.brandContext,
+        });
+
+        generatedAssets.push({
+          id: doc.id,
+          type: intent.assetType,
+          title: intent.assetTitle,
+          description: intent.assetDescription,
+          format: intent.assetFormat,
+          downloadUrl: `/api/export/${doc.id}/download`,
+        });
+      } catch (docError: any) {
+        console.error('Document generation failed:', docError.message);
+      }
     }
 
     res.json({
       success: true,
-      content: response,
-      message: response,
+      content: llmResponse.content,
+      message: llmResponse.content,
       agentName,
-      model: model || 'gpt-5.2',
-      provider: provider || 'OpenAI',
+      model: llmResponse.model,
+      provider: llmResponse.provider,
       generatedAssets,
       usage: {
-        promptTokens: Math.floor(Math.random() * 500) + 200,
-        completionTokens: Math.floor(Math.random() * 1000) + 500,
-        totalTokens: Math.floor(Math.random() * 1500) + 700
+        tokensUsed: llmResponse.tokensUsed,
       },
-      cost: (Math.random() * 0.05 + 0.01).toFixed(4)
+      cost: llmResponse.cost,
     });
-
   } catch (error: any) {
     console.error('Marketing chat error:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to process chat request'
+      error: error.message || 'Failed to process chat request. No LLM providers are available.',
     });
   }
 });
 
-router.get('/capabilities', (req: Request, res: Response) => {
+router.get('/capabilities', (_req: Request, res: Response) => {
   res.json({
     success: true,
     capabilities: [
@@ -563,32 +231,49 @@ router.get('/capabilities', (req: Request, res: Response) => {
       { id: 'social', name: 'Social Content', description: 'Generate social media posts and carousels' },
       { id: 'research', name: 'Market Research', description: 'Conduct competitor and market analysis' },
       { id: 'strategy', name: 'Marketing Strategy', description: 'Develop marketing strategies and plans' },
-      { id: 'analytics', name: 'Performance Analysis', description: 'Analyze campaign performance and ROI' },
-      { id: 'automation', name: 'Workflow Automation', description: 'Create marketing automation workflows' },
       { id: 'video_script', name: 'Video Script', description: 'Write scripts for marketing videos' },
-      { id: 'brand_guide', name: 'Brand Guidelines', description: 'Create brand style guides' }
-    ]
+      { id: 'brand_guide', name: 'Brand Guidelines', description: 'Create brand style guides' },
+    ],
   });
 });
 
-router.get('/models', (req: Request, res: Response) => {
+router.get('/models', (_req: Request, res: Response) => {
+  const providers = getAvailableProviders();
+  const models: Array<{ id: string; name: string; provider: string }> = [];
+
+  for (const p of providers) {
+    switch (p) {
+      case 'openai':
+        models.push({ id: 'gpt-4o-mini', name: 'GPT-4o Mini', provider: 'openai' });
+        models.push({ id: 'gpt-4o', name: 'GPT-4o', provider: 'openai' });
+        break;
+      case 'anthropic':
+        models.push({ id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4', provider: 'anthropic' });
+        break;
+      case 'gemini':
+        models.push({ id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'gemini' });
+        break;
+      case 'groq':
+        models.push({ id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B', provider: 'groq' });
+        break;
+      case 'openrouter':
+        models.push({ id: 'meta-llama/llama-3.3-70b-instruct:free', name: 'Llama 3.3 70B (Free)', provider: 'openrouter' });
+        models.push({ id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0 Flash (Free)', provider: 'openrouter' });
+        break;
+    }
+  }
+
+  res.json({ success: true, models, providers });
+});
+
+router.get('/providers', (_req: Request, res: Response) => {
+  const providers = getAvailableProviders();
   res.json({
     success: true,
-    models: [
-      { id: 'gpt-5.2', name: 'GPT-5.2 Thinking', provider: 'OpenAI', tier: 'Premium', costPer1M: 5 },
-      { id: 'gpt-5.2-pro', name: 'GPT-5.2 Pro', provider: 'OpenAI', tier: 'Premium', costPer1M: 15 },
-      { id: 'claude-sonnet-4', name: 'Claude 4 Sonnet', provider: 'Anthropic', tier: 'Premium', costPer1M: 3 },
-      { id: 'claude-opus-4', name: 'Claude 4 Opus', provider: 'Anthropic', tier: 'Premium', costPer1M: 15 },
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'Google', tier: 'Premium', costPer1M: 0.075 },
-      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google', tier: 'Premium', costPer1M: 1.25 },
-      { id: 'kimi-k2.5', name: 'Kimi K2.5', provider: 'Moonshot', tier: 'Cost-Optimized', costPer1M: 0.12 },
-      { id: 'deepseek-v3', name: 'DeepSeek V3', provider: 'DeepSeek', tier: 'Budget', costPer1M: 0.27 },
-      { id: 'llama-3.3-70b', name: 'Llama 3.3 70B', provider: 'OpenRouter', tier: 'Free', costPer1M: 0.12 }
-    ]
+    providers,
+    count: providers.length,
+    configured: providers.length > 0,
   });
 });
-
-console.log('🤖 Marketing Chat API initialized');
-console.log('   Endpoints: /api/chat/marketing, /api/chat/capabilities, /api/chat/models');
 
 export default router;

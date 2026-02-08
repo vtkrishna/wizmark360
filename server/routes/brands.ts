@@ -11,6 +11,8 @@ import {
   insertBrandContactSchema,
   insertServicePackageSchema,
 } from "../../shared/agency-erp-schema";
+import { generateAllBrandDocuments, BrandData } from "../services/brand-document-generator";
+import { listDocuments } from "../services/document-generator";
 
 const router = Router();
 
@@ -189,6 +191,88 @@ router.post("/:id/contacts", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error creating contact:", error);
     res.status(500).json({ error: "Failed to create contact" });
+  }
+});
+
+router.post("/:id/generate-documents", async (req: Request, res: Response) => {
+  try {
+    const brandId = parseInt(req.params.id);
+    const [brand] = await db.select().from(brands).where(eq(brands.id, brandId));
+
+    if (!brand) {
+      return res.status(404).json({ error: "Brand not found" });
+    }
+
+    const [guidelines] = await db.select().from(brandGuidelines).where(eq(brandGuidelines.brandId, brandId));
+
+    const brandData: BrandData = {
+      name: brand.name,
+      industry: brand.industry || undefined,
+      description: (brand as any).description || undefined,
+      colors: {
+        primary: guidelines?.primaryColor || undefined,
+        secondary: guidelines?.secondaryColor || undefined,
+      },
+      fonts: {
+        primary: guidelines?.primaryFont || undefined,
+      },
+      tone: guidelines?.toneOfVoice || undefined,
+      targetAudience: guidelines?.targetAudience || undefined,
+      values: (brand as any).values || undefined,
+      competitors: (brand as any).competitors || undefined,
+      usp: (brand as any).usp || undefined,
+    };
+
+    const documents = await generateAllBrandDocuments(brandData);
+
+    res.json({
+      brandId,
+      brandName: brand.name,
+      documents: documents.map((doc) => ({
+        id: doc.id,
+        filename: doc.filename,
+        format: doc.format,
+        size: doc.size,
+        downloadUrl: doc.downloadUrl,
+        createdAt: doc.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("Error generating brand documents:", error);
+    res.status(500).json({ error: "Failed to generate brand documents", details: String(error) });
+  }
+});
+
+router.get("/:id/documents", async (req: Request, res: Response) => {
+  try {
+    const brandId = parseInt(req.params.id);
+    const [brand] = await db.select().from(brands).where(eq(brands.id, brandId));
+
+    if (!brand) {
+      return res.status(404).json({ error: "Brand not found" });
+    }
+
+    const allDocuments = listDocuments();
+    const brandDocuments = allDocuments.filter((doc) =>
+      doc.filename.startsWith(doc.filename.split("_")[0]) &&
+      doc.filename.toLowerCase().includes(brand.name.toLowerCase().replace(/\s+/g, "_"))
+    );
+
+    res.json({
+      brandId,
+      brandName: brand.name,
+      documents: brandDocuments.map((doc) => ({
+        id: doc.id,
+        filename: doc.filename,
+        format: doc.format,
+        size: doc.size,
+        downloadUrl: doc.downloadUrl,
+        createdAt: doc.createdAt,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching brand documents:", error);
+    res.status(500).json({ error: "Failed to fetch brand documents" });
   }
 });
 

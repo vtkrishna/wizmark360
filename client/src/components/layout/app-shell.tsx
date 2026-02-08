@@ -25,7 +25,9 @@ import {
   Newspaper,
   Bot,
   Brain,
-  PieChart
+  PieChart,
+  Calendar,
+  Compass
 } from "lucide-react";
 
 interface AppShellProps {
@@ -117,7 +119,8 @@ export default function AppShell({ children, currentBrand, onBrandSwitch }: AppS
         {/* Navigation */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           <NavItem icon={LayoutDashboard} label="Dashboard" path="/dashboard" />
-          <NavItem icon={MessageSquare} label="AI Assistant" path="/chat" badge={3} />
+          <NavItem icon={Compass} label="Strategy" path="/strategy" />
+          <NavItem icon={MessageSquare} label="Super Chat" path="/marketing-chat" badge={3} />
           
           {/* Verticals Section */}
           <div className="pt-4">
@@ -167,6 +170,7 @@ export default function AppShell({ children, currentBrand, onBrandSwitch }: AppS
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
             <NavItem icon={Users} label="Brands & CRM" path="/brands" />
             <NavItem icon={FileText} label="Content Library" path="/content" />
+            <NavItem icon={Calendar} label="Calendar" path="/calendar" />
             <NavItem icon={BarChart3} label="Analytics" path="/analytics" />
           </div>
         </nav>

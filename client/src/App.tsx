@@ -14,6 +14,7 @@ import PlatformConnectionsPage from './pages/platform-connections';
 import UnifiedAnalyticsPage from './pages/unified-analytics';
 import GlobalMarketingChat from './pages/global-marketing-chat';
 import AdminLLMSettings from './pages/admin-llm-settings';
+import ContentCalendar from './pages/content-calendar';
 import Login from './pages/Login';
 import NotFound from './pages/not-found';
 
@@ -40,6 +41,8 @@ export default function App() {
               <Route path="/settings/integrations" component={PlatformConnectionsPage} />
               <Route path="/platform-connections" component={PlatformConnectionsPage} />
               <Route path="/unified-analytics" component={UnifiedAnalyticsPage} />
+              <Route path="/calendar" component={ContentCalendar} />
+              <Route path="/strategy" component={NewDashboard} />
               <Route path="/marketing-chat" component={GlobalMarketingChat} />
               <Route path="/admin/llm-settings" component={AdminLLMSettings} />
               <Route path="/admin/agents" component={AdminLLMSettings} />

@@ -60,6 +60,9 @@ import verticalWorkflowRoutes from "./routes/vertical-workflow-routes";
 import crossVerticalRoutes from "./routes/cross-vertical-routes";
 import marketingChatRoutes from "./routes/marketing-chat-routes";
 import waiSDKv32Routes from "./routes/wai-sdk-v32-routes";
+import exportRoutes from "./routes/export-routes";
+import strategyPipelineRoutes from "./routes/strategy-pipeline-routes";
+import monitoringDashboardRoutes from "./routes/monitoring-dashboard-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -210,6 +213,9 @@ app.use('/api/vertical-workflows', verticalWorkflowRoutes);
 app.use('/api/cross-vertical', crossVerticalRoutes);
 app.use('/api/chat', marketingChatRoutes);
 app.use('/api/wai-sdk/v3.2', waiSDKv32Routes);
+app.use('/api/export', exportRoutes);
+app.use('/api/strategy-pipeline', strategyPipelineRoutes);
+app.use('/api/monitoring-dashboard', monitoringDashboardRoutes);
 
 // Audit middleware for logging API access
 app.use(auditMiddleware());
