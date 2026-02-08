@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import {
   LLM_PROVIDERS,
-  CLAUDE_MARKETING_TOOLS,
+  WIZMARK_INTELLIGENCE_SUITE,
   TWENTY_TWO_POINT_AGENT_FRAMEWORK,
   PLATFORM_STATS,
   MODEL_ROUTING,
@@ -410,10 +410,10 @@ export default function AdminLLMSettings() {
             <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800 p-4">
               <h3 className="font-medium text-orange-900 dark:text-orange-100 flex items-center gap-2 mb-3">
                 <Wrench className="h-5 w-5" />
-                Claude Marketing Tools ({CLAUDE_MARKETING_TOOLS.length} Capabilities)
+                WizMark Intelligence Suite ({WIZMARK_INTELLIGENCE_SUITE.length} Capabilities)
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                {CLAUDE_MARKETING_TOOLS.map(tool => (
+                {WIZMARK_INTELLIGENCE_SUITE.map(tool => (
                   <div key={tool.id} className="p-3 bg-white dark:bg-gray-800 rounded-lg border">
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium text-sm text-gray-900 dark:text-white">{tool.name}</span>

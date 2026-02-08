@@ -21,7 +21,7 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 - **Multilingual Support**: Content generation, chat, and translation in 22 Indian languages.
 - **Voice Capabilities**: Speech-to-Text (Sarvam Saarika v3) and Text-to-Speech (Sarvam Bulbul v2).
 - **Centralized LLM Configuration**: All models, providers, costs, and capabilities defined in `shared/llm-config.ts` — no hardcoded model names.
-- **Claude Marketing Tools**: 10 specialized tool-use capabilities (Competitor Intelligence, Visual Brand Monitor, Ad Creative Generator, Market Research Agent, SEO Audit Automation, etc.) via Claude Opus 4.6 and Sonnet 5.0.
+- **WizMark Intelligence Suite**: 10 proprietary AI capabilities (Competitor Intelligence Scanner, Visual Brand Monitor, AI Ad Creative Generator, Market Research Agent, SEO Audit Automation, Social Listening Analyzer, Campaign Performance Optimizer, Content Repurposing Engine, Predictive Lead Scoring, Brand Voice Guardian).
 - **Enterprise Marketing Features**: AI-powered workflow automation, multi-touch campaign orchestration, predictive lead scoring, real-time performance dashboards, AI content generation, and lead management.
 - **Multimodal Content Pipeline**: Strategy-to-text-to-image-to-video workflow.
 - **Brand-Aware Content Library**: Content management with brand context.
@@ -66,10 +66,14 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 ## Document Structure
 
 ### Active Documents
-- **`replit.md`** (this file) — Core tracking document for project status, changelog, architecture decisions, feature development, and user preferences. This is the single source of truth for all project tracking.
+- **`replit.md`** (this file) — Core tracking document for project status, changelog, architecture decisions, feature development, and user preferences. Single source of truth.
 - **`README.md`** — Public-facing project overview.
-- **`docs/WizMark-360-Product-Note.md`** — Complete marketing product note (1,230+ lines) covering all features, architecture, agents, verticals, integrations, and competitive positioning.
+- **`docs/WizMark-360-Product-Note.md`** — Product-focused marketing document (1,553 lines) covering features, workflows, verticals, WizMark Intelligence Suite, competitive positioning, and use cases. Written for marketing teams and business decision-makers.
+- **`docs/WizMark-360-User-Guide.md`** — End-to-end user guide (1,571 lines) covering onboarding, vertical-by-vertical usage, 10 AI tools, content library, analytics, team management, integrations, and FAQ.
 - **`docs/WizMark-360-Investor-Presentation.md`** — Series A investor presentation (1,000+ lines) covering market opportunity, technology MOAT, revenue model, go-to-market strategy, and investment thesis.
+- **`docs/project-tracker.md`** — Complete project changelog, feature status matrix, vertical development status, infrastructure status, and roadmap (Phases 1–7).
+- **`docs/requirements.md`** — Enterprise production requirements: 43 API keys across 6 categories, infrastructure specs for 10K users, security/compliance checklists (SOC2, GDPR, DPDP Act), and pre-launch checklist.
+- **`docs/deployment.md`** — Global production deployment plan: AWS/GCP/Azure architectures, multi-region setup, auto-scaling, CI/CD pipeline, disaster recovery, cost estimates ($6K–$13.5K/month), and post-launch operations.
 - **`packages/memory/README.md`**, **`packages/tools/README.md`** — Package-specific READMEs (kept in place for developer reference).
 
 ### Archived Documents
@@ -81,5 +85,12 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
   - `documents_archive/system-prompts/` — 1 file (prompt patterns extraction)
 
 ## Recent Changes
-- **Feb 8, 2026**: Document cleanup — moved 56 old/superseded documents to `documents_archive/`, keeping only the two new comprehensive documents in `docs/`. Identified `replit.md` as the core project tracking document.
-- **Feb 8, 2026**: Created WizMark-360-Product-Note.md (1,230+ lines) and WizMark-360-Investor-Presentation.md (1,000+ lines) with architect-reviewed accuracy fixes (service modules terminology, data source disclaimers).
+- **Feb 8, 2026**: Complete documentation overhaul — created 5 new comprehensive documents:
+  - Rewrote `WizMark-360-Product-Note.md` (1,553 lines) as product-focused document with workflows, use cases, and competitive analysis
+  - Created `WizMark-360-User-Guide.md` (1,571 lines) — end-to-end user guide with vertical-by-vertical usage, onboarding, and FAQ
+  - Created `project-tracker.md` — complete changelog with Phases 1–4 and feature status matrix
+  - Created `requirements.md` — enterprise production requirements (43 API keys, infrastructure specs, compliance)
+  - Created `deployment.md` — global deployment plan for 10K users (AWS/GCP/Azure, $6K–$13.5K/month)
+- **Feb 8, 2026**: Rebranded "Claude Marketing Tools" → "WizMark Intelligence Suite" across `shared/llm-config.ts`, frontend components, and all documentation. Added backward-compatible export alias.
+- **Feb 8, 2026**: Document cleanup — moved 56 old/superseded documents to `documents_archive/`, keeping only active documents in `docs/`.
+- **Feb 8, 2026**: Created WizMark-360-Investor-Presentation.md (1,000+ lines) with architect-reviewed accuracy fixes.

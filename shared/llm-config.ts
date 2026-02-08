@@ -27,7 +27,7 @@ export interface LLMProvider {
   supportedFeatures: string[];
 }
 
-export interface ClaudeToolCapability {
+export interface WizMarkToolCapability {
   id: string;
   name: string;
   description: string;
@@ -36,7 +36,9 @@ export interface ClaudeToolCapability {
   parameters: string[];
 }
 
-export const CLAUDE_MARKETING_TOOLS: ClaudeToolCapability[] = [
+export type ClaudeToolCapability = WizMarkToolCapability;
+
+export const WIZMARK_INTELLIGENCE_SUITE: WizMarkToolCapability[] = [
   {
     id: 'competitor-intelligence',
     name: 'Competitor Intelligence Scanner',
@@ -118,6 +120,8 @@ export const CLAUDE_MARKETING_TOOLS: ClaudeToolCapability[] = [
     parameters: ['brand_guidelines', 'content_draft', 'channel']
   }
 ];
+
+export const CLAUDE_MARKETING_TOOLS = WIZMARK_INTELLIGENCE_SUITE;
 
 export const LLM_PROVIDERS: LLMProvider[] = [
   {
