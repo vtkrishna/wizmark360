@@ -1,6 +1,6 @@
 # WizMark 360 — Comprehensive User Guide
 ## The World's First AI Marketing Operating System
-### By WizFin360 | Version 6.0 | February 2026
+### By Wizards360 | Version 4.5.0 | February 2026
 
 ---
 
@@ -11,6 +11,7 @@
 ║         AI Marketing Operating System                            ║
 ║                                                                  ║
 ║   285 AI Agents  •  24 LLM Providers  •  886 Models             ║
+║   319 Services  •  178 API Routes  •  25 Pages                  ║
 ║   8 Verticals  •  22 Languages  •  One Platform                 ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
@@ -32,14 +33,17 @@
    - 4.6 [LinkedIn B2B Marketing](#46-linkedin-b2b-marketing-32-agents)
    - 4.7 [Performance Advertising](#47-performance-advertising-47-agents)
    - 4.8 [PR & Communications](#48-pr--communications-18-agents)
-5. [WizMark Intelligence Suite — 10 AI Tools](#5-wizmark-intelligence-suite--10-ai-tools)
-6. [Content Library & Multilingual Features](#6-content-library--multilingual-features)
-7. [AI Platform Management](#7-ai-platform-management)
-8. [Analytics & Reporting](#8-analytics--reporting)
-9. [Team Management & Roles](#9-team-management--roles)
-10. [Integrations Setup](#10-integrations-setup)
-11. [WizMark 360 vs Other Platforms](#11-wizmark-360-vs-other-platforms)
-12. [FAQ & Troubleshooting](#12-faq--troubleshooting)
+5. [Wizards Studio Platform — 10 Specialized Studios](#5-wizards-studio-platform--10-specialized-studios)
+6. [WizMark Intelligence Suite — 10 AI Tools](#6-wizmark-intelligence-suite--10-ai-tools)
+7. [Context Engineering & Prompt Optimization](#7-context-engineering--prompt-optimization)
+8. [Token Cost Prediction & Budget Management](#8-token-cost-prediction--budget-management)
+9. [Content Library & Multilingual Features](#9-content-library--multilingual-features)
+10. [AI Platform Management](#10-ai-platform-management)
+11. [Analytics & Reporting](#11-analytics--reporting)
+12. [Team Management & Roles](#12-team-management--roles)
+13. [Integrations Setup](#13-integrations-setup)
+14. [WizMark 360 vs Other Platforms](#14-wizmark-360-vs-other-platforms)
+15. [FAQ & Troubleshooting](#15-faq--troubleshooting)
 
 ---
 
@@ -933,7 +937,76 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-## 5. WizMark Intelligence Suite — 10 AI Tools
+## 5. Wizards Studio Platform — 10 Specialized Studios
+
+The **Wizards Studio Platform** is WizMark 360's guided startup and project creation system. It provides 10 specialized studios, each focused on a critical aspect of building and launching a marketing-driven business or campaign. The platform includes a structured **14-day startup journey** that takes founders and teams from idea to launch.
+
+### The 10 Studios
+
+| # | Studio | Purpose | Key Outputs |
+|---|--------|---------|-------------|
+| 1 | **Ideation Lab** | Brainstorm and validate business ideas, market opportunities, and campaign concepts | Validated idea canvas, market fit analysis |
+| 2 | **Product Blueprint** | Define product specifications, features, and go-to-market requirements | Product spec document, feature roadmap |
+| 3 | **Engineering Forge** | Technical architecture planning, stack selection, and development workflows | Technical architecture, development plan |
+| 4 | **Experience Design** | User experience design, wireframing, and interface planning | UX wireframes, user flow maps |
+| 5 | **Growth Engine** | Growth strategy development, channel selection, and acquisition planning | Growth playbook, channel strategy |
+| 6 | **Market Intelligence** | Competitive analysis, market sizing, and positioning strategy | Market analysis report, positioning map |
+| 7 | **Launch Command** | Launch planning, timeline management, and go-live coordination | Launch checklist, timeline, rollout plan |
+| 8 | **Operations Hub** | Operational workflow setup, team coordination, and process automation | Operations playbook, workflow templates |
+| 9 | **Quality Assurance Lab** | Testing strategies, quality gates, and validation frameworks | QA plan, testing checklist |
+| 10 | **Deployment Studio** | Production deployment planning, infrastructure setup, and monitoring | Deployment guide, infrastructure plan |
+
+### 14-Day Startup Journey
+
+The Wizards Studio Platform includes a structured 14-day journey that guides you through every studio in sequence:
+
+| Day | Studio | Activity |
+|-----|--------|----------|
+| Day 1–2 | Ideation Lab | Validate your idea, identify target market, define value proposition |
+| Day 3–4 | Product Blueprint | Define MVP features, create product specifications |
+| Day 5–6 | Engineering Forge | Plan technical architecture, select tech stack |
+| Day 7 | Experience Design | Design user flows, create wireframes |
+| Day 8–9 | Growth Engine | Develop growth strategy, plan acquisition channels |
+| Day 10 | Market Intelligence | Analyze competitors, size the market |
+| Day 11 | Launch Command | Create launch plan, set timeline |
+| Day 12 | Operations Hub | Set up workflows, define team processes |
+| Day 13 | Quality Assurance Lab | Define quality gates, create testing plan |
+| Day 14 | Deployment Studio | Plan deployment, configure monitoring |
+
+### How to Use the Studios
+
+1. Navigate to **Wizards Studio** in the left sidebar
+2. Select a studio to begin or continue the 14-day journey
+3. Each studio provides AI-guided workflows with templates and prompts
+4. Complete the studio tasks — outputs are saved to your project workspace
+5. Track your progress on the **Journey Timeline** dashboard
+6. Studios can be revisited and updated at any time after initial completion
+
+### Industry Templates
+
+The Wizards Studio Platform includes pre-configured workflows for key industry verticals:
+
+| Vertical | Template Includes |
+|----------|-------------------|
+| **Fintech** | Compliance-aware workflows, regulatory checklists, financial product positioning |
+| **Healthcare** | HIPAA considerations, patient engagement strategies, medical content guidelines |
+| **E-commerce** | Product catalog setup, conversion optimization, multi-channel commerce |
+| **SaaS** | Freemium modeling, PLG strategies, developer marketing, churn analysis |
+
+### Founder Services
+
+For founders using the 14-day journey, WizMark 360 provides dedicated Founder Services:
+
+- **Founder Profile** — Track your journey, milestones, and achievements across studios
+- **Journey Tracking** — Visual progress dashboard showing completion status for all 10 studios
+- **Achievement System** — Unlock achievements as you complete studio milestones
+- **Relationship Mapping** — Map advisors, investors, partners, and team connections
+
+> **Pro Tip:** Even if you are not a startup founder, the Wizards Studio Platform is valuable for planning any new marketing initiative, product launch, or campaign — the structured approach ensures nothing is missed.
+
+---
+
+## 6. WizMark Intelligence Suite — 10 AI Tools
 
 The **WizMark Intelligence Suite** is a collection of 10 specialized AI-powered marketing tools built into WizMark 360. These tools go beyond basic content generation — they provide deep analysis, competitive intelligence, and automated optimization.
 
@@ -1094,7 +1167,88 @@ The **WizMark Intelligence Suite** is a collection of 10 specialized AI-powered 
 
 ---
 
-## 6. Content Library & Multilingual Features
+## 7. Context Engineering & Prompt Optimization
+
+The **Context Engineering Engine** is WizMark 360's advanced prompt optimization system that ensures every AI interaction produces the highest quality output while minimizing token usage and cost.
+
+### What Is Context Engineering?
+
+Context Engineering goes beyond simple prompt templates. It uses multi-layer context construction to build the optimal prompt for every task, incorporating:
+
+| Layer | What It Does | Benefit |
+|-------|-------------|---------|
+| **Task Context** | Analyzes the specific task type, complexity, and requirements | Right-sized prompts — no over-engineering simple tasks |
+| **Brand Context** | Injects your brand voice, guidelines, and preferences | Consistent, on-brand outputs every time |
+| **Memory Integration** | Pulls relevant past interactions and campaign data from Mem0 | AI remembers what worked before — no repetition |
+| **Adaptive Complexity** | Adjusts prompt depth based on task difficulty scoring | Simple tasks get fast, lean prompts; complex tasks get rich context |
+| **Model-Specific Optimization** | Tailors prompt structure to the selected LLM provider | Maximizes each model's strengths (e.g., Claude for analysis, Gemini for multimodal) |
+
+### How Context Engineering Works for You
+
+You do not need to manually configure Context Engineering — it runs automatically on every AI interaction. However, you can fine-tune its behavior:
+
+1. Navigate to **Settings > AI Configuration > Context Engineering**
+2. Adjust **Context Depth**: Minimal, Standard, or Deep (default: Standard)
+3. Enable or disable **Memory Integration** for specific verticals
+4. Set **Complexity Threshold** — the point at which the engine switches from lean to rich prompts
+5. View **Context Analytics** to see token savings and quality scores
+
+### Key Benefits
+
+- **30–50% token savings** through intelligent context pruning
+- **Higher quality outputs** by providing precisely the right context
+- **Faster responses** for simple tasks through adaptive complexity
+- **Cross-session learning** via memory integration
+
+> **Pro Tip:** Enable Deep context mode for strategic planning tasks (campaign strategy, competitive analysis) and keep Standard mode for routine content generation.
+
+---
+
+## 8. Token Cost Prediction & Budget Management
+
+The **Token Cost Prediction Service** helps you understand and manage AI costs before they are incurred. It provides pre-execution cost estimates for any task, enabling smarter budget allocation across your marketing operations.
+
+### How Token Cost Prediction Works
+
+Before any AI task is executed, the Token Cost Prediction Service:
+
+1. **Analyzes Task Complexity** — Evaluates the task type, expected input/output length, and processing requirements
+2. **Estimates Token Usage** — Predicts the number of input and output tokens needed
+3. **Calculates Provider-Specific Cost** — Applies the pricing model of the selected LLM provider
+4. **Provides Cost Range** — Shows best-case, expected, and worst-case cost estimates
+
+### Using Token Cost Prediction
+
+1. Navigate to **Analytics > Cost Management > Token Prediction**
+2. View real-time cost predictions for queued and active tasks
+3. Set **Budget Alerts** — get notified when projected spending exceeds thresholds
+4. Review **Cost Optimization Suggestions** — the system recommends cheaper model alternatives when quality requirements allow
+
+### Cost Management Dashboard
+
+| Feature | Description |
+|---------|-------------|
+| **Pre-Execution Estimates** | See predicted cost before running any AI task |
+| **Daily/Weekly/Monthly Budgets** | Set spending caps with automatic notifications |
+| **Provider Cost Comparison** | Compare costs across all 24 LLM providers for the same task |
+| **Cost-per-Vertical Breakdown** | Track AI spending by marketing vertical |
+| **Model Routing Optimization** | Automatic suggestions to route tasks to cost-effective models |
+| **Historical Cost Analytics** | Trends, anomalies, and savings reports |
+
+### Budget Controls
+
+| Control | How It Works |
+|---------|-------------|
+| **Spending Caps** | Set maximum daily/weekly/monthly AI spending per vertical or overall |
+| **Cost Alerts** | Email and in-app notifications at 50%, 75%, 90%, and 100% of budget |
+| **Auto-Downgrade** | Automatically route to cheaper models when budget is near limit |
+| **Cost Approval** | Require approval for tasks estimated above a configurable cost threshold |
+
+> **Pro Tip:** Use the Provider Cost Comparison feature before launching high-volume campaigns. Routing bulk content generation to Tier 3 models (DeepSeek, Together AI) instead of Tier 1 can save 60–90% on routine tasks without significant quality loss.
+
+---
+
+## 9. Content Library & Multilingual Features
 
 ### Content Library
 
@@ -1162,7 +1316,7 @@ WizMark 360 supports content creation, translation, and voice in 22 Indian langu
 
 ---
 
-## 7. AI Platform Management
+## 10. AI Platform Management
 
 ### Agent Registry — Browsing and Using 285 Agents
 
@@ -1232,7 +1386,7 @@ The Unified Analytics dashboard provides a single view of performance across all
 
 ---
 
-## 8. Analytics & Reporting
+## 11. Analytics & Reporting
 
 ### Cross-Vertical Analytics
 
@@ -1286,7 +1440,7 @@ WizMark 360 offers multiple report types:
 
 ---
 
-## 9. Team Management & Roles
+## 12. Team Management & Roles
 
 ### RBAC Roles (4 Roles)
 
@@ -1333,7 +1487,7 @@ Set up content approval workflows to ensure quality and brand compliance:
 
 ---
 
-## 10. Integrations Setup
+## 13. Integrations Setup
 
 ### CRM Integrations
 
@@ -1411,7 +1565,7 @@ WizMark 360 uses **Razorpay** for all payment processing, with full **GST/IGST c
 
 ---
 
-## 11. WizMark 360 vs Other Platforms
+## 14. WizMark 360 vs Other Platforms
 
 ### Comparison vs Global Competitors
 
@@ -1468,7 +1622,7 @@ WizMark 360 uses **Razorpay** for all payment processing, with full **GST/IGST c
 
 ---
 
-## 12. FAQ & Troubleshooting
+## 15. FAQ & Troubleshooting
 
 ### Frequently Asked Questions
 
@@ -1563,8 +1717,8 @@ A: Yes. The WhatsApp vertical supports product catalogs, in-chat payments, and a
 ║   Need help? Contact support@wizardstechglobal.com               ║
 ║   Or click the support icon in the bottom-right corner           ║
 ║                                                                  ║
-║   WizMark 360 — by WizFin360                                    ║
-║   Version 6.0 | February 2026                                   ║
+║   WizMark 360 — by Wizards360                                   ║
+║   Version 4.5.0 | February 2026                                 ║
 ║   © 2026 Wizards Tech Global. All rights reserved.              ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝

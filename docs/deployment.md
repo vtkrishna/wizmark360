@@ -4,7 +4,7 @@
 
 This document provides a comprehensive deployment plan for **WizMark 360** (Wizards360) to serve **10,000+ concurrent users** in a global production environment. The plan covers multi-region architecture, cloud provider options (AWS, GCP, Azure), infrastructure sizing, CI/CD pipelines, disaster recovery, security hardening, and cost estimation.
 
-WizMark 360 is a full-stack TypeScript application (React + Express) with 285 autonomous agents, 24 LLM providers, 886+ AI models, and 8 marketing verticals. The deployment architecture must handle high-volume LLM API calls, real-time WebSocket connections, background agent orchestration, and enterprise-grade security.
+WizMark 360 is a full-stack TypeScript application (React + Express) with 285 autonomous agents, 24 LLM providers, 886+ AI models, 319 service modules, 178 API routes, and 8 marketing verticals. The deployment architecture must handle high-volume LLM API calls, real-time WebSocket connections, background agent orchestration, and enterprise-grade security.
 
 ---
 
@@ -561,6 +561,58 @@ Internet → Azure DNS → Azure Front Door (CDN + WAF)
 | Audit | All secret access logged and alertable |
 | Environment Isolation | Separate secrets per environment (dev/staging/prod) |
 
+### Quantum Security Deployment Considerations
+
+When deploying WizMark 360 in production, the Quantum Security Framework requires the following deployment considerations:
+
+| Component | Deployment Requirement | Configuration |
+|-----------|----------------------|---------------|
+| **Post-Quantum TLS** | Deploy with hybrid TLS certificates supporting both classical and post-quantum key exchange | Nginx/ALB configured with CRYSTALS-Kyber + X25519 hybrid |
+| **Key Management** | Dedicated HSM or cloud KMS with quantum-safe key generation | AWS CloudHSM / Azure Dedicated HSM / Google Cloud HSM |
+| **Zero-Knowledge Auth** | zk-SNARK verification service deployed as a sidecar or microservice | 2 vCPU, 4 GB RAM dedicated instance |
+| **QRNG Integration** | Hardware QRNG or cloud QRNG API for cryptographic key material | Fallback to CSPRNG if QRNG unavailable |
+| **Certificate Rotation** | Automated quantum-safe certificate rotation with zero-downtime | 90-day rotation cycle via cert-manager |
+| **Compliance Validation** | NIST SP 800-208 compliance validation on every deployment | Automated compliance checks in CI/CD pipeline |
+
+### Self-Healing & Auto-Recovery in Production
+
+The Self-Healing ML Service and Autonomous Continuous Execution Engine provide automated recovery capabilities in production:
+
+| Capability | How It Works | Recovery Time |
+|-----------|-------------|---------------|
+| **Agent Auto-Restart** | Self-healing agents detect their own failures and restart with state recovery | <10 seconds |
+| **Model Fallback** | When an LLM provider fails, the Smart Router automatically falls back to the next best provider | <30 seconds |
+| **Conflict Resolution** | Real-time coordination between concurrent agents prevents conflicting operations | Continuous |
+| **Health Self-Assessment** | Each service module performs periodic self-health checks and reports status | Every 30 seconds |
+| **Automatic Scaling** | Self-healing agents trigger horizontal scaling when load patterns indicate capacity pressure | <2 minutes |
+| **Data Consistency** | Conflict management ensures data consistency across distributed agent operations | Continuous |
+| **Performance Drift Recovery** | When model performance degrades, the system automatically recalibrates or switches models | <5 minutes |
+
+**Deployment Configuration for Self-Healing:**
+
+```
+Self-Healing Configuration:
+├─ Health check interval: 30 seconds
+├─ Failure threshold: 3 consecutive failures
+├─ Auto-restart: Enabled (with exponential backoff)
+├─ State persistence: Redis-backed checkpoint store
+├─ Fallback chain: Tier 1 → Tier 2 → Tier 3 → Cached response
+├─ Conflict resolution: Last-write-wins with vector clock ordering
+└─ Alert on recovery: Slack + PagerDuty notification
+```
+
+### Wizards Studio Deployment Component
+
+The Wizards Studio Platform requires the following additional deployment components:
+
+| Component | Specification | Notes |
+|-----------|---------------|-------|
+| **Studio Service** | Dedicated microservice handling 10 studio workflows | 2 vCPU, 4 GB RAM per instance |
+| **Template Storage** | Industry template repository (Fintech, Healthcare, E-commerce, SaaS) | 50 GB S3/GCS storage |
+| **Journey State** | Redis-backed journey progress tracking for the 14-day workflow | Persisted state with 90-day retention |
+| **Founder Profile DB** | PostgreSQL tables for founder profiles, achievements, relationship mapping | Part of main database, ~5 GB growth/year |
+| **Studio Analytics** | Real-time studio usage and completion metrics | Feeds into unified analytics dashboard |
+
 ---
 
 ## 10. Cost Estimation (Monthly) — All Providers
@@ -569,7 +621,7 @@ Internet → Azure DNS → Azure Front Door (CDN + WAF)
 
 | Component | AWS | GCP | Azure |
 |-----------|-----|-----|-------|
-| Compute (4–6 nodes) | $720 | $680 | $780 |
+| Compute (6–8 nodes for 319 services) | $1,080 | $1,020 | $1,170 |
 | PostgreSQL (HA) | $1,450 | $1,350 | $1,500 |
 | Redis Cache | $230 | $280 | $310 |
 | CDN + WAF | $485 | $430 | $450 |
@@ -578,7 +630,7 @@ Internet → Azure DNS → Azure Front Door (CDN + WAF)
 | Monitoring | $200 | $180 | $220 |
 | DNS + Secrets + Misc | $60 | $55 | $65 |
 | Data Transfer | $300 | $280 | $320 |
-| **Infrastructure Total** | **$3,610** | **$3,390** | **$3,825** |
+| **Infrastructure Total** | **$3,970** | **$3,730** | **$4,215** |
 
 ### Additional Costs
 
@@ -595,9 +647,9 @@ Internet → Azure DNS → Azure Front Door (CDN + WAF)
 
 | Scenario | AWS | GCP | Azure |
 |----------|-----|-----|-------|
-| **Conservative** (low LLM usage) | $6,230 | $6,010 | $6,445 |
-| **Moderate** (typical usage) | $8,610 | $8,390 | $8,825 |
-| **High** (heavy LLM usage) | $13,330 | $13,110 | $13,545 |
+| **Conservative** (low LLM usage) | $6,590 | $6,350 | $6,835 |
+| **Moderate** (typical usage) | $8,970 | $8,730 | $9,215 |
+| **High** (heavy LLM usage) | $13,690 | $13,450 | $13,935 |
 
 ---
 
