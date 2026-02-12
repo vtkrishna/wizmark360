@@ -14,17 +14,17 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const { brandId, name, objectives, targetAudience, budget, duration, verticals } = req.body;
 
-    if (!brandId || !name || !objectives || !targetAudience || !budget || !duration || !verticals) {
-      return res.status(400).json({ error: 'Missing required fields: brandId, name, objectives, targetAudience, budget, duration, verticals' });
+    if (!brandId || !name || !objectives || !budget || !verticals) {
+      return res.status(400).json({ error: 'Missing required fields: brandId, name, objectives, budget, verticals' });
     }
 
     const strategy = await createStrategy({
       brandId,
       name,
       objectives,
-      targetAudience,
+      targetAudience: targetAudience || 'General market audience — demographics, interests, and behaviors to be refined during strategy execution',
       budget,
-      duration,
+      duration: duration || '3 months',
       verticals,
     });
 

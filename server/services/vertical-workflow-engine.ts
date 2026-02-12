@@ -730,6 +730,191 @@ const VERTICAL_WORKFLOWS: VerticalWorkflow[] = [
     ],
     inputSchema: { brandId: 'string', botToken: 'string', campaignDetails: 'object' },
     outputSchema: { broadcastId: 'string', analytics: 'object' }
+  },
+  {
+    id: 'pr-communications-pipeline',
+    name: 'PR & Communications Pipeline',
+    vertical: 'pr_communications',
+    description: 'End-to-end PR workflow from media outreach to crisis management',
+    version: '1.0.0',
+    steps: [
+      {
+        id: 'media_landscape_analysis',
+        name: 'Media Landscape Analysis',
+        type: 'agent',
+        agentId: 'pr-media-analyst',
+        inputs: { brandId: '$input.brandId', industry: '$input.industry' },
+        outputs: ['mediaOutlets', 'journalists', 'sentimentBaseline', 'mediaOpportunities'],
+        dependencies: [],
+        timeout: 60000,
+        retryPolicy: { maxRetries: 2, backoffMs: 3000 }
+      },
+      {
+        id: 'narrative_development',
+        name: 'Narrative & Messaging Development',
+        type: 'agent',
+        agentId: 'pr-narrative-strategist',
+        inputs: { brand: '$input.brandId', goals: '$input.prGoals', landscape: '$media_landscape_analysis.mediaOpportunities' },
+        outputs: ['keyMessages', 'narrative', 'talkingPoints', 'qAndA'],
+        dependencies: ['media_landscape_analysis'],
+        timeout: 60000,
+        retryPolicy: { maxRetries: 2, backoffMs: 3000 }
+      },
+      {
+        id: 'press_release_creation',
+        name: 'Press Release & Content Creation',
+        type: 'agent',
+        agentId: 'pr-content-writer',
+        inputs: { narrative: '$narrative_development.narrative', messages: '$narrative_development.keyMessages' },
+        outputs: ['pressRelease', 'mediaPitch', 'factSheet', 'executiveBios'],
+        dependencies: ['narrative_development'],
+        timeout: 90000,
+        retryPolicy: { maxRetries: 2, backoffMs: 5000 }
+      },
+      {
+        id: 'media_list_building',
+        name: 'Media List Building & Targeting',
+        type: 'agent',
+        agentId: 'pr-media-list-builder',
+        inputs: { outlets: '$media_landscape_analysis.mediaOutlets', topic: '$input.prGoals' },
+        outputs: ['mediaList', 'priorityContacts', 'pitchAngles'],
+        dependencies: ['media_landscape_analysis'],
+        timeout: 45000,
+        retryPolicy: { maxRetries: 2, backoffMs: 2000 }
+      },
+      {
+        id: 'outreach_execution',
+        name: 'Media Outreach Execution',
+        type: 'service',
+        serviceCall: 'email-campaign-service.sendPROutreach',
+        inputs: { mediaList: '$media_list_building.mediaList', pitch: '$press_release_creation.mediaPitch' },
+        outputs: ['sentPitches', 'responses', 'followUpSchedule'],
+        dependencies: ['press_release_creation', 'media_list_building'],
+        timeout: 120000,
+        retryPolicy: { maxRetries: 3, backoffMs: 10000 }
+      },
+      {
+        id: 'coverage_monitoring',
+        name: 'Media Coverage Monitoring',
+        type: 'agent',
+        agentId: 'pr-coverage-monitor',
+        inputs: { brandId: '$input.brandId', pitches: '$outreach_execution.sentPitches' },
+        outputs: ['coverageReport', 'mentions', 'sentimentAnalysis', 'shareOfVoice'],
+        dependencies: ['outreach_execution'],
+        timeout: 60000,
+        retryPolicy: { maxRetries: 2, backoffMs: 5000 }
+      },
+      {
+        id: 'crisis_monitoring',
+        name: 'Crisis Detection & Response',
+        type: 'agent',
+        agentId: 'pr-crisis-manager',
+        inputs: { brandId: '$input.brandId', sentiment: '$coverage_monitoring.sentimentAnalysis' },
+        outputs: ['riskAlerts', 'responseTemplates', 'escalationPlan'],
+        dependencies: ['coverage_monitoring'],
+        timeout: 30000,
+        retryPolicy: { maxRetries: 2, backoffMs: 2000 }
+      }
+    ],
+    triggers: [
+      { type: 'manual', config: {} },
+      { type: 'scheduled', config: { cron: '0 7 * * 1-5' } },
+      { type: 'event', config: { event: 'crisis_detected' } }
+    ],
+    inputSchema: { brandId: 'string', industry: 'string', prGoals: 'object' },
+    outputSchema: { coverageReport: 'object', mentions: 'array', sentimentAnalysis: 'object' }
+  },
+  {
+    id: 'web-development-pipeline',
+    name: 'Web Development & Optimization Pipeline',
+    vertical: 'web_development',
+    description: 'Website development, landing page creation, and CRO optimization',
+    version: '1.0.0',
+    steps: [
+      {
+        id: 'site_audit',
+        name: 'Website Audit & Analysis',
+        type: 'agent',
+        agentId: 'webdev-site-auditor',
+        inputs: { url: '$input.websiteUrl', brandId: '$input.brandId' },
+        outputs: ['auditReport', 'performanceMetrics', 'uxIssues', 'accessibilityScore'],
+        dependencies: [],
+        timeout: 90000,
+        retryPolicy: { maxRetries: 2, backoffMs: 5000 }
+      },
+      {
+        id: 'design_strategy',
+        name: 'Design & UX Strategy',
+        type: 'agent',
+        agentId: 'webdev-ux-strategist',
+        inputs: { audit: '$site_audit.auditReport', goals: '$input.webGoals', brand: '$input.brandId' },
+        outputs: ['designRecommendations', 'wireframes', 'userFlows', 'conversionPaths'],
+        dependencies: ['site_audit'],
+        timeout: 60000,
+        retryPolicy: { maxRetries: 2, backoffMs: 3000 }
+      },
+      {
+        id: 'landing_page_generation',
+        name: 'Landing Page Generation',
+        type: 'agent',
+        agentId: 'webdev-landing-page-builder',
+        inputs: { design: '$design_strategy.wireframes', brand: '$input.brandId', campaign: '$input.campaignContext' },
+        outputs: ['htmlContent', 'cssStyles', 'jsInteractions', 'responsiveLayouts'],
+        dependencies: ['design_strategy'],
+        timeout: 120000,
+        retryPolicy: { maxRetries: 2, backoffMs: 5000 }
+      },
+      {
+        id: 'copy_optimization',
+        name: 'Web Copy Optimization',
+        type: 'agent',
+        agentId: 'webdev-copywriter',
+        inputs: { pages: '$landing_page_generation.htmlContent', brand: '$input.brandId' },
+        outputs: ['optimizedCopy', 'headlines', 'ctaVariants', 'socialProof'],
+        dependencies: ['landing_page_generation'],
+        timeout: 60000,
+        retryPolicy: { maxRetries: 2, backoffMs: 3000 }
+      },
+      {
+        id: 'ab_testing_setup',
+        name: 'A/B Testing Configuration',
+        type: 'agent',
+        agentId: 'webdev-cro-specialist',
+        inputs: { pages: '$landing_page_generation.htmlContent', variants: '$copy_optimization.ctaVariants' },
+        outputs: ['testPlan', 'variants', 'trackingSetup', 'hypotheses'],
+        dependencies: ['copy_optimization'],
+        timeout: 45000,
+        retryPolicy: { maxRetries: 2, backoffMs: 2000 }
+      },
+      {
+        id: 'performance_optimization',
+        name: 'Performance Optimization',
+        type: 'service',
+        serviceCall: 'seo-toolkit-service.optimizePerformance',
+        inputs: { url: '$input.websiteUrl', pages: '$landing_page_generation.htmlContent' },
+        outputs: ['optimizedAssets', 'coreWebVitals', 'loadTimeImprovements'],
+        dependencies: ['landing_page_generation'],
+        timeout: 90000,
+        retryPolicy: { maxRetries: 2, backoffMs: 5000 }
+      },
+      {
+        id: 'analytics_integration',
+        name: 'Analytics & Tracking Setup',
+        type: 'service',
+        serviceCall: 'conversion-tracking-service.setupWebAnalytics',
+        inputs: { brandId: '$input.brandId', pages: '$landing_page_generation.htmlContent' },
+        outputs: ['analyticsConfig', 'heatmapSetup', 'conversionGoals'],
+        dependencies: ['ab_testing_setup', 'performance_optimization'],
+        timeout: 45000,
+        retryPolicy: { maxRetries: 2, backoffMs: 3000 }
+      }
+    ],
+    triggers: [
+      { type: 'manual', config: {} },
+      { type: 'event', config: { event: 'new_landing_page_request' } }
+    ],
+    inputSchema: { brandId: 'string', websiteUrl: 'string', webGoals: 'object', campaignContext: 'object' },
+    outputSchema: { pages: 'array', testPlan: 'object', performanceReport: 'object' }
   }
 ];
 
@@ -742,7 +927,7 @@ class VerticalWorkflowEngine {
     VERTICAL_WORKFLOWS.forEach(wf => this.workflows.set(wf.id, wf));
     console.log('🔄 Vertical Workflow Engine initialized');
     console.log(`   Loaded ${this.workflows.size} vertical workflows`);
-    console.log('   Verticals: Social, SEO, Performance Ads, Sales/SDR, WhatsApp, LinkedIn, Telegram');
+    console.log('   Verticals: Social, SEO, Performance Ads, Sales/SDR, WhatsApp, LinkedIn, Telegram, PR & Comms, Web Dev');
   }
 
   async executeWorkflow(

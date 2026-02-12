@@ -306,7 +306,7 @@ export class SarvamTranslationService extends EventEmitter {
     // Get seed translation if available
     const seedMap = this.seedTranslations.get(key);
     if (seedMap) {
-      for (const [lang, translation] of seedMap.entries()) {
+      for (const [lang, translation] of Array.from(seedMap.entries())) {
         translations.set(lang, translation);
       }
       return translations;
@@ -368,14 +368,69 @@ export class SarvamTranslationService extends EventEmitter {
     return data.translated_text || request.text;
   }
 
-  /**
-   * Intelligent fallback when Sarvam API is unavailable
-   * Returns original text with language marker
-   */
   private async intelligentFallback(request: TranslationRequest): Promise<string> {
-    // For now, return original text
-    // In production, could use alternative translation services or maintain larger seed database
+    const openaiKey = process.env.OPENAI_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY;
+
+    if (openaiKey) {
+      try {
+        const langName = this.getLanguageName(request.targetLanguage);
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${openaiKey}` },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: `You are a professional translator. Translate the following text from ${this.getLanguageName(request.sourceLanguage)} to ${langName}. Return ONLY the translated text, no explanations.` },
+              { role: 'user', content: request.text }
+            ],
+            temperature: 0.3,
+            max_tokens: 2048,
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const translated = data.choices?.[0]?.message?.content?.trim();
+          if (translated) return translated;
+        }
+      } catch (err) {
+        console.error('OpenAI translation fallback failed:', err);
+      }
+    }
+
+    if (geminiKey) {
+      try {
+        const langName = this.getLanguageName(request.targetLanguage);
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `Translate the following text from ${this.getLanguageName(request.sourceLanguage)} to ${langName}. Return ONLY the translated text:\n\n${request.text}` }] }],
+            generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const translated = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+          if (translated) return translated;
+        }
+      } catch (err) {
+        console.error('Gemini translation fallback failed:', err);
+      }
+    }
+
     return request.text;
+  }
+
+  private getLanguageName(code: string): string {
+    const names: Record<string, string> = {
+      en: 'English', hi: 'Hindi', bn: 'Bengali', te: 'Telugu', mr: 'Marathi',
+      ta: 'Tamil', gu: 'Gujarati', ur: 'Urdu', kn: 'Kannada', or: 'Odia',
+      ml: 'Malayalam', pa: 'Punjabi', as: 'Assamese', mai: 'Maithili',
+      sa: 'Sanskrit', kok: 'Konkani', ne: 'Nepali', sd: 'Sindhi',
+      doi: 'Dogri', mni: 'Manipuri', brx: 'Bodo', sat: 'Santali', ks: 'Kashmiri',
+    };
+    return names[code] || code;
   }
 
   /**
@@ -402,8 +457,8 @@ export class SarvamTranslationService extends EventEmitter {
 
     // Limit cache size to 10,000 entries
     if (this.translationCache.size > 10000) {
-      const firstKey = this.translationCache.keys().next().value;
-      this.translationCache.delete(firstKey);
+      const firstKey = this.translationCache.keys().next().value as string;
+      if (firstKey) this.translationCache.delete(firstKey);
     }
   }
 
