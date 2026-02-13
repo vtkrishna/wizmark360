@@ -63,6 +63,7 @@ import waiSDKv32Routes from "./routes/wai-sdk-v32-routes";
 import exportRoutes from "./routes/export-routes";
 import strategyPipelineRoutes from "./routes/strategy-pipeline-routes";
 import monitoringDashboardRoutes from "./routes/monitoring-dashboard-routes";
+import { marketingAgentsLoader } from "./services/marketing-agents-loader";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -225,6 +226,9 @@ async function startServer() {
     console.log('🚀 Starting WAI SDK Platform - Minimal Mode');
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+    
+    // Initialize marketing agents loader
+    await marketingAgentsLoader.initialize();
     
     // Setup authentication (MUST be before other routes)
     await setupAuth(app);

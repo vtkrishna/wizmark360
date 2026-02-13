@@ -1,17 +1,19 @@
 /**
- * Agent Registry Service - SINGLE SOURCE OF TRUTH for All 267 Agents
+ * Agent Registry Service - SINGLE SOURCE OF TRUTH for All Agents
  * 
- * This service loads and manages all agents from WAI SDK packages:
- * - 105 agents from comprehensive-105-agents-v9.ts
- * - 79 agents from wshobson-agents-registry.ts  
- * - 83+ agents from Geminiflow (future integration)
+ * This service loads and manages all agents from multiple sources:
+ * - 105 agents from comprehensive-105-agents-v9.ts (WAI SDK)
+ * - 79 agents from wshobson-agents-registry.ts (WAI SDK)
+ * - 79 agents from Geminiflow (Vertex AI + Gemini)
+ * - 262 marketing agents from data/marketing-agents-registry.json (Feb 2026)
  * 
- * Total: 267+ agents with full ROMA L1-L4 compliance
- * 
- * Week 1-2 Critical Fix: Load ALL agents into runtime (currently only 3/267 loaded)
+ * Total: 525+ agents with full ROMA L1-L4 compliance
+ * Marketing agents include 22-point system prompts, CAM 2.0, GRPO, Voice AI
  */
 
 import { EventEmitter } from 'events';
+import fs from 'fs';
+import path from 'path';
 
 // WEEK 1-2 CRITICAL FIX: Import real WAI SDK agent manifests
 import Comprehensive105AgentsV9 from '../../wai-sdk/packages/agents/src/definitions/comprehensive-105-agents-v9.js';
@@ -96,7 +98,8 @@ export class AgentRegistryService extends EventEmitter {
       // Load agents from all sources
       await this.loadComprehensiveAgents(); // 105 agents
       await this.loadWshobsonAgents(); // 79 agents
-      await this.loadGeminiflowAgents(); // 83+ agents (placeholder for now)
+      await this.loadGeminiflowAgents(); // 83+ agents
+      await this.loadMarketingAgents(); // 262+ marketing agents from JSON registry
 
       const loadTime = Date.now() - startTime;
       this.isInitialized = true;
@@ -282,6 +285,65 @@ export class AgentRegistryService extends EventEmitter {
   }
 
   /**
+   * Load 262+ marketing agents from data/marketing-agents-registry.json
+   * Feb 2026: Full 22-point system prompts, CAM 2.0, GRPO, Voice AI, Enterprise Wiring
+   */
+  private async loadMarketingAgents(): Promise<void> {
+    console.log('📦 Loading marketing agents from JSON registry...');
+
+    try {
+      const registryPath = path.join(process.cwd(), 'data', 'marketing-agents-registry.json');
+      if (!fs.existsSync(registryPath)) {
+        console.warn('⚠️ Marketing agents registry not found at', registryPath);
+        return;
+      }
+
+      const jsonContent = fs.readFileSync(registryPath, 'utf-8');
+      const registry = JSON.parse(jsonContent);
+      let loadedCount = 0;
+
+      for (const mktAgent of registry.agents || []) {
+        const agent: Agent = {
+          id: mktAgent.id,
+          name: mktAgent.name,
+          description: mktAgent.description || `Marketing agent: ${mktAgent.name}`,
+          tier: this.mapMarketingTier(mktAgent.tier),
+          romaLevel: this.mapWAIRomaLevel(mktAgent.romaLevel),
+          capabilities: mktAgent.capabilities || [],
+          model: mktAgent.preferredModels?.[0] || 'gemini-3-flash',
+          category: mktAgent.vertical || mktAgent.category || 'Marketing',
+          systemPrompt: mktAgent.systemPrompt,
+          status: 'active',
+          totalExecutions: 0,
+          successRate: 1.0
+        };
+
+        this.agents.set(agent.id, agent);
+        loadedCount++;
+      }
+
+      console.log(`✅ Loaded ${loadedCount} marketing agents from JSON registry`);
+    } catch (error) {
+      console.error('❌ Error loading marketing agents:', error);
+      console.error('  Continuing without marketing agents');
+    }
+  }
+
+  /**
+   * Map marketing agent tiers to registry tiers
+   */
+  private mapMarketingTier(tier: string): Agent['tier'] {
+    const tierMap: Record<string, Agent['tier']> = {
+      'director': 'executive',
+      'manager': 'executive',
+      'specialist': 'development',
+      'worker': 'domain',
+      'reviewer': 'qa'
+    };
+    return tierMap[String(tier || '').toLowerCase()] || 'development';
+  }
+
+  /**
    * Check if registry is ready
    */
   public isReady(): boolean {
@@ -376,7 +438,7 @@ export class AgentRegistryService extends EventEmitter {
    */
   private getLoadBreakdown(): string {
     const stats = this.getStats();
-    return `Executive: ${stats.byTier['executive'] || 0}, Dev: ${stats.byTier['development'] || 0}, Creative: ${stats.byTier['creative'] || 0}, QA: ${stats.byTier['qa'] || 0}, DevOps: ${stats.byTier['devops'] || 0}, Domain: ${stats.byTier['domain'] || 0}`;
+    return `Executive: ${stats.byTier['executive'] || 0}, Dev: ${stats.byTier['development'] || 0}, Creative: ${stats.byTier['creative'] || 0}, QA: ${stats.byTier['qa'] || 0}, DevOps: ${stats.byTier['devops'] || 0}, Domain: ${stats.byTier['domain'] || 0}, Total: ${stats.total}`;
   }
 
   /**

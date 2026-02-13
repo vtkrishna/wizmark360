@@ -42,6 +42,51 @@ export interface MarketingAgent {
     routineModel?: string;
     complexModel?: string;
   };
+  cam2Monitoring?: {
+    enabled: boolean;
+    version: string;
+    metrics: Record<string, boolean>;
+    alertThresholds: { latencyMs: number; errorRatePercent: number; qualityScoreMin: number };
+    realTimeStreaming: boolean;
+    dashboardEndpoint: string;
+    historyRetentionDays: number;
+  };
+  grpoConfig?: {
+    enabled: boolean;
+    version: string;
+    continuousLearning: Record<string, boolean>;
+    policyOptimization: Record<string, boolean>;
+    trainingDataSources: string[];
+    updateFrequency: string;
+  };
+  voiceAIConfig?: {
+    enabled: boolean;
+    twoWayStreaming: boolean;
+    inputProviders: string[];
+    outputProviders: string[];
+    realtimeProtocol: string;
+    streamingEndpoint: string;
+    supportedLanguages: string[];
+    features: Record<string, boolean>;
+    latencyTargetMs: number;
+  };
+  enterpriseWiring?: {
+    queenOrchestrator: { connected: boolean; taskDecomposition: boolean; algorithms: string[] };
+    memoryIntegration: Record<string, boolean>;
+    toolsIntegration: { mcpToolsAccess: boolean; toolCount: number; customToolsEnabled: boolean };
+    orchestrationEngine: Record<string, boolean>;
+    agentBreeding: { canSpawnSubagents: boolean; maxSubagents: number };
+    humanInLoop: Record<string, boolean>;
+    collectiveIntelligence: Record<string, boolean>;
+  };
+  peerMeshConfig?: {
+    enabled: boolean;
+    discoveryProtocol: string;
+    meshTopology: string;
+    loadBalancing: boolean;
+    failover: boolean;
+    maxPeers: number;
+  };
   metrics?: Record<string, boolean>;
   status: string;
 }
@@ -72,6 +117,7 @@ export interface AgentRegistry {
     defaultModel: string;
     premiumModel: string;
     reasoningModel: string;
+    costEffectiveModel?: string;
     maxConcurrentAgents: number;
     costOptimization: {
       enabled: boolean;
@@ -80,11 +126,11 @@ export interface AgentRegistry {
       routineTaskMaxCost: number;
       complexTaskMaxCost: number;
     };
-    fallbackChain: Array<{
+    fallbackChain?: Array<{
       tier: number;
       models: string[];
     }>;
-    guardrails: Record<string, boolean>;
+    guardrails?: Record<string, boolean>;
   };
 }
 
@@ -232,8 +278,8 @@ class MarketingAgentsLoaderService {
     const config = this.getConfiguration();
     if (!config) return ['kimi-k2.5'];
 
-    const fallback = config.fallbackChain.find(f => f.tier === tier);
-    return fallback?.models || ['kimi-k2.5'];
+    const fallback = config.fallbackChain?.find(f => f.tier === tier);
+    return fallback?.models || ['gemini-3-flash'];
   }
 
   /**

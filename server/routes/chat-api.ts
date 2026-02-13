@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { chiefOfStaffService, ChatRequest, Vertical } from "../services/chief-of-staff-service";
 import { ALL_MARKETING_AGENTS, getAgentsByCategory, getAgentById, getAgentsByTier, AGENT_COUNTS } from "../agents/marketing-agents-catalog";
+import { marketingAgentsLoader, type MarketingAgent } from "../services/marketing-agents-loader";
 import { 
   ALL_HIERARCHICAL_AGENTS, 
   AGENT_STATS as HIERARCHICAL_STATS,
@@ -116,19 +117,45 @@ router.get("/agents/:vertical", async (req: Request, res: Response) => {
 router.get("/marketing-agents", async (req: Request, res: Response) => {
   try {
     const includePrompt = req.query.includePrompt === 'true';
+    const vertical = req.query.vertical as string;
+    const tier = req.query.tier as string;
+    const romaLevel = req.query.romaLevel as string;
+
+    let agents: MarketingAgent[] = marketingAgentsLoader.getAllAgents();
+    if (agents.length === 0) {
+      return res.json({
+        totalAgents: ALL_MARKETING_AGENTS.length,
+        counts: AGENT_COUNTS,
+        agents: ALL_MARKETING_AGENTS.map((a: any) => ({
+          id: a.id, name: a.name, category: a.category, tier: a.tier,
+          description: a.description, mission: a.mission, objectives: a.objectives,
+          skills: a.skills, tools: a.tools
+        }))
+      });
+    }
+
+    if (vertical) agents = agents.filter((a: MarketingAgent) => a.vertical === vertical);
+    if (tier) agents = agents.filter((a: MarketingAgent) => a.tier === tier);
+    if (romaLevel) agents = agents.filter((a: MarketingAgent) => a.romaLevel === romaLevel);
+
     res.json({
-      totalAgents: ALL_MARKETING_AGENTS.length,
-      counts: AGENT_COUNTS,
-      agents: ALL_MARKETING_AGENTS.map(a => includePrompt ? a : {
+      totalAgents: agents.length,
+      metadata: marketingAgentsLoader.getMetadata(),
+      verticalSummary: marketingAgentsLoader.getVerticalSummary(),
+      tierSummary: marketingAgentsLoader.getTierSummary(),
+      agents: agents.map((a: MarketingAgent) => includePrompt ? a : {
         id: a.id,
         name: a.name,
+        vertical: a.vertical,
+        group: a.group,
         category: a.category,
         tier: a.tier,
+        romaLevel: a.romaLevel,
         description: a.description,
-        mission: a.mission,
-        objectives: a.objectives,
-        skills: a.skills,
-        tools: a.tools
+        capabilities: a.capabilities,
+        tools: a.tools,
+        preferredModels: a.preferredModels,
+        status: a.status
       })
     });
   } catch (error: any) {
@@ -141,28 +168,39 @@ router.get("/marketing-agents/category/:category", async (req: Request, res: Res
   try {
     const { category } = req.params;
     const validCategories = ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance", "pr"];
-    
+
+    const verticalMap: Record<string, string> = {
+      social: "Social Media", seo: "SEO/GEO", web: "Web Development",
+      sales: "Sales/SDR", whatsapp: "WhatsApp", linkedin: "LinkedIn",
+      performance: "Performance Ads", pr: "PR & Communications"
+    };
+
     if (!validCategories.includes(category)) {
-      return res.status(400).json({ 
-        error: "Invalid category", 
-        validCategories 
+      return res.status(400).json({ error: "Invalid category", validCategories });
+    }
+
+    const registryAgents = marketingAgentsLoader.getAgentsByVertical(verticalMap[category] || category);
+    if (registryAgents.length > 0) {
+      res.json({
+        category,
+        vertical: verticalMap[category],
+        total: registryAgents.length,
+        agents: registryAgents.map((a: MarketingAgent) => ({
+          id: a.id, name: a.name, tier: a.tier, romaLevel: a.romaLevel,
+          description: a.description, capabilities: a.capabilities,
+          tools: a.tools, preferredModels: a.preferredModels, status: a.status
+        }))
+      });
+    } else {
+      const agents = getAgentsByCategory(category as any);
+      res.json({
+        category, total: agents.length,
+        agents: agents.map((a: any) => ({
+          id: a.id, name: a.name, tier: a.tier, description: a.description,
+          mission: a.mission, skills: a.skills, tools: a.tools
+        }))
       });
     }
-    
-    const agents = getAgentsByCategory(category as any);
-    res.json({
-      category,
-      total: agents.length,
-      agents: agents.map(a => ({
-        id: a.id,
-        name: a.name,
-        tier: a.tier,
-        description: a.description,
-        mission: a.mission,
-        skills: a.skills,
-        tools: a.tools
-      }))
-    });
   } catch (error: any) {
     console.error("Category agents API error:", error);
     res.status(500).json({ error: "Failed to get category agents" });
@@ -172,12 +210,15 @@ router.get("/marketing-agents/category/:category", async (req: Request, res: Res
 router.get("/marketing-agents/agent/:agentId", async (req: Request, res: Response) => {
   try {
     const { agentId } = req.params;
+    const registryAgent = marketingAgentsLoader.getAgent(agentId);
+    if (registryAgent) {
+      return res.json(registryAgent);
+    }
+
     const agent = getAgentById(agentId);
-    
     if (!agent) {
       return res.status(404).json({ error: "Agent not found" });
     }
-    
     res.json(agent);
   } catch (error: any) {
     console.error("Agent detail API error:", error);
@@ -188,7 +229,7 @@ router.get("/marketing-agents/agent/:agentId", async (req: Request, res: Respons
 router.get("/marketing-agents/tier/:tier", async (req: Request, res: Response) => {
   try {
     const { tier } = req.params;
-    const validTiers = ["L0", "L1", "L2", "L3", "L4"];
+    const validTiers = ["L0", "L1", "L2", "L3", "L4", "director", "manager", "specialist", "worker", "reviewer"];
     
     if (!validTiers.includes(tier)) {
       return res.status(400).json({ 
@@ -196,12 +237,24 @@ router.get("/marketing-agents/tier/:tier", async (req: Request, res: Response) =
         validTiers 
       });
     }
+
+    const registryAgents = marketingAgentsLoader.getAgentsByTier(tier);
+    if (registryAgents.length > 0) {
+      return res.json({
+        tier, total: registryAgents.length,
+        agents: registryAgents.map((a: MarketingAgent) => ({
+          id: a.id, name: a.name, tier: a.tier, romaLevel: a.romaLevel,
+          vertical: a.vertical, description: a.description,
+          capabilities: a.capabilities, tools: a.tools, preferredModels: a.preferredModels
+        }))
+      });
+    }
     
     const agents = getAgentsByTier(tier as any);
     res.json({
       tier,
       total: agents.length,
-      agents: agents.map(a => ({
+      agents: agents.map((a: any) => ({
         id: a.id,
         name: a.name,
         category: a.category,
