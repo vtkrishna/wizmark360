@@ -4,7 +4,60 @@
 
 This document provides a comprehensive deployment plan for **WizMark 360** (Wizards360) to serve **10,000+ concurrent users** in a global production environment. The plan covers multi-region architecture, cloud provider options (AWS, GCP, Azure), infrastructure sizing, CI/CD pipelines, disaster recovery, security hardening, and cost estimation.
 
-WizMark 360 is a full-stack TypeScript application (React + Express) with 285 autonomous agents, 24 LLM providers, 886+ AI models, 319 service modules, 178 API routes, and 8 marketing verticals. The deployment architecture must handle high-volume LLM API calls, real-time WebSocket connections, background agent orchestration, and enterprise-grade security.
+WizMark 360 is a full-stack TypeScript application (React + Express + PostgreSQL + Drizzle ORM) with 262 autonomous agents across 8 verticals (Social Media 44, SEO/GEO 38, Web Dev 31, Sales/SDR 36, WhatsApp 27, LinkedIn B2B 28, Performance Ads 39, PR & Comms 29), 24 LLM providers (Claude Opus 4.6, GPT-5.2 Pro, Gemini 3 Pro), 886+ AI models with 4-tier architecture, 22-point system prompt framework, 20 agentic network patterns, and 45+ API endpoints. The deployment architecture must handle high-volume LLM API calls, real-time WebSocket connections, background agent orchestration, CAM 2.0 monitoring, GRPO continuous learning, Voice AI, and enterprise-grade security.
+
+### Current Development Configuration
+
+| Setting | Value |
+|---------|-------|
+| **Package Manager** | pnpm |
+| **Build System** | Vite |
+| **Dev Command** | `npm run dev` (tsx watch server/index.minimal.ts) |
+| **Build Command** | `npm run build` |
+| **Port** | 5000 (all environments) |
+| **Database** | PostgreSQL with Drizzle ORM |
+| **Deployment** | Autoscale on Replit |
+
+### Replit Deployment Configuration
+
+WizMark 360 is configured for autoscale deployment on Replit:
+
+```
+Deployment Target: autoscale
+Build Command: npm run build
+Run Command: npm run start
+Port: 5000
+```
+
+### Environment Variables Required
+
+The following environment variables must be configured:
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `OPENAI_API_KEY` | OpenAI (GPT-5.2 Pro, GPT-4.1, o3, o4-mini) |
+| `ANTHROPIC_API_KEY` | Anthropic (Claude Opus 4.6, Sonnet 5.0, Haiku 4.5) |
+| `GEMINI_API_KEY` | Google (Gemini 3 Pro/Flash, 2.5 Pro/Flash) |
+| `GROQ_API_KEY` | Groq (Llama 3.3-70B, Mixtral) |
+| `COHERE_API_KEY` | Cohere (Command R+) |
+| `SARVAM_API_KEY` | Sarvam AI (STT/TTS, 22 Indian languages) |
+| `TOGETHER_API_KEY` | Together AI (open-source models) |
+| `OPENROUTER_API_KEY` | OpenRouter (400+ model aggregator) |
+| `ZHIPU_API_KEY` | Zhipu AI (GLM-4) |
+| `DEEPSEEK_API_KEY` | DeepSeek (DeepSeek V3) |
+| `MISTRAL_API_KEY` | Mistral (Mistral Large, Codestral) |
+| `PERPLEXITY_API_KEY` | Perplexity (real-time web search) |
+| `XAI_API_KEY` | xAI (Grok-2) |
+| `FIREWORKS_API_KEY` | Fireworks AI (fast inference) |
+| `REPLICATE_API_TOKEN` | Replicate (image/video models) |
+| `HUGGINGFACE_API_KEY` | HuggingFace (open-source models) |
+| `META_WHATSAPP_TOKEN` | WhatsApp Business API |
+| `RAZORPAY_KEY_ID` | Razorpay payment gateway |
+| `RAZORPAY_KEY_SECRET` | Razorpay secret |
+| `SESSION_SECRET` | Express session encryption |
+| `GOOGLE_SEARCH_API_KEY` | Google Custom Search |
+| `BING_SEARCH_API_KEY` | Bing Web Search |
 
 ---
 
@@ -764,5 +817,5 @@ The Wizards Studio Platform requires the following additional deployment compone
 
 ---
 
-*Document generated: February 8, 2026*
-*Platform version: WizMark 360 v4.0.0*
+*Document generated: February 13, 2026*
+*Platform version: WizMark 360 v5.0.0*

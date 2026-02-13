@@ -10,8 +10,8 @@
 ║              W I Z M A R K   3 6 0                               ║
 ║         AI Marketing Operating System                            ║
 ║                                                                  ║
-║   285 AI Agents  •  24 LLM Providers  •  886 Models             ║
-║   319 Services  •  178 API Routes  •  25 Pages                  ║
+║   262 AI Agents  •  24 LLM Providers  •  886 Models             ║
+║   319 Services  •  178 API Routes  •  14 Pages                  ║
 ║   8 Verticals  •  22 Languages  •  One Platform                 ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
@@ -25,14 +25,14 @@
 2. [Platform Architecture Overview](#2-platform-architecture-overview)
 3. [Getting Started](#3-getting-started)
 4. [Vertical-by-Vertical Usage Guide](#4-vertical-by-vertical-usage-guide)
-   - 4.1 [Social Media Marketing](#41-social-media-marketing-45-agents)
-   - 4.2 [SEO & GEO Optimization](#42-seo--geo-optimization-38-agents)
-   - 4.3 [Web Development](#43-web-development-35-agents)
-   - 4.4 [Sales SDR Automation](#44-sales-sdr-automation-42-agents)
-   - 4.5 [WhatsApp Marketing](#45-whatsapp-marketing-28-agents)
-   - 4.6 [LinkedIn B2B Marketing](#46-linkedin-b2b-marketing-32-agents)
-   - 4.7 [Performance Advertising](#47-performance-advertising-47-agents)
-   - 4.8 [PR & Communications](#48-pr--communications-18-agents)
+   - 4.1 [Social Media Marketing](#41-social-media-marketing)
+   - 4.2 [SEO & GEO Optimization](#42-seo--geo-optimization)
+   - 4.3 [Web Development](#43-web-development)
+   - 4.4 [Sales SDR Automation](#44-sales-sdr-automation)
+   - 4.5 [WhatsApp Marketing](#45-whatsapp-marketing)
+   - 4.6 [LinkedIn B2B Marketing](#46-linkedin-b2b-marketing)
+   - 4.7 [Performance Advertising](#47-performance-advertising)
+   - 4.8 [PR & Communications](#48-pr--communications)
 5. [Wizards Studio Platform — 10 Specialized Studios](#5-wizards-studio-platform--10-specialized-studios)
 6. [WizMark Intelligence Suite — 10 AI Tools](#6-wizmark-intelligence-suite--10-ai-tools)
 7. [Context Engineering & Prompt Optimization](#7-context-engineering--prompt-optimization)
@@ -51,7 +51,7 @@
 
 ### What Is WizMark 360?
 
-WizMark 360 is the world's first **AI Marketing Operating System** — a self-driving marketing agency platform that automates your entire marketing operation end-to-end. From strategy and content creation to campaign execution and performance optimization, WizMark 360 replaces 10+ separate tools with one unified platform powered by **285 AI agents** working across **8 marketing verticals**.
+WizMark 360 is the world's first **AI Marketing Operating System** — a self-driving marketing agency platform that automates your entire marketing operation end-to-end. From strategy and content creation to campaign execution and performance optimization, WizMark 360 replaces 10+ separate tools with one unified platform powered by **262 AI agents** working across **8 marketing verticals**.
 
 Think of it as having an entire marketing agency team — strategists, copywriters, designers, ad managers, SEO experts, sales development reps, and analysts — all powered by AI and available 24/7.
 
@@ -108,7 +108,7 @@ Here is a simplified view of how WizMark 360 works — no technical expertise re
 │  │   Task Analysis → Agent Selection → Model Routing     │       │
 │  │                                                       │       │
 │  │   ┌──────────┐  ┌──────────┐  ┌──────────┐          │       │
-│  │   │ 285 AI   │  │ Smart    │  │ ROMA     │          │       │
+│  │   │ 262 AI   │  │ Smart    │  │ ROMA     │          │       │
 │  │   │ Agents   │  │ Model    │  │ Autonomy │          │       │
 │  │   │          │  │ Router   │  │ Engine   │          │       │
 │  │   └──────────┘  └──────────┘  └──────────┘          │       │
@@ -148,7 +148,7 @@ Here is a simplified view of how WizMark 360 works — no technical expertise re
 When you perform any action in WizMark 360 — create a social post, run an SEO audit, score a lead — here is what happens behind the scenes:
 
 1. **Task Analysis:** The WAI-SDK orchestration engine analyzes your request — what type of task it is, which vertical it belongs to, what language is needed, and how complex it is.
-2. **Agent Selection:** From the 285 available agents, the engine selects the best-fit specialist for the job (e.g., a Social Content Creator agent for Instagram posts, or a Technical SEO Auditor for site analysis).
+2. **Agent Selection:** From the 262 available agents, the engine selects the best-fit specialist for the job (e.g., a Social Content Creator agent for Instagram posts, or a Technical SEO Auditor for site analysis).
 3. **Model Routing:** The Smart Model Router picks the optimal LLM from 24 providers and 886 models based on cost, speed, quality, and capability requirements.
 4. **Execution:** The agent completes the task using the selected model, applying your brand context, guidelines, and preferences.
 5. **Quality Check:** Built-in guardrails validate the output against your brand voice, compliance rules, and quality standards.
@@ -161,32 +161,32 @@ When you perform any action in WizMark 360 — create a social post, run an SEO 
 │                    AGENT-MODEL-VERTICAL MAP                  │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  VERTICALS (8)          AGENTS (285)        MODELS (886)    │
+│  VERTICALS (8)          AGENTS (262)        MODELS (886)    │
 │  ┌──────────┐          ┌──────────┐       ┌──────────┐     │
-│  │ Social   │──────────│ 45 agents│───────│ GPT-4o   │     │
-│  │ Media    │          │          │       │ Claude   │     │
-│  ├──────────┤          ├──────────┤       │ Gemini   │     │
-│  │ SEO/GEO  │──────────│ 38 agents│───────│ Groq     │     │
+│  │ Social   │──────────│ agents   │───────│GPT-5.2Pro│     │
+│  │ Media    │          │          │       │Claude 4.6│     │
+│  ├──────────┤          ├──────────┤       │Gemini 3  │     │
+│  │ SEO/GEO  │──────────│ agents   │───────│ Groq     │     │
 │  ├──────────┤          ├──────────┤       │ Sarvam   │     │
-│  │ Web Dev  │──────────│ 35 agents│───────│ DeepSeek │     │
+│  │ Web Dev  │──────────│ agents   │───────│ DeepSeek │     │
 │  ├──────────┤          ├──────────┤       │ Mistral  │     │
-│  │ Sales SDR│──────────│ 42 agents│───────│ Cohere   │     │
+│  │ Sales SDR│──────────│ agents   │───────│ Cohere   │     │
 │  ├──────────┤          ├──────────┤       │ Perplexity│    │
-│  │ WhatsApp │──────────│ 28 agents│───────│ Together │     │
+│  │ WhatsApp │──────────│ agents   │───────│ Together │     │
 │  ├──────────┤          ├──────────┤       │ OpenRouter│    │
-│  │ LinkedIn │──────────│ 32 agents│───────│ xAI Grok │     │
+│  │ LinkedIn │──────────│ agents   │───────│ xAI Grok │     │
 │  ├──────────┤          ├──────────┤       │ Replicate│     │
-│  │ Perf Ads │──────────│ 47 agents│───────│ + more   │     │
+│  │ Perf Ads │──────────│ agents   │───────│ + more   │     │
 │  ├──────────┤          ├──────────┤       └──────────┘     │
-│  │ PR/Comms │──────────│ 18 agents│                         │
+│  │ PR/Comms │──────────│ agents   │                         │
 │  └──────────┘          └──────────┘                         │
 │                                                              │
 │  Smart Model Router selects the best model per task:        │
 │  • Cost optimization → DeepSeek V3 (90% savings)            │
 │  • Speed → Groq Llama 3.3-70B (sub-second)                  │
-│  • Quality → GPT-4o / Claude Opus 4.6 (premium)             │
+│  • Quality → GPT-5.2 Pro / Claude Opus 4.6 (premium)        │
 │  • Indian languages → Sarvam-2B                             │
-│  • Multimodal → Gemini 2.5 Pro (vision + text)              │
+│  • Multimodal → Gemini 3 Pro (vision + text)                │
 │  • Real-time search → Perplexity                            │
 │                                                              │
 └─────────────────────────────────────────────────────────────┘
@@ -196,7 +196,7 @@ When you perform any action in WizMark 360 — create a social post, run an SEO 
 
 | Tier | Purpose | Example Models | Cost Range |
 |------|---------|---------------|------------|
-| **Tier 1: Premium** | Complex reasoning, premium content | GPT-4o, Claude Opus 4.6, Gemini 2.5 Pro | $3–$75 / 1M tokens |
+| **Tier 1: Premium** | Complex reasoning, premium content | GPT-5.2 Pro, Claude Opus 4.6, Gemini 3 Pro | $3–$75 / 1M tokens |
 | **Tier 2: Professional** | Balanced quality and speed | Claude Sonnet 5.0, GPT-4o-mini, Gemini Flash | $0.30–$3 / 1M tokens |
 | **Tier 3: Cost-Effective** | Bulk processing, routine tasks | DeepSeek V3, Groq Llama, Kimi K2.5 | $0.06–$0.30 / 1M tokens |
 | **Tier 4: Specialized** | Language, voice, domain tasks | Sarvam-2B, Cohere Command R+, Codestral | Varies |
@@ -241,7 +241,7 @@ WizMark 360 uses the **ROMA framework** to control how much autonomy you give th
 
 ### Dashboard Overview — The Marketing Command Center
 
-Your main dashboard is the **Marketing Command Center**, a single screen providing a real-time view of everything happening across your marketing operation.
+Your main dashboard is the **Marketing Command Center** (`/dashboard`), a single screen providing a real-time view of everything happening across your marketing operation. The dashboard is organized into **6 tabs**: Strategy, Planning, Execution, Content, Monitoring, and Results.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -277,30 +277,39 @@ Your main dashboard is the **Marketing Command Center**, a single screen providi
 
 **Left Sidebar** — Access every section of the platform:
 
-| Menu Item | What It Opens |
-|-----------|---------------|
-| **Dashboard** | Marketing Command Center (home) |
-| **Social Media** | Social media vertical dashboard |
-| **SEO/GEO** | Search optimization vertical |
-| **Web Dev** | Web development vertical |
-| **Sales/SDR** | Sales automation vertical |
-| **WhatsApp** | WhatsApp marketing vertical |
-| **LinkedIn** | LinkedIn B2B vertical |
-| **Performance Ads** | Ad management vertical |
-| **PR & Comms** | PR vertical |
-| **Marketing Chat** | AI assistant for all tasks |
-| **Content Library** | All your marketing assets |
-| **Analytics** | Unified cross-vertical analytics |
-| **Agent Registry** | View and manage 285 AI agents |
-| **LLM Settings** | AI model configuration |
-| **Settings** | Account, billing, integrations, team |
+| Menu Item | Route | What It Opens |
+|-----------|-------|---------------|
+| **Dashboard** | `/dashboard` | Marketing Command Center with tabs: Strategy, Planning, Execution, Content, Monitoring, Results |
+| **Strategy** | `/strategy` | Strategy planning view |
+| **Super Chat** | `/marketing-chat` | Global AI marketing chat with quick actions: Create Presentation, Write Proposal, Generate Image, Design Infographic |
+| **Marketing Verticals** | `/vertical/:vertical` | 8 vertical dashboards: Social Media, SEO/GEO, Web Dev, Sales/SDR, WhatsApp, LinkedIn, Performance Ads, PR & Comms |
+| **AI Platform** | | Submenu with Unified Analytics, Agent Registry, and LLM Settings |
+| — Unified Analytics | `/unified-analytics` | Cross-vertical ROI, ROAS, channel performance breakdown |
+| — Agent Registry | `/admin/agents` | View and manage 262 AI agents |
+| — LLM Settings | `/admin/llm-settings` | LLM Providers tab (24 providers, 886+ models), Marketing Agents tab, Intelligent Routing tab |
+| **Brands & CRM** | `/brands` | 5 brands with Grid/List view, campaigns/leads/revenue per brand |
+| **Content Library** | `/content-library` | 20 items, 18 published, multilingual (22 Indian languages), filter by type/status/vertical |
+| **Calendar** | `/calendar` | Content calendar for scheduling and managing campaigns |
+| **Analytics** | `/analytics` | Overview, By Vertical, Agent Performance, Cost Analysis tabs |
+| **Settings** | `/settings` | Profile, Notifications, Security, Appearance, Language, AI Settings, API Keys, Billing, Team, Organization |
 
-**Universal Search (Ctrl+K / Cmd+K)** — Press anywhere in the platform to:
+**Additional Pages:**
 
-- Jump to any vertical or page
-- Search for campaigns, content, or leads
-- Find specific AI agents
-- Access quick actions (e.g., "Create social post," "Run SEO audit")
+| Page | Route | Description |
+|------|-------|-------------|
+| **Landing Page** | `/` | Hero section with Chief of Staff AI demo |
+| **Brand Onboarding** | `/onboarding` | 6-step brand onboarding wizard |
+| **Platform Connections** | `/settings/integrations` | OAuth integrations for social, CRM, and ad platforms |
+| **Login** | `/login` | Authentication page |
+
+**Header Features:**
+
+| Feature | Description |
+|---------|-------------|
+| **Universal Search (Ctrl+K)** | Jump to any page, search campaigns/content/leads, find agents, access quick actions |
+| **Workspace Switcher** | Switch between different brand workspaces |
+| **Notifications** | Real-time alerts for approvals, mentions, and system events |
+| **New Task Button** | Quick-create tasks from anywhere in the platform |
 
 > **Pro Tip:** The search understands natural language. Type "show me last week's Instagram performance" and it takes you to the right dashboard with the correct filters applied.
 
@@ -312,11 +321,11 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.1 Social Media Marketing (45 Agents)
+### 4.1 Social Media Marketing
 
 **What it does:** Creates, schedules, publishes, and optimizes social media content across all major platforms — Instagram, Facebook, LinkedIn, X (Twitter), Pinterest, YouTube, and Threads.
 
-**Why you need it:** Social media is the most time-consuming marketing channel. WizMark 360's 45 agents handle everything from ideation to analytics, freeing your team to focus on strategy.
+**Why you need it:** Social media is the most time-consuming marketing channel. WizMark 360's dedicated social media agents handle everything from ideation to analytics, freeing your team to focus on strategy.
 
 #### Step-by-Step Workflow
 
@@ -393,7 +402,7 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.2 SEO & GEO Optimization (38 Agents)
+### 4.2 SEO & GEO Optimization
 
 **What it does:** Optimizes your website for traditional search engines (Google, Bing) AND next-generation AI search engines (ChatGPT, Perplexity, Google AI Overviews). SEO handles Google rankings; GEO (Generative Engine Optimization) ensures your brand appears in AI-generated answers.
 
@@ -472,7 +481,7 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.3 Web Development (35 Agents)
+### 4.3 Web Development
 
 **What it does:** Builds landing pages, marketing websites, and conversion-optimized pages using AI — no coding required. Includes a visual editor, animation capabilities, A/B testing, and performance optimization.
 
@@ -546,11 +555,11 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.4 Sales SDR Automation (42 Agents)
+### 4.4 Sales SDR Automation
 
 **What it does:** Automates the entire sales development process — from finding and scoring leads to personalized outreach, follow-ups, CRM synchronization, and pipeline management.
 
-**Why you need it:** Manual SDR work is slow and expensive. WizMark 360's 42 agents find, qualify, and nurture leads 24/7 while your sales team focuses on closing deals.
+**Why you need it:** Manual SDR work is slow and expensive. WizMark 360's sales agents find, qualify, and nurture leads 24/7 while your sales team focuses on closing deals.
 
 #### Step-by-Step Workflow
 
@@ -632,7 +641,7 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.5 WhatsApp Marketing (28 Agents)
+### 4.5 WhatsApp Marketing
 
 **What it does:** Manages your WhatsApp Business presence — from AI chatbots and broadcast campaigns to visual flow builders, voice messages in Indian languages, and WhatsApp Commerce.
 
@@ -708,7 +717,7 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.6 LinkedIn B2B Marketing (32 Agents)
+### 4.6 LinkedIn B2B Marketing
 
 **What it does:** Manages your LinkedIn presence for B2B lead generation — from company page optimization and thought leadership content to InMail campaigns, employee advocacy, and ABM (Account-Based Marketing).
 
@@ -784,11 +793,11 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.7 Performance Advertising (47 Agents)
+### 4.7 Performance Advertising
 
 **What it does:** Manages paid advertising campaigns across Meta Ads, Google Ads, LinkedIn Ads, TikTok Ads, Twitter Ads, and Pinterest Ads. Includes AI-powered creative generation, audience targeting, budget optimization, and attribution analysis.
 
-**Why you need it:** Paid advertising drives immediate results, but managing campaigns across 6+ platforms is complex and expensive. WizMark 360's 47 agents handle everything from creative generation to real-time bid optimization.
+**Why you need it:** Paid advertising drives immediate results, but managing campaigns across 6+ platforms is complex and expensive. WizMark 360's performance advertising agents handle everything from creative generation to real-time bid optimization.
 
 #### Step-by-Step Workflow
 
@@ -862,11 +871,11 @@ WizMark 360 organizes your marketing work into 8 specialized verticals. Each ver
 
 ---
 
-### 4.8 PR & Communications (18 Agents)
+### 4.8 PR & Communications
 
 **What it does:** Manages press releases, media outreach, crisis communication, brand reputation monitoring, and journalist relationship management.
 
-**Why you need it:** PR builds credibility and trust that paid advertising alone cannot achieve. WizMark 360's 18 PR agents handle everything from press release writing to crisis response.
+**Why you need it:** PR builds credibility and trust that paid advertising alone cannot achieve. WizMark 360's PR agents handle everything from press release writing to crisis response.
 
 #### Step-by-Step Workflow
 
@@ -1252,19 +1261,31 @@ Before any AI task is executed, the Token Cost Prediction Service:
 
 ### Content Library
 
-The Content Library is your central repository for all marketing assets created across every vertical.
+The Content Library is your central repository for all marketing assets created across every vertical. The current library contains **20 items** with **18 published**.
 
-**How to access:** Navigate to **Content Library** in the left sidebar.
+**How to access:** Navigate to **Content Library** in the left sidebar, or go to `/content-library`.
 
 | Feature | Description |
 |---------|-------------|
 | Smart Search | Find any asset by keyword, type, vertical, or date |
+| Filter by Type/Status/Vertical | Filter content by asset type, publication status, or marketing vertical |
 | Brand Filters | Filter content by brand (multi-brand support) |
 | Version History | Track changes and revert to previous versions |
 | Status Tracking | Draft → In Review → Approved → Published → Archived |
 | Asset Types | Text, images, videos, documents, templates, presentations |
 | Collections | Group related assets into shareable collections |
 | Usage Analytics | See which assets are performing best across channels |
+
+**Example Content Types (India-First Campaigns):**
+
+| Content Type | Description |
+|-------------|-------------|
+| Diwali Campaign | Festival-themed marketing assets for the Diwali season |
+| Pongal Festival Promo | Regional campaign assets for Pongal celebrations |
+| Sankranti Campaign | Makar Sankranti promotional content |
+| Durga Puja Special | Bengali festival-specific marketing materials |
+| Republic Day Campaign | Patriotic-themed brand campaigns |
+| Holi Festival Marketing | Color-themed seasonal promotions |
 
 ### Creating Content in 22 Indian Languages
 
@@ -1299,16 +1320,18 @@ WizMark 360 supports content creation, translation, and voice in 22 Indian langu
 
 | Capability | Technology | Supported Languages |
 |------------|-----------|-------------------|
-| Speech-to-Text (STT) | Sarvam Saarika v3 | 8 Indian languages |
-| Text-to-Speech (TTS) | Sarvam Bulbul v2 | 8 Indian languages |
+| Speech-to-Text (STT) | Sarvam Saarika v2 | 12 Indian languages |
+| Text-to-Speech (TTS) | Sarvam Bulbul v1 | 12 Indian languages |
 | WhatsApp Voice Notes | Sarvam integration | All supported languages |
 | IVR & Call Automation | Voice pipeline | Hindi, English, Tamil, Telugu |
 
 ### Translation Workflow
 
+Translation is powered by **Sarvam AI** as the primary provider with **OpenAI** as an automatic fallback:
+
 1. **Select source content** from any vertical or the Content Library
 2. Click **"Translate"** and choose one or more target languages
-3. AI translates with cultural context adaptation (not just word-for-word translation)
+3. AI translates with cultural context adaptation (not just word-for-word translation) — Sarvam AI handles Indian languages natively; if Sarvam API is unavailable, the system automatically falls back to OpenAI gpt-4o-mini, then Gemini
 4. Review the translation — AI highlights low-confidence segments for human review
 5. Approve and the translated content is saved to the Content Library
 
@@ -1318,54 +1341,73 @@ WizMark 360 supports content creation, translation, and voice in 22 Indian langu
 
 ## 10. AI Platform Management
 
-### Agent Registry — Browsing and Using 285 Agents
+### Agent Registry — Browsing and Using 262 Agents
 
-**How to access:** Navigate to **Agent Registry** in the left sidebar.
+**How to access:** Navigate to **AI Platform > Agent Registry** in the left sidebar, or go to `/admin/agents`.
 
-The Agent Registry lets you browse, search, and manage all 285 AI agents deployed across the platform.
+The Agent Registry lets you browse, search, and manage all 262 AI agents deployed across the platform. Agents are organized into a 5-tier hierarchy:
 
-**Agent Distribution:**
+**Agent Tier Breakdown:**
 
-| Vertical | Agent Count | Key Agent Types |
-|----------|------------|----------------|
-| Social Media | 45 | Content creators, schedulers, analysts, engagement bots, crisis managers |
-| SEO/GEO | 38 | Technical auditors, content optimizers, link builders, GEO trackers |
-| Web Development | 35 | Page builders, code generators, animation specialists, A/B testers |
-| Sales/SDR | 42 | Lead researchers, qualification bots, outreach writers, meeting schedulers |
-| WhatsApp | 28 | Chatbots, broadcast managers, flow builders, voice agents |
-| LinkedIn B2B | 32 | Profile optimizers, content writers, InMail specialists, ABM agents |
-| Performance Ads | 47 | Creative generators, bid optimizers, audience builders, attribution analysts |
-| PR & Communications | 18 | Press release writers, media monitors, crisis responders |
+| Tier | Count | Role |
+|------|-------|------|
+| Directors | 8 | Strategic oversight per vertical |
+| Managers | 42 | Team coordination and workflow management |
+| Specialists | 170 | Domain-specific task execution |
+| Workers | 34 | High-volume routine operations |
+| Reviewers | 8 | Quality assurance and compliance checking |
 
-**Each agent has a standardized 6-part system prompt:**
-1. Identity & Role — who the agent is and what it does
-2. Capabilities & Expertise — skills, languages, jurisdictions
-3. Behavioral Rules — how it operates and escalates
-4. Tools & Integrations — what tools it can use
-5. Output Standards — formatting and quality requirements
-6. Guardrails — what it cannot do (safety boundaries)
+**Agent Distribution by Vertical:**
+
+| Vertical | Key Agent Types |
+|----------|----------------|
+| Social Media | Content creators, schedulers, analysts, engagement bots, crisis managers |
+| SEO/GEO | Technical auditors, content optimizers, link builders, GEO trackers |
+| Web Development | Page builders, code generators, animation specialists, A/B testers |
+| Sales/SDR | Lead researchers, qualification bots, outreach writers, meeting schedulers |
+| WhatsApp | Chatbots, broadcast managers, flow builders, voice agents |
+| LinkedIn B2B | Profile optimizers, content writers, InMail specialists, ABM agents |
+| Performance Ads | Creative generators, bid optimizers, audience builders, attribution analysts |
+| PR & Communications | Press release writers, media monitors, crisis responders |
+
+**Each agent has a standardized 22-point system prompt** covering:
+- Identity & Role — who the agent is and what it does
+- Capabilities & Expertise — skills, languages, jurisdictions
+- Behavioral Rules — how it operates and escalates
+- Tools & Integrations — what tools it can use (MCP tools, mem0 memory, peer mesh networking)
+- Output Standards — formatting and quality requirements
+- Guardrails — what it cannot do (safety boundaries)
+- CAM 2.0 Monitoring — real-time operations tracking
+- GRPO Learning — reinforcement learning from user feedback
+- Voice AI — Sarvam STT/TTS integration
+- Enterprise Wiring — queen orchestrator, agent breeding, collective intelligence
 
 **Agent ROMA Levels:**
 
-| Level | Name | Agent Count | Capability |
-|-------|------|-------------|------------|
-| L0 | Reactive | 45 | Responds only to manual triggers |
-| L1 | Proactive | 67 | Suggests actions based on patterns |
-| L2 | Autonomous | 89 | Executes approved strategies automatically |
-| L3 | Collaborative | 62 | Multi-agent coordination across verticals |
-| L4 | Self-Evolving | 22 | Learns and adapts strategies independently |
+| Level | Name | Capability |
+|-------|------|------------|
+| L0 | Reactive | Responds only to manual triggers |
+| L1 | Proactive | Suggests actions based on patterns |
+| L2 | Autonomous | Executes approved strategies automatically |
+| L3 | Collaborative | Multi-agent coordination across verticals |
+| L4 | Self-Evolving | Learns and adapts strategies independently |
 
 ### LLM Settings — Understanding Providers and Models
 
-**How to access:** Navigate to **LLM Settings** in the left sidebar.
+**How to access:** Navigate to **AI Platform > LLM Settings** in the left sidebar, or go to `/admin/llm-settings`.
+
+The LLM Settings page has three tabs:
+- **LLM Providers** — Browse and configure 24 providers with 886+ models
+- **Marketing Agents** — View and manage the 262 marketing agents
+- **Intelligent Routing** — Configure the Smart Model Router rules
 
 WizMark 360 integrates with 24 LLM providers offering 886+ models across 4 tiers:
 
 | Provider | Tier | Key Models | Best For |
 |----------|------|-----------|----------|
-| OpenAI | Premium | GPT-4o, GPT-4o-mini | Complex reasoning, code |
+| OpenAI | Premium | GPT-5.2 Pro, GPT-4o-mini | Complex reasoning, code |
 | Anthropic | Premium | Claude Opus 4.6, Claude Sonnet 5.0 | Analysis, tool-use, vision |
-| Google | Premium | Gemini 2.5 Pro, Gemini Flash | Multimodal, speed |
+| Google | Premium | Gemini 3 Pro, Gemini Flash | Multimodal, speed |
 | Groq | Professional | Llama 3.3-70B | Sub-second responses |
 | Sarvam AI | Specialized | Sarvam-2B | Indian languages, voice |
 | DeepSeek | Cost-Effective | DeepSeek V3 | Budget reasoning (90% savings) |
@@ -1380,9 +1422,15 @@ WizMark 360 integrates with 24 LLM providers offering 886+ models across 4 tiers
 
 ### Unified Analytics Dashboard
 
-**How to access:** Navigate to **Analytics** in the left sidebar.
+**How to access:** Navigate to **AI Platform > Unified Analytics** in the left sidebar, or go to `/unified-analytics`.
 
-The Unified Analytics dashboard provides a single view of performance across all 8 verticals, all campaigns, and all channels. See Section 8 for detailed analytics documentation.
+The Unified Analytics dashboard provides a single view of cross-vertical performance including ROI, ROAS, and channel performance breakdown across all 8 verticals, campaigns, and channels. See Section 11 for detailed analytics documentation.
+
+**Analytics page** (`/analytics`) provides four tabs:
+- **Overview** — High-level platform performance summary
+- **By Vertical** — Performance comparison across 8 verticals
+- **Agent Performance** — Individual agent effectiveness metrics
+- **Cost Analysis** — AI spending breakdown and optimization insights
 
 ---
 
@@ -1396,14 +1444,14 @@ Access at **Analytics > Unified Analytics** — your single source of truth for 
 
 | Metric | What It Tells You |
 |--------|-------------------|
-| **Total Spend** | Aggregate investment across all channels |
-| **Total Revenue** | Attributed revenue from all campaigns |
-| **ROAS** | Return on Ad Spend (revenue ÷ spend) |
-| **ROI** | Return on Investment (profit ÷ cost) |
-| **Total Conversions** | Leads, sales, sign-ups across all channels |
-| **CPA** | Cost Per Acquisition |
-| **CTR** | Overall Click-Through Rate |
 | **Total Impressions** | Reach across all platforms |
+| **Total Clicks** | Aggregate clicks across all campaigns and channels |
+| **Conversions** | Leads, sales, sign-ups across all channels |
+| **CTR** | Overall Click-Through Rate |
+| **Total Spend** | Aggregate investment across all channels |
+| **Revenue Generated** | Attributed revenue from all campaigns |
+| **Cost Per Lead** | Average cost to acquire a qualified lead |
+| **ROAS** | Return on Ad Spend (revenue ÷ spend) |
 
 ### ROI / ROAS Tracking
 
@@ -1571,7 +1619,7 @@ WizMark 360 uses **Razorpay** for all payment processing, with full **GST/IGST c
 
 | Capability | WizMark 360 | HubSpot | Salesforce Marketing Cloud | Adobe Marketo |
 |------------|-------------|---------|---------------------------|---------------|
-| **AI Agents** | 285 | 0 | 0 | 0 |
+| **AI Agents** | 262 | 0 | 0 | 0 |
 | **LLM Providers** | 24 | 1 | 1 (proprietary) | 1 |
 | **AI Models** | 886 | Limited | Einstein only | Sensei only |
 | **Marketing Verticals** | 8 | 3–4 | 2–3 | 2–3 |
@@ -1588,7 +1636,7 @@ WizMark 360 uses **Razorpay** for all payment processing, with full **GST/IGST c
 | Capability | WizMark 360 | WebEngage | MoEngage | CleverTap |
 |------------|-------------|-----------|----------|-----------|
 | **LLM Integration** | 24 providers | 1–2 | 1–2 | 1–2 |
-| **Autonomous Agents** | 285 | 0 | 0 | 0 |
+| **Autonomous Agents** | 262 | 0 | 0 | 0 |
 | **SEO/GEO Suite** | Full | ❌ | ❌ | ❌ |
 | **Web Development** | Full | ❌ | ❌ | ❌ |
 | **Sales SDR Automation** | Full | ❌ | ❌ | ❌ |
