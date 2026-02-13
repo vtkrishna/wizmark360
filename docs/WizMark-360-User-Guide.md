@@ -1,6 +1,6 @@
 # WizMark 360 — Comprehensive User Guide
 ## The World's First AI Marketing Operating System
-### By Wizards360 | Version 4.5.0 | February 2026
+### By Wizards360 | Version 5.0.0 | February 2026
 
 ---
 
@@ -11,7 +11,7 @@
 ║         AI Marketing Operating System                            ║
 ║                                                                  ║
 ║   262 AI Agents  •  24 LLM Providers  •  886 Models             ║
-║   319 Services  •  178 API Routes  •  14 Pages                  ║
+║   45+ API Endpoints  •  15+ Pages                               ║
 ║   8 Verticals  •  22 Languages  •  One Platform                 ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝
@@ -76,7 +76,7 @@ Before diving into the platform, complete these essentials:
 - [ ] Log in to your WizMark 360 platform URL
 - [ ] Complete the 6-step brand onboarding wizard (see Section 3)
 - [ ] Connect your social media accounts and ad platforms
-- [ ] Set your preferred automation level (ROMA L0–L4)
+- [ ] Set your preferred automation level (ROMA L1–L4)
 - [ ] Invite your team members and assign roles
 - [ ] Explore the Marketing Command Center dashboard
 - [ ] Run your first AI-powered campaign
@@ -223,7 +223,7 @@ When you log in for the first time, a guided onboarding wizard walks you through
 | **Step 3: Target Audience** | Define demographics, geographic focus (India-first with 22 regional languages), psychographic profiles, and customer personas | 5 min |
 | **Step 4: Marketing Goals** | Set primary objectives (brand awareness, lead generation, sales), KPI targets, budget preferences, and timelines | 3 min |
 | **Step 5: Platform Connections** | Connect your social media accounts, ad platforms, CRM, and email tools via OAuth | 5 min |
-| **Step 6: AI Configuration** | Choose default AI behavior, set approval workflows, and pick your automation level (ROMA L0–L4) | 3 min |
+| **Step 6: AI Configuration** | Choose default AI behavior, set approval workflows, and pick your automation level (ROMA L1–L4) | 3 min |
 
 #### Choosing Your Automation Level (ROMA Framework)
 
@@ -231,13 +231,12 @@ WizMark 360 uses the **ROMA framework** to control how much autonomy you give th
 
 | Level | Name | What Happens | Best For |
 |-------|------|-------------|----------|
-| **L0** | Reactive | AI only acts when you explicitly ask it to | New users getting comfortable |
-| **L1** | Proactive | AI suggests actions; you approve before execution | Teams wanting guidance |
-| **L2** | Autonomous | AI executes pre-approved strategies on its own | Experienced users |
-| **L3** | Collaborative | Multiple AI agents coordinate across verticals automatically | Enterprise teams |
-| **L4** | Self-Evolving | AI learns from results and adapts strategies independently | Advanced power users |
+| **L1** | Reactive | AI only acts when you explicitly ask it to | New users getting comfortable |
+| **L2** | Proactive | AI suggests actions; you approve before execution | Teams wanting guidance |
+| **L3** | Autonomous | AI executes pre-approved strategies on its own | Experienced users |
+| **L4** | Collaborative | Multiple AI agents coordinate across verticals automatically | Enterprise teams |
 
-> **Best Practice:** Start at **L1 (Proactive)** and gradually increase as you build confidence. You can set different ROMA levels for different verticals.
+> **Best Practice:** Start at **L1 (Reactive)** and gradually increase as you build confidence. You can set different ROMA levels for different verticals.
 
 ### Dashboard Overview — The Marketing Command Center
 
@@ -1386,11 +1385,10 @@ The Agent Registry lets you browse, search, and manage all 262 AI agents deploye
 
 | Level | Name | Capability |
 |-------|------|------------|
-| L0 | Reactive | Responds only to manual triggers |
-| L1 | Proactive | Suggests actions based on patterns |
-| L2 | Autonomous | Executes approved strategies automatically |
-| L3 | Collaborative | Multi-agent coordination across verticals |
-| L4 | Self-Evolving | Learns and adapts strategies independently |
+| L1 | Reactive | Responds only to manual triggers |
+| L2 | Proactive | Suggests actions based on patterns |
+| L3 | Autonomous | Executes approved strategies automatically |
+| L4 | Collaborative | Multi-agent coordination across verticals |
 
 ### LLM Settings — Understanding Providers and Models
 
@@ -1627,7 +1625,7 @@ WizMark 360 uses **Razorpay** for all payment processing, with full **GST/IGST c
 | **Voice AI (STT + TTS)** | ✅ | ❌ | ❌ | ❌ |
 | **WhatsApp Native** | ✅ | Plugin | Plugin | ❌ |
 | **GST Compliance** | ✅ (Razorpay) | ❌ | ❌ | ❌ |
-| **Self-Driving (ROMA)** | L0–L4 | Manual | Limited | Manual |
+| **Self-Driving (ROMA)** | L1–L4 | Manual | Limited | Manual |
 | **GEO Optimization** | ✅ | ❌ | ❌ | ❌ |
 | **Enterprise Pricing** | Competitive | $3,200/mo | $10,000+/mo | Custom (high) |
 
@@ -1645,12 +1643,12 @@ WizMark 360 uses **Razorpay** for all payment processing, with full **GST/IGST c
 | **Voice Agents** | Full (Sarvam) | Limited | Limited | Limited |
 | **WhatsApp Commerce** | Full | Plugin | Plugin | Plugin |
 | **Indian Language Support** | 22 languages | Limited | Limited | Limited |
-| **Self-Driving Marketing** | ROMA L0–L4 | ❌ | ❌ | ❌ |
+| **Self-Driving Marketing** | ROMA L1–L4 | ❌ | ❌ | ❌ |
 
 ### Key Advantages Summary
 
 1. **Multi-LLM Intelligence:** Not locked into one AI provider. 24 providers means always using the best model for each task — saving costs while maximizing quality.
-2. **True Autonomy:** ROMA L0–L4 lets you go from manual control to full self-driving marketing at your own pace.
+2. **True Autonomy:** ROMA L1–L4 lets you go from manual control to full self-driving marketing at your own pace.
 3. **India-First:** 22 Indian languages, Sarvam AI voice, Razorpay payments, GST compliance — built for the Indian market from day one.
 4. **All-in-One:** Replaces Buffer + Ahrefs + Webflow + Outreach + Wati + Taplio + AdCreative.ai + Cision — saving ₹2–5 lakh/month in tool subscriptions.
 5. **GEO Ready:** The only platform that optimizes for both traditional SEO and AI search engines (ChatGPT, Perplexity, Google AI Overviews).
@@ -1687,7 +1685,7 @@ A: Yes. You can set up unlimited brand profiles, each with its own identity, voi
 A: 22 Indian languages plus English. 8 languages have full voice support (STT + TTS). All 22 support text generation and translation.
 
 **Q: How does the ROMA autonomy system work?**
-A: Start at L0 (Reactive) or L1 (Proactive) — the AI suggests actions but waits for your approval. As you build confidence, increase to L2 (Autonomous) for approved tasks, L3 (Collaborative) for cross-vertical coordination, or L4 (Self-Evolving) for full autonomous operation. You can set different levels per vertical.
+A: Start at L1 (Reactive) — the AI only acts when you ask. As you build confidence, increase to L2 (Proactive) for AI-suggested actions with your approval, L3 (Autonomous) for approved tasks, or L4 (Collaborative) for cross-vertical coordination. You can set different levels per vertical.
 
 **Q: Is my data secure?**
 A: Yes. WizMark 360 uses enterprise-grade security with role-based access control, audit logging, data encryption at rest and in transit, and compliance guardrails for DPDP Act 2023 (India), GDPR, and other regional regulations.
@@ -1766,7 +1764,7 @@ A: Yes. The WhatsApp vertical supports product catalogs, in-chat payments, and a
 ║   Or click the support icon in the bottom-right corner           ║
 ║                                                                  ║
 ║   WizMark 360 — by Wizards360                                   ║
-║   Version 4.5.0 | February 2026                                 ║
+║   Version 5.0.0 | February 2026                                 ║
 ║   © 2026 Wizards Tech Global. All rights reserved.              ║
 ║                                                                  ║
 ╚══════════════════════════════════════════════════════════════════╝

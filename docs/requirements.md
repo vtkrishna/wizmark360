@@ -10,7 +10,7 @@ Taking the platform live requires:
 - **Security compliance** with SOC2, GDPR, and India's DPDP Act 2023
 - **Monitoring and observability** stack with CAM 2.0 monitoring, GRPO continuous learning, real-time alerting, APM, and cost tracking
 - **CI/CD pipeline** for zero-downtime deployments
-- **Voice AI** via Sarvam AI (Saarika v3 STT, Bulbul v2 TTS) for 22 Indian languages
+- **Voice AI** via Sarvam AI (Saarika v2 STT, Bulbul v1 TTS) for 22 Indian languages
 - **Enterprise Wiring** with queen orchestrator, mem0 memory, MCP tools, agent breeding, and collective intelligence
 
 ---
@@ -23,10 +23,10 @@ Taking the platform live requires:
 |---|---------------------|----------|-------------|------|
 | 1 | `OPENAI_API_KEY` | OpenAI | GPT-5.2, GPT-4.1, o3, o4-mini, DALL-E 3, Whisper, TTS | Tier 1 — Premium |
 | 2 | `ANTHROPIC_API_KEY` | Anthropic | Claude Opus 4.6, Sonnet 5.0, Haiku 4.5 — primary for WizMark Intelligence Suite | Tier 1 — Premium |
-| 3 | `GEMINI_API_KEY` | Google | Gemini 3 Pro/Flash, 2.5 Pro/Flash — multimodal, grounding, 2M context | Tier 1 — Premium |
+| 3 | `GEMINI_API_KEY` | Google | Gemini 3 Pro/Flash — multimodal, grounding, 2M context | Tier 1 — Premium |
 | 4 | `GROQ_API_KEY` | Groq | Llama 3.3-70B, Mixtral — sub-second inference for real-time responses | Tier 2 — Professional |
 | 5 | `COHERE_API_KEY` | Cohere | Command R+ — specialized for RAG, embeddings, reranking | Tier 2 — Professional |
-| 6 | `SARVAM_API_KEY` | Sarvam AI | Sarvam-2B, Saarika v3 (STT), Bulbul v2 (TTS) — 22 Indian languages | Tier 4 — Specialized |
+| 6 | `SARVAM_API_KEY` | Sarvam AI | Sarvam-2B, Saarika v2 (STT), Bulbul v1 (TTS) — 22 Indian languages | Tier 4 — Specialized |
 | 7 | `TOGETHER_API_KEY` | Together AI | Open-source model hosting — Llama, Mixtral, CodeLlama | Tier 3 — Cost-Effective |
 | 8 | `OPENROUTER_API_KEY` | OpenRouter | 400+ model aggregator — unified API for multi-provider routing | Tier 4 — Specialized |
 | 9 | `ZHIPU_API_KEY` | Zhipu AI | GLM-4 — Chinese language and bilingual capabilities | Tier 4 — Specialized |
