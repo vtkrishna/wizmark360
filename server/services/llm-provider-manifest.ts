@@ -99,7 +99,7 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
       { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal", "fast"], isDefault: true, isActive: true },
       { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", contextWindow: 2000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "reasoning"], isActive: true },
       { id: "gemini-3-pro-image", name: "Nano Banana Pro", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "image-generation"], isActive: true },
-      { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal"], isActive: true },
       { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", contextWindow: 2000000, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision"], isActive: true },
       { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "fast"], isActive: true },
     ]
@@ -195,7 +195,7 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
     capabilities: ["text", "rag", "embedding"],
     bestFor: ["Enterprise RAG", "Semantic search", "Embeddings"],
     models: [
-      { id: "command-r-plus", name: "Command R+", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "rag"], isDefault: true, isActive: true },
+      { id: "command-a-03-2025", name: "Command A", contextWindow: 256000, maxOutput: 4096, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "rag"], isDefault: true, isActive: true },
       { id: "command-r", name: "Command R", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 0.5, outputCostPer1M: 1.5, capabilities: ["text", "rag"], isActive: true },
       { id: "command-light", name: "Command Light", contextWindow: 4096, maxOutput: 4096, inputCostPer1M: 0.3, outputCostPer1M: 0.6, capabilities: ["text", "fast"], isActive: true },
       { id: "embed-english-v3.0", name: "Embed English V3", contextWindow: 512, maxOutput: 1024, inputCostPer1M: 0.1, outputCostPer1M: 0, capabilities: ["embedding", "rag"], isActive: true },
@@ -287,7 +287,7 @@ export const PROVIDER_MANIFESTS: ProviderManifest[] = [
       // MID-TIER - Quality at reasonable cost
       { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.12, outputCostPer1M: 0.3, capabilities: ["text", "code", "reasoning"], isActive: true },
       { id: "qwen/qwen-2.5-72b-instruct", name: "Qwen 2.5 72B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.35, outputCostPer1M: 0.4, capabilities: ["text", "code", "reasoning"], isActive: true },
-      { id: "google/gemini-2.0-flash-001", name: "Gemini 2.0 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "vision", "multimodal"], isActive: true },
       // PREMIUM MODELS - via OpenRouter for fallback
       { id: "openai/gpt-4o", name: "GPT-4o via OpenRouter", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision"], isActive: true },
       { id: "anthropic/claude-3.5-sonnet", name: "Claude 3.5 Sonnet via OpenRouter", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code"], isActive: true },

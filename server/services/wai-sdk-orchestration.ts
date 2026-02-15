@@ -429,7 +429,7 @@ Generate the implementation code. Be concise and production-ready.`;
     if (!process.env.GEMINI_API_KEY) {
       if (process.env.OPENROUTER_API_KEY) {
         executionProvider = "openrouter";
-        executionModel = "google/gemini-2.0-flash-001";
+        executionModel = "google/gemini-2.5-flash";
       } else if (process.env.GROQ_API_KEY) {
         executionProvider = "groq";
         executionModel = "llama-3.3-70b-versatile";

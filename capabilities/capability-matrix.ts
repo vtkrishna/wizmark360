@@ -185,13 +185,13 @@ export class CapabilityMatrixManager {
             performance: { p50LatencyMs: 1200, p95LatencyMs: 3500, throughputTokensPerSecond: 35, availabilityPercent: 99.8 },
             regions: ['global'],
             capabilities: ['reasoning', 'analysis', 'writing', 'vision', 'coding'],
-            fallbackChain: ['claude-3-haiku-20240307'],
+            fallbackChain: ['claude-haiku-4-5'],
             lastUpdated: new Date(),
             status: 'active'
           },
           {
-            id: 'claude-3-haiku-20240307',
-            name: 'Claude 3 Haiku',
+            id: 'claude-haiku-4-5',
+            name: 'Claude Haiku 4.5',
             provider: 'anthropic',
             version: '2024-03-07',
             modality: ['text', 'image'],
@@ -222,8 +222,8 @@ export class CapabilityMatrixManager {
         healthStatus: 'healthy',
         models: [
           {
-            id: 'gemini-1.5-pro',
-            name: 'Gemini 1.5 Pro',
+            id: 'gemini-2.5-pro',
+            name: 'Gemini 2.5 Pro',
             provider: 'google',
             version: '001',
             modality: ['text', 'image', 'audio', 'video'],
@@ -234,13 +234,13 @@ export class CapabilityMatrixManager {
             performance: { p50LatencyMs: 1800, p95LatencyMs: 4200, throughputTokensPerSecond: 28, availabilityPercent: 99.7 },
             regions: ['global'],
             capabilities: ['multimodal', 'long-context', 'reasoning', 'vision', 'audio-analysis'],
-            fallbackChain: ['gemini-1.5-flash'],
+            fallbackChain: ['gemini-2.5-flash'],
             lastUpdated: new Date(),
             status: 'active'
           },
           {
-            id: 'gemini-1.5-flash',
-            name: 'Gemini 1.5 Flash',
+            id: 'gemini-2.5-flash',
+            name: 'Gemini 2.5 Flash',
             provider: 'google',
             version: '001',
             modality: ['text', 'image', 'audio', 'video'],
@@ -464,8 +464,8 @@ export class CapabilityMatrixManager {
         healthStatus: 'healthy',
         models: [
           {
-            id: 'command-r-plus',
-            name: 'Command R+',
+            id: 'command-a-03-2025',
+            name: 'Command A',
             provider: 'cohere',
             version: '2024-04',
             modality: ['text'],
@@ -656,8 +656,8 @@ export class CapabilityMatrixManager {
         healthStatus: 'healthy',
         models: [
           {
-            id: 'claude-3-opus-20240229',
-            name: 'Claude 3 Opus',
+            id: 'claude-opus-4-6',
+            name: 'Claude Opus 4',
             provider: 'claude-ai',
             version: '2024-02-29',
             modality: ['text', 'image'],

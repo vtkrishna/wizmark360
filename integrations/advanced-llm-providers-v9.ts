@@ -139,7 +139,7 @@ export class AdvancedLLMProvidersV9 extends EventEmitter {
         regions: ['global'],
         models: [
           { id: 'claude-3-5-sonnet', name: 'Claude 3.5 Sonnet', version: '20240620', parameters: '200B+', contextWindow: 200000, specialties: ['reasoning', 'safety'], pricing: { inputCost: 0.000015, outputCost: 0.000075, currency: 'USD', billingUnit: 'token' }},
-          { id: 'claude-3-haiku', name: 'Claude 3 Haiku', version: '20240307', parameters: '20B', contextWindow: 200000, specialties: ['speed', 'efficiency'], pricing: { inputCost: 0.00000025, outputCost: 0.00000125, currency: 'USD', billingUnit: 'token' }}
+          { id: 'claude-haiku-4-5', name: 'Claude 3 Haiku', version: '20240307', parameters: '20B', contextWindow: 200000, specialties: ['speed', 'efficiency'], pricing: { inputCost: 0.00000025, outputCost: 0.00000125, currency: 'USD', billingUnit: 'token' }}
         ],
         quantumSupport: false,
         realTimeOptimization: true,
@@ -251,7 +251,7 @@ export class AdvancedLLMProvidersV9 extends EventEmitter {
       {
         id: 'cohere-command-r',
         name: 'Cohere Command R+',
-        model: 'command-r-plus',
+        model: 'command-a-03-2025',
         apiKey: process.env.COHERE_API_KEY,
         endpoint: 'https://api.cohere.ai/v1',
         cost: 'medium',
@@ -272,7 +272,7 @@ export class AdvancedLLMProvidersV9 extends EventEmitter {
         uptime: 99.4,
         regions: ['global'],
         models: [
-          { id: 'command-r-plus', name: 'Command R+', version: '2024-04-25', parameters: '104B', contextWindow: 128000, specialties: ['rag', 'retrieval'], pricing: { inputCost: 0.000015, outputCost: 0.000075, currency: 'USD', billingUnit: 'token' }},
+          { id: 'command-a-03-2025', name: 'Command R+', version: '2024-04-25', parameters: '104B', contextWindow: 128000, specialties: ['rag', 'retrieval'], pricing: { inputCost: 0.000015, outputCost: 0.000075, currency: 'USD', billingUnit: 'token' }},
           { id: 'command-r', name: 'Command R', version: '2024-03-05', parameters: '35B', contextWindow: 128000, specialties: ['efficiency', 'rag'], pricing: { inputCost: 0.0000005, outputCost: 0.0000015, currency: 'USD', billingUnit: 'token' }}
         ],
         quantumSupport: false,

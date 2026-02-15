@@ -1447,7 +1447,7 @@ function buildAgentDefinition(partial: Partial<MarketingAgentDefinition>): Marke
     capabilities: partial.capabilities!,
     tools: getToolsForCategory(partial.category!),
     protocols: ['A2A', 'MCP', `ROMA-${partial.romaLevel}`, 'AG-UI', 'OpenAgent', 'Parlant', 'BMAD'],
-    preferredModels: ['claude-sonnet-5-0', 'gpt-5-2', 'gemini-3-pro'],
+    preferredModels: ['claude-sonnet-4-20250514', 'gpt-5-2', 'gemini-3-pro'],
     fallbackModels: ['claude-haiku-4-5', 'gpt-5-2-pro', 'deepseek-r2'],
     operationModes: {
       autonomous: partial.romaLevel === 'L3' || partial.romaLevel === 'L4',

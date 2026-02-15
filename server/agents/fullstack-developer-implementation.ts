@@ -475,7 +475,7 @@ This implementation demonstrates how the Fullstack Developer agent operates as a
       ],
 
       // Preferred LLM Models (Cost-Optimized)
-      preferredModels: ['deepseek-r2', 'claude-sonnet-5-0', 'gpt-5-2'], // DeepSeek R2 first for cost optimization
+      preferredModels: ['deepseek-r2', 'claude-sonnet-4-20250514', 'gpt-5-2'], // DeepSeek R2 first for cost optimization
 
       // Task Categories
       taskTypes: [

@@ -352,17 +352,17 @@ export class CapabilityMatrix {
       // OpenAI Models
       'gpt-4o': { input: 2.50, output: 10.00 },
       'gpt-4o-mini': { input: 0.15, output: 0.60 },
-      'gpt-4-turbo': { input: 10.00, output: 30.00 },
+      'gpt-4.1': { input: 10.00, output: 30.00 },
       'gpt-3.5-turbo': { input: 0.50, output: 1.50 },
       
       // Anthropic Models
       'claude-3.5-sonnet': { input: 3.00, output: 15.00 },
-      'claude-3-opus': { input: 15.00, output: 75.00 },
-      'claude-3-haiku': { input: 0.25, output: 1.25 },
+      'claude-opus-4-6': { input: 15.00, output: 75.00 },
+      'claude-haiku-4-5': { input: 0.25, output: 1.25 },
       
       // Google Models
-      'gemini-1.5-pro': { input: 1.25, output: 5.00 },
-      'gemini-1.5-flash': { input: 0.075, output: 0.30 },
+      'gemini-2.5-pro': { input: 1.25, output: 5.00 },
+      'gemini-2.5-flash': { input: 0.075, output: 0.30 },
       'gemini-pro': { input: 0.50, output: 1.50 },
       
       // XAI Models
@@ -416,12 +416,12 @@ export class CapabilityMatrix {
   private getModelDisplayName(modelId: string): string {
     const nameMap: Record<string, string> = {
       'gpt-4o': 'GPT-4o',
-      'gpt-4-turbo': 'GPT-4 Turbo',
+      'gpt-4.1': 'GPT-4.1',
       'gpt-3.5-turbo': 'GPT-3.5 Turbo',
       'claude-3.5-sonnet': 'Claude 3.5 Sonnet',
-      'claude-3-opus': 'Claude 3 Opus',
-      'gemini-1.5-pro': 'Gemini 1.5 Pro',
-      'gemini-1.5-flash': 'Gemini 1.5 Flash'
+      'claude-opus-4-6': 'Claude Opus 4',
+      'gemini-2.5-pro': 'Gemini 2.5 Pro',
+      'gemini-2.5-flash': 'Gemini 2.5 Flash'
     };
 
     return nameMap[modelId] || modelId;
@@ -430,12 +430,12 @@ export class CapabilityMatrix {
   private getContextLength(modelId: string): number {
     const contextMap: Record<string, number> = {
       'gpt-4o': 128000,
-      'gpt-4-turbo': 128000,
+      'gpt-4.1': 128000,
       'gpt-3.5-turbo': 16000,
       'claude-3.5-sonnet': 200000,
-      'claude-3-opus': 200000,
-      'gemini-1.5-pro': 1000000,
-      'gemini-1.5-flash': 1000000
+      'claude-opus-4-6': 200000,
+      'gemini-2.5-pro': 1000000,
+      'gemini-2.5-flash': 1000000
     };
 
     return contextMap[modelId] || 32000;
@@ -461,7 +461,7 @@ export class CapabilityMatrix {
 
   private estimateQuality(providerId: string, modelId: string): number {
     // Return quality score 0-1
-    if (modelId.includes('gpt-4') || modelId.includes('claude-3') || modelId.includes('gemini-1.5')) {
+    if (modelId.includes('gpt-4') || modelId.includes('claude-') || modelId.includes('gemini-2.5')) {
       return 0.95;
     }
     return 0.85;

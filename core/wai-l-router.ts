@@ -286,8 +286,8 @@ export class WAILRouter extends EventEmitter {
     
     // Adjust based on model type
     if (candidate.modelId.includes('gpt-4') || 
-        candidate.modelId.includes('claude-3') || 
-        candidate.modelId.includes('gemini-1.5')) {
+        candidate.modelId.includes('claude-') || 
+        candidate.modelId.includes('gemini-2.5')) {
       score = 0.95;
     } else if (candidate.modelId.includes('gpt-3.5') || 
                candidate.modelId.includes('claude-haiku')) {
@@ -445,8 +445,8 @@ export class WAILRouter extends EventEmitter {
   private selectHighestQualityModel(models: any[]): any {
     // Simple quality ranking based on model names
     const qualityRanking = [
-      'gpt-4o', 'gpt-4-turbo', 'claude-3-opus', 'claude-3.5-sonnet',
-      'gemini-1.5-pro', 'gpt-3.5-turbo', 'claude-3-haiku', 'gemini-1.5-flash'
+      'gpt-4o', 'gpt-4.1', 'claude-opus-4-6', 'claude-3.5-sonnet',
+      'gemini-2.5-pro', 'gpt-3.5-turbo', 'claude-haiku-4-5', 'gemini-2.5-flash'
     ];
 
     for (const modelId of qualityRanking) {

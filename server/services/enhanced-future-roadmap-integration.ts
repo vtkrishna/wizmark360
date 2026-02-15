@@ -266,7 +266,7 @@ export class ClaudeCodeTerminalIntegration {
     Provide JSON response with: output, exitCode, executionTime, suggestions, nextCommands.`;
 
     const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-5-0',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,
       system: systemPrompt,
       messages: [
@@ -328,7 +328,7 @@ export class ClaudeCodeTerminalIntegration {
     JSON format: generatedCode, terminalCommands, setupInstructions, testCommands.`;
 
     const response = await this.anthropic.messages.create({
-      model: 'claude-sonnet-5-0',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 8192,
       system: systemPrompt,
       messages: [

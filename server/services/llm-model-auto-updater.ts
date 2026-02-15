@@ -80,9 +80,9 @@ const LATEST_MODELS_MANIFEST: Record<AIProvider, { flagship: string; models: str
     lastUpdate: "2025-02-17"
   },
   cohere: { 
-    flagship: "command-r-plus", 
-    models: ["command-r-plus", "command-r", "embed-v3"],
-    lastUpdate: "2024-09-01"
+    flagship: "command-a-03-2025", 
+    models: ["command-a-03-2025", "command-r-plus-08-2024", "command-r-08-2024", "embed-v3"],
+    lastUpdate: "2025-03-01"
   },
   perplexity: { 
     flagship: "sonar-pro", 

@@ -864,7 +864,7 @@ export class ContextAwareLLMSelection extends EventEmitter {
     
     this.domainModelMappings.set('data-analysis', [
       'anthropic/claude-3.5-sonnet',
-      'cohere/command-r-plus',
+      'cohere/command-a-03-2025',
       'openai/gpt-4o'
     ]);
     

@@ -289,7 +289,7 @@ export class RealLLMService extends EventEmitter {
           'deepseek-ai/deepseek-v3', 'deepseek-ai/deepseek-coder-v2',
           // Specialized Models
           'google/gemini-pro-1.5', 'microsoft/wizardlm-2-8x22b', 'mistralai/mistral-large',
-          'cohere/command-r-plus', 'anthropic/claude-3-opus', 'openai/o1-preview',
+          'cohere/command-a-03-2025', 'anthropic/claude-3-opus', 'openai/o1-preview',
           // Vision & Multimodal
           'openai/gpt-4-vision-preview', 'google/gemini-pro-vision',
           // Coding Specialists
@@ -407,7 +407,7 @@ export class RealLLMService extends EventEmitter {
         id: 'cohere',
         name: 'Cohere',
         models: [
-          'command-r-plus', 'command-r', 'command', 'command-nightly',
+          'command-a-03-2025', 'command-r-08-2024', 'command', 'command-nightly',
           'embed-english-v3.0', 'embed-multilingual-v3.0', 'rerank-english-v3.0'
         ],
         cost: 'medium',
@@ -1235,7 +1235,7 @@ export class RealLLMService extends EventEmitter {
    * Execute Cohere request - REAL IMPLEMENTATION
    */
   private async executeCohere(request: LLMRequest, config: any): Promise<LLMResponse> {
-    const model = request.model || 'command-r-plus';
+    const model = request.model || 'command-a-03-2025';
     
     // Cohere has a different API format
     const cohereResponse = await fetch('https://api.cohere.ai/v1/chat', {

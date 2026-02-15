@@ -340,14 +340,14 @@ const SUPPORTED_LANGUAGES = ['en', 'hi', 'bn', 'te', 'mr', 'ta', 'ur', 'gu', 'kn
 const TIER_MODELS = {
   director: {
     preferred: ['claude-opus-4-6', 'gpt-5-2-pro', 'gemini-3-pro'],
-    fallback: ['claude-sonnet-5-0', 'gpt-5-2', 'gemini-2-5-pro', 'deepseek-r2']
+    fallback: ['claude-sonnet-4-20250514', 'gpt-5-2', 'gemini-2-5-pro', 'deepseek-r2']
   },
   manager: {
-    preferred: ['claude-sonnet-5-0', 'gpt-5-2', 'gemini-3-pro'],
+    preferred: ['claude-sonnet-4-20250514', 'gpt-5-2', 'gemini-3-pro'],
     fallback: ['claude-sonnet-4-5', 'gpt-4-1', 'gemini-2-5-flash', 'deepseek-r2']
   },
   specialist: {
-    preferred: ['claude-sonnet-5-0', 'gpt-5-2', 'gemini-2-5-pro'],
+    preferred: ['claude-sonnet-4-20250514', 'gpt-5-2', 'gemini-2-5-pro'],
     fallback: ['claude-sonnet-4-5', 'gemini-2-5-flash', 'kimi-k2-5']
   },
   worker: {
@@ -356,7 +356,7 @@ const TIER_MODELS = {
   },
   reviewer: {
     preferred: ['claude-opus-4-6', 'gpt-5-2', 'gemini-3-pro'],
-    fallback: ['claude-sonnet-5-0', 'gpt-4-1', 'gemini-2-5-pro']
+    fallback: ['claude-sonnet-4-20250514', 'gpt-4-1', 'gemini-2-5-pro']
   }
 };
 
@@ -893,7 +893,7 @@ const registry = {
   })),
   agents: allAgents,
   configuration: {
-    defaultModel: 'claude-sonnet-5-0',
+    defaultModel: 'claude-sonnet-4-20250514',
     premiumModel: 'claude-opus-4-6',
     reasoningModel: 'gpt-5-2-pro',
     costEffectiveModel: 'gemini-3-flash',

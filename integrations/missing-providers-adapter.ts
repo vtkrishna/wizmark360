@@ -82,13 +82,13 @@ export class MissingProvidersAdapterV8 extends EventEmitter {
         developer: {
           description: 'Code generation and development agent',
           capabilities: ['code-writing', 'debugging', 'testing', 'documentation'],
-          model: 'claude-3-opus',
+          model: 'claude-opus-4-6',
           tools: ['code-interpreter', 'git-operations', 'testing-frameworks']
         },
         analyst: {
           description: 'Data analysis and insights generation agent',
           capabilities: ['data-processing', 'statistical-analysis', 'visualization'],
-          model: 'gpt-4-turbo',
+          model: 'gpt-4.1',
           tools: ['data-tools', 'charts-generation', 'report-creation']
         },
         executor: {
@@ -592,17 +592,17 @@ export class MissingProvidersAdapterV8 extends EventEmitter {
         caching: true
       },
       supportedModels: [
-        'gpt-4-turbo-preview',
+        'gpt-4.1-preview',
         'gpt-4-vision-preview', 
         'gpt-3.5-turbo',
-        'claude-3-opus',
+        'claude-opus-4-6',
         'claude-3-sonnet',
-        'claude-3-haiku',
+        'claude-haiku-4-5',
         'gemini-pro',
         'gemini-pro-vision',
         'llama-2-70b',
         'mixtral-8x7b',
-        'command-r-plus',
+        'command-a-03-2025',
         'dbrx-instruct',
         'llava-13b',
         'qwen-72b-chat'

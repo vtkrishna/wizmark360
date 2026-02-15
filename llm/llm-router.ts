@@ -257,16 +257,16 @@ export class LLMRouter extends EventEmitter {
     return [
       // OpenAI Models
       { id: 'gpt-4o', name: 'GPT-4o', provider: 'openai', context: 128000, cost: 30 },
-      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'openai', context: 128000, cost: 25 },
+      { id: 'gpt-4.1', name: 'GPT-4.1', provider: 'openai', context: 128000, cost: 25 },
       { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', provider: 'openai', context: 16000, cost: 5 },
       
       // Anthropic Models
       { id: 'claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', provider: 'anthropic', context: 200000, cost: 28 },
-      { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'anthropic', context: 200000, cost: 35 },
+      { id: 'claude-opus-4-6', name: 'Claude Opus 4', provider: 'anthropic', context: 200000, cost: 35 },
       
       // Google Models
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', provider: 'google', context: 1000000, cost: 20 },
-      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', provider: 'google', context: 1000000, cost: 10 },
+      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'google', context: 1000000, cost: 20 },
+      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'google', context: 1000000, cost: 10 },
       
       // XAI Models
       { id: 'grok-2', name: 'Grok 2', provider: 'xai', context: 131072, cost: 15 },
@@ -357,7 +357,7 @@ class AnthropicProvider implements LLMProvider {
   async disconnect(): Promise<void> {}
   isAvailable(): boolean { return true; }
   getBestModel(complexity: string): string {
-    return complexity === 'high' ? 'claude-3.5-sonnet' : 'claude-3-haiku';
+    return complexity === 'high' ? 'claude-3.5-sonnet' : 'claude-haiku-4-5';
   }
   updatePerformance(taskType: string, performance: any): void {}
 }
@@ -373,7 +373,7 @@ class GoogleProvider implements LLMProvider {
   async disconnect(): Promise<void> {}
   isAvailable(): boolean { return true; }
   getBestModel(complexity: string): string {
-    return complexity === 'high' ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+    return complexity === 'high' ? 'gemini-2.5-pro' : 'gemini-2.5-flash';
   }
   updatePerformance(taskType: string, performance: any): void {}
 }
@@ -472,7 +472,7 @@ class CohereProvider implements LLMProvider {
   async initialize(): Promise<void> {}
   async disconnect(): Promise<void> {}
   isAvailable(): boolean { return true; }
-  getBestModel(complexity: string): string { return 'command-r-plus'; }
+  getBestModel(complexity: string): string { return 'command-a-03-2025'; }
   updatePerformance(taskType: string, performance: any): void {}
 }
 

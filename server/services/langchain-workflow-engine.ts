@@ -102,9 +102,9 @@ export class LangChainWorkflowEngine {
       maxTokens: 8192
     });
 
-    this.models.set('claude-sonnet-5-0', {
+    this.models.set('claude-sonnet-4-20250514', {
       provider: 'anthropic',
-      modelName: 'claude-sonnet-5-0',
+      modelName: 'claude-sonnet-4-20250514',
       temperature: 0.7,
       maxTokens: 8192
     });
@@ -135,7 +135,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'outline',
           type: 'llm',
-          model: 'claude-sonnet-5-0',
+          model: 'claude-sonnet-4-20250514',
           prompt: 'Create a detailed outline based on research: {research_output}',
           dependencies: ['research']
         },
@@ -177,7 +177,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'architecture',
           type: 'llm',
-          model: 'claude-sonnet-5-0',
+          model: 'claude-sonnet-4-20250514',
           prompt: 'Design architecture for: {requirements}\nConsider scalability and best practices.',
           temperature: 0.2
         },
@@ -230,7 +230,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'competitor-analysis',
           type: 'llm',
-          model: 'claude-sonnet-5-0',
+          model: 'claude-sonnet-4-20250514',
           prompt: 'Analyze competitors in {industry} focusing on {aspects}',
           dependencies: ['market-research']
         },
@@ -266,7 +266,7 @@ export class LangChainWorkflowEngine {
         {
           id: 'concept',
           type: 'llm',
-          model: 'claude-sonnet-5-0',
+          model: 'claude-sonnet-4-20250514',
           prompt: 'Generate creative campaign concept for {brand} targeting {audience}',
           temperature: 0.9
         },
@@ -403,7 +403,7 @@ export class LangChainWorkflowEngine {
     });
 
     const bodyChain = new LLMChain({
-      llm: this.models.get('claude-sonnet-5-0'),
+      llm: this.models.get('claude-sonnet-4-20250514'),
       prompt: PromptTemplate.fromTemplate('Write the main content based on intro: {intro}'),
       outputKey: 'body'
     });
@@ -555,7 +555,7 @@ Generated automatically by LangChain Workflow Engine
       )
     ]);
 
-    const model = this.models.get('claude-sonnet-5-0');
+    const model = this.models.get('claude-sonnet-4-20250514');
     const chain = new LLMChain({ llm: model, prompt });
     
     const result = await chain.call({ description, context: JSON.stringify(context) });
@@ -643,7 +643,7 @@ Generate:
 3. Optimal chain sequencing
 `;
 
-    const model = this.models.get('claude-sonnet-5-0');
+    const model = this.models.get('claude-sonnet-4-20250514');
     const result = await model.predict(prompt);
     
     // Parse and create template

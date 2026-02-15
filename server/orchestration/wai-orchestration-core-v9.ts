@@ -389,7 +389,7 @@ export class WAISDKBootstrap {
               },
               method: 'POST',
               body: JSON.stringify({
-                model: 'claude-3-haiku-20240307',
+                model: 'claude-haiku-4-5-20240307',
                 max_tokens: 10,
                 messages: [{ role: 'user', content: [{ type: 'text', text: 'ping' }] }]
               })
@@ -864,7 +864,7 @@ export class WAISDKBootstrap {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              model: 'claude-3-haiku-20240307',
+              model: 'claude-haiku-4-5-20240307',
               max_tokens: 150,
               messages: [{ role: 'user', content: message }]
             })
@@ -879,7 +879,7 @@ export class WAISDKBootstrap {
             content: data.content?.[0]?.text || 'No response',
             cost: 0.0015, // Approximate cost for Claude Haiku
             usage: data.usage,
-            model: 'claude-3-haiku-20240307'
+            model: 'claude-haiku-4-5-20240307'
           };
         }
         
@@ -2123,7 +2123,7 @@ export class WAIOrchestrationCoreV9 extends EventEmitter {
             'content-type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'claude-3-haiku-20240307',
+            model: 'claude-haiku-4-5-20240307',
             max_tokens: 1,
             messages: [{ role: 'user', content: 'ping' }]
           })
@@ -2454,7 +2454,7 @@ export class WAIOrchestrationCoreV9 extends EventEmitter {
             pricing: { inputCost: 0.003, outputCost: 0.015, currency: 'USD', billingUnit: '1k tokens' }
           },
           {
-            id: 'claude-3-opus-20240229',
+            id: 'claude-opus-4-6-20240229',
             name: 'Claude 3 Opus',
             version: '20240229',
             parameters: '175B',
@@ -2505,7 +2505,7 @@ export class WAIOrchestrationCoreV9 extends EventEmitter {
             pricing: { inputCost: 0.00075, outputCost: 0.003, currency: 'USD', billingUnit: '1k tokens' }
           },
           {
-            id: 'gemini-1.5-pro',
+            id: 'gemini-2.5-pro',
             name: 'Gemini 1.5 Pro',
             version: '1.5',
             parameters: '175B',
@@ -2789,7 +2789,7 @@ export class WAIOrchestrationCoreV9 extends EventEmitter {
       {
         id: 'cohere',
         name: 'Cohere',
-        model: 'command-r-plus',
+        model: 'command-a-03-2025',
         cost: 'medium',
         costPerToken: 0.003,
         capabilities: { coding: 88, creative: 90, analytical: 95, multimodal: 80, reasoning: 92, languages: 95 },
@@ -2802,7 +2802,7 @@ export class WAIOrchestrationCoreV9 extends EventEmitter {
         regions: ['global'],
         models: [
           {
-            id: 'command-r-plus',
+            id: 'command-a-03-2025',
             name: 'Command R+',
             version: 'latest',
             parameters: '104B',

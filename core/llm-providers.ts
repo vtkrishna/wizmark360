@@ -285,7 +285,7 @@ export class AdvancedLLMProvidersV9 extends EventEmitter {
       {
         id: 'cohere-command-r',
         name: 'Cohere Command R+',
-        model: 'command-r-plus',
+        model: 'command-a-03-2025',
         apiKey: process.env.COHERE_API_KEY,
         endpoint: 'https://api.cohere.ai/v1',
         cost: 'medium',

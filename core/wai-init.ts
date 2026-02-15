@@ -210,15 +210,15 @@ async function autodiscoverProviders(): Promise<ProviderInfo[]> {
 async function getProviderModels(providerId: string): Promise<string[]> {
   // This would be populated from the actual provider APIs
   const defaultModels: Record<string, string[]> = {
-    openai: ['gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-    anthropic: ['claude-3.5-sonnet', 'claude-3-opus', 'claude-3-haiku'],
-    google: ['gemini-1.5-pro', 'gemini-1.5-flash'],
+    openai: ['gpt-4o', 'gpt-4.1', 'gpt-3.5-turbo'],
+    anthropic: ['claude-3.5-sonnet', 'claude-opus-4-6', 'claude-haiku-4-5'],
+    google: ['gemini-2.5-pro', 'gemini-2.5-flash'],
     xai: ['grok-2'],
     perplexity: ['pplx-7b-online', 'pplx-70b-online'],
     together: ['meta-llama/Llama-2-70b-chat-hf'],
     replicate: ['meta/llama-2-70b-chat'],
     groq: ['mixtral-8x7b-32768'],
-    cohere: ['command-r-plus'],
+    cohere: ['command-a-03-2025'],
     mistral: ['mistral-large'],
     openrouter: ['openrouter/auto']
   };

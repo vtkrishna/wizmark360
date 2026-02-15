@@ -567,7 +567,7 @@ Maintain this brand context in all responses and ensure consistency with brand g
 
         response = result.choices[0]?.message?.content || "";
       } else if (provider === "gemini" && this.gemini) {
-        model = "gemini-2.0-flash";
+        model = "gemini-2.5-flash";
         const fullPrompt = `${systemPrompt}\n\nConversation:\n${conversationHistory.map(m => `${m.role}: ${m.content}`).join("\n")}\n\nassistant:`;
         
         const result = await this.gemini.models.generateContent({

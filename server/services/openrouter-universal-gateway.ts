@@ -269,8 +269,8 @@ export class OpenRouterUniversalGateway extends EventEmitter {
         region: ['us', 'eu']
       },
       {
-        id: 'cohere/command-r-plus',
-        name: 'Command R+',
+        id: 'cohere/command-a-03-2025',
+        name: 'Command A',
         description: 'Enterprise-focused model with RAG optimization',
         pricing: { prompt: 0.000003, completion: 0.000015 },
         context_length: 128000,

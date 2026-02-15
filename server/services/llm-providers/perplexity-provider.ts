@@ -17,30 +17,19 @@ import { generateCorrelationId, createTimeoutController } from '../orchestration
 import { ProviderError } from '../orchestration-errors';
 
 export class PerplexityProvider extends UnifiedLLMAdapter {
-  private readonly models = {
-    // Online Models (with real-time search)
-    'llama-3.1-sonar-large-128k-online': { inputCost: 1, outputCost: 1, contextWindow: 127072, maxOutput: 4096, search: true },
-    'llama-3.1-sonar-small-128k-online': { inputCost: 0.2, outputCost: 0.2, contextWindow: 127072, maxOutput: 4096, search: true },
-    'llama-3.1-sonar-huge-128k-online': { inputCost: 5, outputCost: 5, contextWindow: 127072, maxOutput: 4096, search: true },
-    
-    // Chat Models (without search)
-    'llama-3.1-sonar-large-128k-chat': { inputCost: 1, outputCost: 1, contextWindow: 131072, maxOutput: 4096, search: false },
-    'llama-3.1-sonar-small-128k-chat': { inputCost: 0.2, outputCost: 0.2, contextWindow: 131072, maxOutput: 4096, search: false },
-    'llama-3.1-8b-instruct': { inputCost: 0.2, outputCost: 0.2, contextWindow: 131072, maxOutput: 4096, search: false },
-    'llama-3.1-70b-instruct': { inputCost: 1, outputCost: 1, contextWindow: 131072, maxOutput: 4096, search: false },
-    
-    // Legacy Models
-    'pplx-7b-online': { inputCost: 0, outputCost: 0.28, contextWindow: 4096, maxOutput: 4096, search: true }, // $0.28 per 1k requests
-    'pplx-70b-online': { inputCost: 0, outputCost: 2.8, contextWindow: 4096, maxOutput: 4096, search: true }, // $2.80 per 1k requests
-    'pplx-7b-chat': { inputCost: 0.07, outputCost: 0.07, contextWindow: 8192, maxOutput: 8192, search: false },
-    'pplx-70b-chat': { inputCost: 0.7, outputCost: 0.7, contextWindow: 4096, maxOutput: 4096, search: false }
+  private readonly models: Record<string, { inputCost: number; outputCost: number; contextWindow: number; maxOutput: number; search: boolean }> = {
+    'sonar': { inputCost: 1, outputCost: 1, contextWindow: 128000, maxOutput: 4096, search: true },
+    'sonar-pro': { inputCost: 3, outputCost: 15, contextWindow: 200000, maxOutput: 4096, search: true },
+    'sonar-reasoning': { inputCost: 1, outputCost: 5, contextWindow: 128000, maxOutput: 4096, search: true },
+    'sonar-reasoning-pro': { inputCost: 2, outputCost: 8, contextWindow: 128000, maxOutput: 4096, search: true },
+    'sonar-deep-research': { inputCost: 5, outputCost: 20, contextWindow: 128000, maxOutput: 8192, search: true }
   };
 
   constructor(apiKey?: string) {
     const provider: LLMProvider = {
       id: 'perplexity',
       name: 'Perplexity AI',
-      models: Object.keys(PerplexityProvider.prototype.models),
+      models: ['sonar', 'sonar-pro', 'sonar-reasoning', 'sonar-reasoning-pro', 'sonar-deep-research'],
       capabilities: {
         textGeneration: true,
         codeGeneration: true,
@@ -107,7 +96,7 @@ export class PerplexityProvider extends UnifiedLLMAdapter {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'llama-3.1-sonar-small-128k-chat',
+          model: 'sonar',
           messages: [{ role: 'user', content: 'Test' }],
           max_tokens: 10
         })
@@ -124,7 +113,7 @@ export class PerplexityProvider extends UnifiedLLMAdapter {
     const startTime = Date.now();
     
     try {
-      console.log(`🔄 [${correlationId}] Perplexity generating response with model: ${request.model || 'llama-3.1-sonar-large-128k-online'}`);
+      console.log(`🔄 [${correlationId}] Perplexity generating response with model: ${request.model || 'sonar-pro'}`);
       
       // Check rate limiting
       if (!(await this.checkRateLimit())) {
@@ -244,7 +233,7 @@ export class PerplexityProvider extends UnifiedLLMAdapter {
     const startTime = Date.now();
     
     try {
-      console.log(`🔄 [${correlationId}] Perplexity streaming response with model: ${request.model || 'llama-3.1-sonar-large-128k-online'}`);
+      console.log(`🔄 [${correlationId}] Perplexity streaming response with model: ${request.model || 'sonar-pro'}`);
       
       const model = request.model || this.selectOptimalModel(request);
       const messages = this.formatMessages(request);
@@ -412,7 +401,7 @@ export class PerplexityProvider extends UnifiedLLMAdapter {
       
       const response = await this.generateResponse({
         messages: [{ role: 'user', content: query }],
-        model: 'llama-3.1-sonar-large-128k-online',
+        model: 'sonar-pro',
         correlationId
       });
 
@@ -441,12 +430,12 @@ export class PerplexityProvider extends UnifiedLLMAdapter {
 
     // Select based on requirements
     if (needsSearch) {
-      if (messageLength > 20000) return 'llama-3.1-sonar-large-128k-online';
-      return 'llama-3.1-sonar-small-128k-online'; // Cost-effective with search
+      if (messageLength > 20000) return 'sonar-pro';
+      return 'sonar'; // Cost-effective with search
     } else {
-      if (hasTools) return 'llama-3.1-sonar-large-128k-chat';
-      if (messageLength > 20000) return 'llama-3.1-sonar-large-128k-chat';
-      return 'llama-3.1-sonar-small-128k-chat'; // Cost-effective without search
+      if (hasTools) return 'sonar-pro';
+      if (messageLength > 20000) return 'sonar-pro';
+      return 'sonar'; // Cost-effective without search
     }
   }
 
@@ -482,10 +471,7 @@ export class PerplexityProvider extends UnifiedLLMAdapter {
     const modelConfig = this.models[model as keyof typeof this.models];
     if (!modelConfig) return 0;
 
-    // Legacy models use per-request pricing
-    if (model.includes('pplx-') && model.includes('online')) {
-      return modelConfig.outputCost / 1000; // Convert per-1k to per-request
-    }
+    // All current Sonar models use per-token pricing
 
     const inputCost = (usage.prompt_tokens / 1000000) * modelConfig.inputCost;
     const outputCost = (usage.completion_tokens / 1000000) * modelConfig.outputCost;

@@ -25,7 +25,7 @@ const PROVIDER_PRIORITY: string[] = ["openrouter", "openai", "gemini", "anthropi
 
 const OPENROUTER_FREE_MODELS = [
   "meta-llama/llama-3.3-70b-instruct:free",
-  "google/gemini-2.0-flash-exp:free",
+  "google/gemini-2.5-flash:free",
   "deepseek/deepseek-chat-v3-0324:free",
 ];
 

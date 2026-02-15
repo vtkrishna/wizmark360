@@ -175,17 +175,17 @@ export class CapabilityMatrix extends EventEmitter {
       // OpenAI Family
       { id: 'openai-gpt4o', name: 'OpenAI GPT-4o', model: 'gpt-4o-2024-08-06', apiKey: process.env.OPENAI_API_KEY },
       { id: 'openai-gpt4o-mini', name: 'OpenAI GPT-4o Mini', model: 'gpt-4o-mini', apiKey: process.env.OPENAI_API_KEY },
-      { id: 'openai-gpt4', name: 'OpenAI GPT-4', model: 'gpt-4-turbo', apiKey: process.env.OPENAI_API_KEY },
+      { id: 'openai-gpt4', name: 'OpenAI GPT-4', model: 'gpt-4.1', apiKey: process.env.OPENAI_API_KEY },
       { id: 'openai-gpt35-turbo', name: 'OpenAI GPT-3.5 Turbo', model: 'gpt-3.5-turbo', apiKey: process.env.OPENAI_API_KEY },
 
       // Anthropic Family  
       { id: 'anthropic-claude35-sonnet', name: 'Anthropic Claude 3.5 Sonnet', model: 'claude-3-5-sonnet-20240620', apiKey: process.env.ANTHROPIC_API_KEY },
-      { id: 'anthropic-claude3-haiku', name: 'Anthropic Claude 3 Haiku', model: 'claude-3-haiku-20240307', apiKey: process.env.ANTHROPIC_API_KEY },
-      { id: 'anthropic-claude3-opus', name: 'Anthropic Claude 3 Opus', model: 'claude-3-opus-20240229', apiKey: process.env.ANTHROPIC_API_KEY },
+      { id: 'anthropic-claude3-haiku', name: 'Anthropic Claude Haiku 4.5', model: 'claude-haiku-4-5', apiKey: process.env.ANTHROPIC_API_KEY },
+      { id: 'anthropic-claude3-opus', name: 'Anthropic Claude Opus 4', model: 'claude-opus-4-6', apiKey: process.env.ANTHROPIC_API_KEY },
 
       // Google Family
       { id: 'google-gemini-pro', name: 'Google Gemini Pro', model: 'gemini-pro', apiKey: process.env.GEMINI_API_KEY },
-      { id: 'google-gemini-flash', name: 'Google Gemini Flash', model: 'gemini-1.5-flash', apiKey: process.env.GEMINI_API_KEY },
+      { id: 'google-gemini-flash', name: 'Google Gemini Flash', model: 'gemini-2.5-flash', apiKey: process.env.GEMINI_API_KEY },
       { id: 'google-gemini-ultra', name: 'Google Gemini Ultra', model: 'gemini-ultra', apiKey: process.env.GEMINI_API_KEY },
 
       // Mistral Family
@@ -194,7 +194,7 @@ export class CapabilityMatrix extends EventEmitter {
       { id: 'mistral-nemo', name: 'Mistral Nemo', model: 'open-mistral-nemo', apiKey: process.env.MISTRAL_API_KEY },
 
       // Additional Providers
-      { id: 'cohere-command-r', name: 'Cohere Command R+', model: 'command-r-plus', apiKey: process.env.COHERE_API_KEY },
+      { id: 'cohere-command-r', name: 'Cohere Command A', model: 'command-a-03-2025', apiKey: process.env.COHERE_API_KEY },
       { id: 'deepseek-coder', name: 'DeepSeek Coder V2', model: 'deepseek-coder', apiKey: process.env.DEEPSEEK_API_KEY },
       { id: 'groq-llama3', name: 'Groq Llama 3 70B', model: 'llama3-70b-8192', apiKey: process.env.GROQ_API_KEY },
       { id: 'together-ai-mixtral', name: 'Together AI Mixtral', model: 'mixtral-8x22b-instruct', apiKey: process.env.TOGETHER_API_KEY },

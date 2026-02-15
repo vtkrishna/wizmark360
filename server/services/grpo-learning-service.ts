@@ -101,7 +101,7 @@ class GRPOLearningService {
     const providers = [
       { id: 'openai', models: ['gpt-4o', 'gpt-4o-mini', 'o1-preview'] },
       { id: 'anthropic', models: ['claude-sonnet-4-20250514', 'claude-3-5-haiku-20241022'] },
-      { id: 'google', models: ['gemini-2.0-flash', 'gemini-1.5-pro'] },
+      { id: 'google', models: ['gemini-2.5-flash', 'gemini-2.5-pro'] },
       { id: 'groq', models: ['llama-3.1-70b-versatile', 'mixtral-8x7b-32768'] }
     ];
 

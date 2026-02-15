@@ -22,7 +22,7 @@ export class CohereProvider extends UnifiedLLMAdapter {
   private readonly models = {
     // Command-R Series (Latest)
     'command-r-plus-08-2024': { inputCost: 2.5, outputCost: 10, contextWindow: 128000, maxOutput: 4096 },
-    'command-r-plus': { inputCost: 3, outputCost: 15, contextWindow: 128000, maxOutput: 4096 },
+    'command-a-03-2025': { inputCost: 3, outputCost: 15, contextWindow: 128000, maxOutput: 4096 },
     'command-r-08-2024': { inputCost: 0.15, outputCost: 0.6, contextWindow: 128000, maxOutput: 4096 },
     'command-r': { inputCost: 0.5, outputCost: 1.5, contextWindow: 128000, maxOutput: 4096 },
     'command-r-plus-04-2024': { inputCost: 3, outputCost: 15, contextWindow: 128000, maxOutput: 4096 },
@@ -128,7 +128,7 @@ export class CohereProvider extends UnifiedLLMAdapter {
     const startTime = Date.now();
     
     try {
-      console.log(`🔄 [${correlationId}] Cohere generating response with model: ${request.model || 'command-r-plus'}`);
+      console.log(`🔄 [${correlationId}] Cohere generating response with model: ${request.model || 'command-a-03-2025'}`);
       
       // Check rate limiting
       if (!(await this.checkRateLimit())) {
@@ -225,7 +225,7 @@ export class CohereProvider extends UnifiedLLMAdapter {
     const startTime = Date.now();
     
     try {
-      console.log(`🔄 [${correlationId}] Cohere streaming response with model: ${request.model || 'command-r-plus'}`);
+      console.log(`🔄 [${correlationId}] Cohere streaming response with model: ${request.model || 'command-a-03-2025'}`);
       
       const model = request.model || this.selectOptimalModel(request);
       const { message, chatHistory, tools } = this.formatForCohere(request);
@@ -408,8 +408,8 @@ export class CohereProvider extends UnifiedLLMAdapter {
     const hasTools = request.tools && request.tools.length > 0;
 
     // Select based on complexity and requirements
-    if (hasTools) return 'command-r-plus'; // Best for function calling
-    if (messageLength > 50000) return 'command-r-plus'; // Large context
+    if (hasTools) return 'command-a-03-2025'; // Best for function calling
+    if (messageLength > 50000) return 'command-a-03-2025'; // Large context
     if (messageLength > 10000) return 'command-r'; // Medium context, cost-effective
     
     return 'command-r-08-2024'; // Latest cost-effective model

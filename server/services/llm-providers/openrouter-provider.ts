@@ -42,7 +42,7 @@ export class OpenRouterProvider extends UnifiedLLMAdapter {
     'mistralai/mistral-7b-instruct': { inputCost: 0.06, outputCost: 0.06, contextWindow: 32768, maxOutput: 4096 },
     
     // Cohere Models
-    'cohere/command-r-plus': { inputCost: 3, outputCost: 15, contextWindow: 128000, maxOutput: 4096 },
+    'cohere/command-a-03-2025': { inputCost: 2.5, outputCost: 10, contextWindow: 256000, maxOutput: 4096 },
     'cohere/command-r': { inputCost: 0.5, outputCost: 1.5, contextWindow: 128000, maxOutput: 4096 },
     
     // Perplexity Models

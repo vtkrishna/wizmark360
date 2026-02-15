@@ -156,8 +156,8 @@ const PROVIDER_PRICING: ProviderPricing[] = [
     name: 'Google',
     models: [
       {
-        modelId: 'gemini-2.0-flash-thinking-exp',
-        name: 'Gemini 2.0 Flash Thinking',
+        modelId: 'gemini-2.5-flash',
+        name: 'Gemini 2.5 Flash',
         inputCostPer1M: 0.00, // Free tier
         outputCostPer1M: 0.00,
         avgLatencyMs: 2500,

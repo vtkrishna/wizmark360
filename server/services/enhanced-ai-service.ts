@@ -108,12 +108,12 @@ export const LLM_REGISTRY: LLMModel[] = [
   { id: "gpt-4o", name: "GPT-4o", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: true },
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai", contextWindow: 128000, maxOutput: 16384, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "vision"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   
-  // Anthropic Models (Latest: Claude Sonnet 4.5, Opus 4.5, Haiku 4.5 - Nov 2025)
-  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "agents", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-opus-4.5", name: "Claude Opus 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code", "agentic"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-opus-4", name: "Claude Opus 4", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "code", "sustained-performance"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-sonnet-4", name: "Claude Sonnet 4", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.8, outputCostPer1M: 4, capabilities: ["text", "fast", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  // Anthropic Models (Latest: Claude Opus 4.6, Sonnet 4, Haiku 4.5)
+  { id: "claude-opus-4-6", name: "Claude Opus 4.6", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code", "agentic", "tool-use", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "tool-use", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-opus-4-5", name: "Claude Opus 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-sonnet-4-5", name: "Claude Sonnet 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "agents", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-haiku-4-5", name: "Claude Haiku 4.5", provider: "anthropic", contextWindow: 200000, maxOutput: 8192, inputCostPer1M: 0.8, outputCostPer1M: 4, capabilities: ["text", "fast", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   
   // Google Gemini Models (Latest: Gemini 3 Flash/Pro - Dec 2024)
   { id: "gemini-3-flash", name: "Gemini 3 Flash", provider: "gemini", contextWindow: 1000000, maxOutput: 8192, inputCostPer1M: 0.5, outputCostPer1M: 3, capabilities: ["text", "vision", "multimodal", "agentic-coding", "video-analysis"], languages: ["en"], isMultilingual: true, supportsVoice: false },
@@ -148,8 +148,9 @@ export const LLM_REGISTRY: LLMModel[] = [
   { id: "codestral", name: "Codestral", provider: "mistral", contextWindow: 32000, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 3, capabilities: ["code", "fill-in-middle"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   
   // Cohere Models
-  { id: "command-r-plus", name: "Command R+", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "command-r", name: "Command R", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 0.5, outputCostPer1M: 1.5, capabilities: ["text", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-a-03-2025", name: "Command A", provider: "cohere", contextWindow: 256000, maxOutput: 4096, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-r-plus-08-2024", name: "Command R+ 08-2024", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-r-08-2024", name: "Command R 08-2024", provider: "cohere", contextWindow: 128000, maxOutput: 4096, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "embed-v3", name: "Embed V3", provider: "cohere", contextWindow: 512, maxOutput: 1024, inputCostPer1M: 0.1, outputCostPer1M: 0, capabilities: ["embedding", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   
   // Perplexity Models
@@ -351,7 +352,7 @@ export class EnhancedAIService {
   private async chatWithOpenAI(messages: ChatMessage[], model?: string): Promise<EnhancedAIResponse> {
     if (!openai) throw new Error('OpenAI provider not configured. Please set OPENAI_API_KEY.');
     const response = await openai.chat.completions.create({
-      model: model || "gpt-5.2",
+      model: model || "gpt-4o-mini",
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
       max_completion_tokens: 4096,
     });
@@ -359,7 +360,7 @@ export class EnhancedAIService {
     return {
       content: response.choices[0].message.content || "",
       provider: "openai",
-      model: model || "gpt-5.2",
+      model: model || "gpt-4o-mini",
       tokensUsed: response.usage?.total_tokens,
     };
   }
@@ -370,7 +371,7 @@ export class EnhancedAIService {
 
     if (!anthropic) throw new Error('Anthropic provider not configured. Please set ANTHROPIC_API_KEY.');
     const response = await anthropic.messages.create({
-      model: model || "claude-sonnet-5-0",
+      model: model || "claude-sonnet-4-20250514",
       max_tokens: 4096,
       system: systemMessage?.content,
       messages: chatMessages.map((m) => ({
@@ -436,7 +437,7 @@ export class EnhancedAIService {
     const chatMessages = messages.filter((m) => m.role !== "system");
 
     const response = await cohere.chat({
-      model: model || "command-r-plus",
+      model: model || "command-a-03-2025",
       messages: chatMessages.map((m) => ({
         role: m.role === "user" ? "user" as const : "assistant" as const,
         content: m.content,
@@ -455,7 +456,7 @@ export class EnhancedAIService {
     return {
       content: textContent,
       provider: "cohere",
-      model: model || "command-r-plus",
+      model: model || "command-a-03-2025",
     };
   }
 

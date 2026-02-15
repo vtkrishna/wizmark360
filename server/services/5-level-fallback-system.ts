@@ -485,9 +485,9 @@ export class FiveLevelFallbackSystem extends EventEmitter {
       description: 'Reliable standard models with good performance',
       providers: [
         {
-          id: 'cohere/command-r-plus',
-          name: 'Command R+',
-          model: 'command-r-plus',
+          id: 'cohere/command-a-03-2025',
+          name: 'Command A',
+          model: 'command-a-03-2025',
           capabilities: { coding: 80, creative: 75, analytical: 95, multimodal: 60, reasoning: 88, languages: 90 },
           pricing: { prompt: 0.000003, completion: 0.000015 },
           performance: { availability: 0.96, responseTime: 3000, qualityScore: 0.85, reliabilityScore: 0.90 },

@@ -19,7 +19,14 @@ import { ProviderError } from '../orchestration-errors';
 export class GoogleProvider extends UnifiedLLMAdapter {
   private client: GoogleGenerativeAI;
   private readonly models = {
-    // Gemini 2.0 Series (Latest)
+    // Gemini 3.0 Series (Preview)
+    'gemini-3-flash-preview': { inputCost: 0.15, outputCost: 0.6, contextWindow: 1000000, maxOutput: 65536 },
+    'gemini-3-pro-preview': { inputCost: 2, outputCost: 10, contextWindow: 2000000, maxOutput: 65536 },
+
+    // Gemini 2.5 Series (Current)
+    'gemini-2.5-flash': { inputCost: 0.075, outputCost: 0.3, contextWindow: 1000000, maxOutput: 65536 },
+
+    // Gemini 2.0 Series (Legacy)
     'gemini-2.0-flash-exp': { inputCost: 0.075, outputCost: 0.3, contextWindow: 1000000, maxOutput: 8192 },
     'gemini-2.0-flash-thinking-exp': { inputCost: 0.075, outputCost: 0.3, contextWindow: 32768, maxOutput: 8192 },
     
@@ -378,7 +385,7 @@ export class GoogleProvider extends UnifiedLLMAdapter {
     if (messageLength > 100000) return 'gemini-1.5-flash'; // Medium context
     if (messageLength > 20000) return 'gemini-1.5-flash-8b'; // Cost-effective for medium tasks
     
-    return 'gemini-2.0-flash-exp'; // Latest and fastest for simple requests
+    return 'gemini-2.5-flash'; // Latest and fastest for simple requests
   }
 
   private buildGenerationConfig(request: LLMRequest, modelConfig: any): GenerationConfig {

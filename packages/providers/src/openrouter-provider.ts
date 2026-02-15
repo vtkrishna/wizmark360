@@ -21,8 +21,8 @@ export class OpenRouterProvider extends UnifiedLLMAdapter {
     'openai/gpt-4o': { inputCost: 2.5, outputCost: 10, contextWindow: 128000, maxOutput: 4096 },
     'openai/gpt-4o-mini': { inputCost: 0.15, outputCost: 0.6, contextWindow: 128000, maxOutput: 16384 },
     'anthropic/claude-3.5-sonnet': { inputCost: 3, outputCost: 15, contextWindow: 200000, maxOutput: 8192 },
-    'anthropic/claude-3-opus': { inputCost: 15, outputCost: 75, contextWindow: 200000, maxOutput: 4096 },
-    'anthropic/claude-3-haiku': { inputCost: 0.25, outputCost: 1.25, contextWindow: 200000, maxOutput: 4096 },
+    'anthropic/claude-opus-4-6': { inputCost: 15, outputCost: 75, contextWindow: 200000, maxOutput: 4096 },
+    'anthropic/claude-haiku-4-5': { inputCost: 0.25, outputCost: 1.25, contextWindow: 200000, maxOutput: 4096 },
     
     // Google Models
     'google/gemini-pro-1.5': { inputCost: 1.25, outputCost: 5, contextWindow: 2097152, maxOutput: 8192 },

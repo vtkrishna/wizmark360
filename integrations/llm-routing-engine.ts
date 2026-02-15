@@ -213,8 +213,8 @@ export class LLMProviderRegistry extends EventEmitter {
             }
           },
           {
-            id: 'claude-3-haiku',
-            name: 'Claude 3 Haiku',
+            id: 'claude-haiku-4-5',
+            name: 'Claude Haiku 4.5',
             providerId: 'anthropic',
             contextWindow: 200000,
             strengths: ['speed', 'efficiency', 'safety'],
@@ -258,8 +258,8 @@ export class LLMProviderRegistry extends EventEmitter {
         name: 'Google',
         models: [
           {
-            id: 'gemini-1.5-pro',
-            name: 'Gemini 1.5 Pro',
+            id: 'gemini-2.5-pro',
+            name: 'Gemini 2.5 Pro',
             providerId: 'google',
             contextWindow: 2000000,
             strengths: ['large context', 'multimodal', 'reasoning'],
@@ -880,7 +880,7 @@ export class LLMRoutingEngine extends EventEmitter {
       // Import Google Gemini service dynamically
       const geminiService = await import('../services/gemini-service.js');
       return await geminiService.default.generateResponse({
-        model: options.model || 'gemini-1.5-pro',
+        model: options.model || 'gemini-2.5-pro',
         prompt,
         maxTokens: options.maxTokens || 4096,
         temperature: options.temperature || 0.7
