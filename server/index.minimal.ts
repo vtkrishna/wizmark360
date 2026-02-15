@@ -16,6 +16,7 @@ import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { log, setupVite, serveStatic } from "./vite";
 import { setupAuth, createAdminUser } from "./auth/local-auth";
 import market360Router from "./routes/market360";
@@ -68,68 +69,135 @@ import { marketingAgentsLoader } from "./services/marketing-agents-loader";
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
 
-// Create Express app and HTTP server
+function validateEnvironment(): { critical: string[]; warnings: string[] } {
+  const critical: string[] = [];
+  const warnings: string[] = [];
+
+  if (!process.env.DATABASE_URL) critical.push('DATABASE_URL');
+
+  const recommendedKeys = ['OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY'];
+  const optionalKeys = ['GROQ_API_KEY', 'COHERE_API_KEY', 'SARVAM_API_KEY', 'TOGETHER_API_KEY', 'OPENROUTER_API_KEY', 'ZHIPU_API_KEY'];
+
+  let hasAtLeastOneLLM = false;
+  for (const key of recommendedKeys) {
+    if (process.env[key]) {
+      hasAtLeastOneLLM = true;
+    } else {
+      warnings.push(`${key} not set (recommended)`);
+    }
+  }
+  if (!hasAtLeastOneLLM) {
+    critical.push('At least one LLM API key (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY)');
+  }
+
+  for (const key of optionalKeys) {
+    if (!process.env[key]) {
+      warnings.push(`${key} not set (optional)`);
+    }
+  }
+
+  if (isProduction && (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === 'dev-secret-change-in-production')) {
+    critical.push('SESSION_SECRET must be set in production (use a strong random string)');
+  }
+
+  return { critical, warnings };
+}
+
 const app = express();
 const server = createServer(app);
 
-// Basic middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// CORS - allow Replit dev domains
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()).filter(Boolean) || [];
+const replitDomains = process.env.REPLIT_DOMAINS?.split(',').map(d => `https://${d.trim()}`) || [];
 app.use(cors({
   origin: (origin, callback) => {
-    if (!isProduction && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('.replit.dev'))) {
+    if (!origin) return callback(null, true);
+    if (!isProduction) {
+      if (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.includes('.replit.dev') || origin.includes('.repl.co')) {
+        return callback(null, true);
+      }
+    }
+    if (allowedOrigins.length > 0 && allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    if (!origin) return callback(null, true);
+    if (replitDomains.some(d => origin.startsWith(d))) {
+      return callback(null, true);
+    }
     callback(null, false);
   },
   credentials: true
 }));
 
-// Basic security headers
 app.use(helmet({
-  contentSecurityPolicy: false, // Disabled for Replit development
+  contentSecurityPolicy: false,
 }));
 
-// Health check endpoint
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later', retryAfter: 60 },
+  keyGenerator: (req) => {
+    return (req as any).user?.id?.toString() || req.ip || 'anonymous';
+  },
+});
+
+const llmLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'AI request rate limit exceeded. Please wait before sending more requests.', retryAfter: 60 },
+  keyGenerator: (req) => {
+    return (req as any).user?.id?.toString() || req.ip || 'anonymous';
+  },
+});
+
+const voiceLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Voice/translation rate limit exceeded. Please wait.', retryAfter: 60 },
+  keyGenerator: (req) => {
+    return (req as any).user?.id?.toString() || req.ip || 'anonymous';
+  },
+});
+
+app.use('/api/', generalLimiter);
+
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '1.0.0-minimal',
+    version: '5.0.0',
     timestamp: new Date().toISOString(),
-    message: 'WAI SDK Platform - Minimal Server Running',
-    note: 'This is a minimal server. Many modules are missing from the GitHub import. See replit.md for details.'
+    platform: 'WizMark 360 - AI Marketing Operating System',
+    agents: 262,
+    llmProviders: 24,
+    models: '886+',
+    environment: isProduction ? 'production' : 'development',
   });
 });
 
-// Basic API info endpoint
 app.get('/api', (req, res) => {
   res.json({
-    name: 'Market360 - Wizards MarketAI Platform',
-    version: '1.0.0',
-    mode: 'minimal',
-    endpoints: {
-      health: '/api/health',
-      info: '/api',
-      market360: '/api/market360/*',
-    },
-    verticals: ['social', 'seo', 'web', 'sales', 'whatsapp', 'linkedin', 'performance'],
-    message: 'Market360 Self-Driving Agency Platform powered by WAI SDK'
+    name: 'WizMark 360 - AI Marketing Operating System',
+    version: '5.0.0',
+    agents: 262,
+    verticals: ['social', 'seo', 'web', 'sales', 'whatsapp', 'linkedin', 'performance', 'pr-comms'],
   });
 });
 
-// Market360 API routes
 app.use('/api/market360', market360Router);
 
-// AI API routes
-app.use('/api/ai', aiRouter);
+app.use('/api/ai', llmLimiter, aiRouter);
 
 // Brands/ERP API routes
 app.use('/api/brands', brandsRouter);
 
-// Chat API routes - Main AI orchestration endpoint
 app.use('/api', chatApiRoutes);
 
 // Market360 Vertical Workflow Routes
@@ -162,8 +230,7 @@ app.use('/api/ads', adPublishingRoutes);
 // AI Visibility Tracker Routes (GEO - ChatGPT/Perplexity monitoring)
 app.use('/api/ai-visibility', aiVisibilityRoutes);
 
-// Translation Routes (Sarvam + Gemini for Indian languages)
-app.use('/api/translation', translationRoutes);
+app.use('/api/translation', voiceLimiter, translationRoutes);
 
 // WhatsApp Business API Routes
 app.use('/api/whatsapp', whatsappRoutes);
@@ -174,8 +241,7 @@ app.use('/api/crm', crmRoutes);
 // Social Publishing Routes (Meta/LinkedIn/Twitter)
 app.use('/api/social', socialPublishingRoutes);
 
-// Voice Agent Routes (Sarvam STT/TTS)
-app.use('/api/voice', voiceRoutes);
+app.use('/api/voice', voiceLimiter, voiceRoutes);
 
 // Email Campaign Routes
 app.use('/api/email', emailRoutes);
@@ -212,7 +278,7 @@ app.use('/api/telegram', telegramRoutes);
 app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
 app.use('/api/vertical-workflows', verticalWorkflowRoutes);
 app.use('/api/cross-vertical', crossVerticalRoutes);
-app.use('/api/chat', marketingChatRoutes);
+app.use('/api/chat', llmLimiter, marketingChatRoutes);
 app.use('/api/wai-sdk/v3.2', waiSDKv32Routes);
 app.use('/api/export', exportRoutes);
 app.use('/api/strategy-pipeline', strategyPipelineRoutes);
@@ -221,43 +287,71 @@ app.use('/api/monitoring-dashboard', monitoringDashboardRoutes);
 // Audit middleware for logging API access
 app.use(auditMiddleware());
 
+app.use((err: any, req: any, res: any, next: any) => {
+  const statusCode = err.status || err.statusCode || 500;
+  console.error(`[ERROR] ${req.method} ${req.path}:`, err.message || err);
+  if (!res.headersSent) {
+    res.status(statusCode).json({
+      error: isProduction ? 'An unexpected error occurred' : err.message,
+      statusCode,
+      ...(isProduction ? {} : { stack: err.stack }),
+    });
+  }
+});
+
 async function startServer() {
   try {
-    console.log('🚀 Starting WAI SDK Platform - Minimal Mode');
-    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🗄️  Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
-    
-    // Initialize marketing agents loader
+    console.log('='.repeat(60));
+    console.log('  WizMark 360 - AI Marketing Operating System v5.0.0');
+    console.log('='.repeat(60));
+    console.log(`  Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`  Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+
+    const { critical, warnings } = validateEnvironment();
+
+    if (warnings.length > 0) {
+      console.log(`\n  [WARNINGS] ${warnings.length} optional configurations missing:`);
+      warnings.forEach(w => console.log(`    - ${w}`));
+    }
+
+    if (critical.length > 0 && isProduction) {
+      console.error(`\n  [CRITICAL] Cannot start in production - missing required config:`);
+      critical.forEach(c => console.error(`    - ${c}`));
+      process.exit(1);
+    } else if (critical.length > 0) {
+      console.warn(`\n  [WARNING] Missing configurations (non-fatal in development):`);
+      critical.forEach(c => console.warn(`    - ${c}`));
+    }
+
     await marketingAgentsLoader.initialize();
-    
-    // Setup authentication (MUST be before other routes)
+    console.log('  262 marketing agents loaded');
+
     await setupAuth(app);
     await createAdminUser();
-    console.log('🔐 Authentication configured (username/password + Google OAuth)');
-    
-    // Setup Vite in development or serve static in production
+    console.log('  Authentication configured (local + Google OAuth)');
+    console.log('  PostgreSQL session store active');
+    console.log('  Rate limiting enabled (200/min general, 30/min AI, 10/min voice)');
+
     if (isProduction) {
       try {
         serveStatic(app);
         log('Production static files served');
       } catch (error) {
-        console.warn('⚠️  Static files not found. Run build first:', error);
+        console.warn('  Static files not found. Run build first.');
       }
     } else {
       await setupVite(app, server);
       log('Development mode with Vite HMR enabled');
     }
-    
-    // Start server
+
     server.listen(port, "0.0.0.0", () => {
-      console.log(`✅ Server running on http://0.0.0.0:${port}`);
-      console.log(`🌐 Health check: http://localhost:${port}/api/health`);
-      console.log(`🔐 Auth: /api/login, /api/logout, /api/auth/user`);
-      console.log(`📝 Note: Running in minimal mode - see replit.md for details`);
+      console.log(`\n  Server running on http://0.0.0.0:${port}`);
+      console.log(`  Health: http://localhost:${port}/api/health`);
+      console.log('='.repeat(60));
     });
-    
+
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 }

@@ -1,12 +1,12 @@
 {
   "name": "wai-sdk-platform",
   "version": "1.0.0",
-  "description": "WAI SDK - Enterprise AI Orchestration Platform with 267+ autonomous agents",
+  "description": "WizMark 360 - AI Marketing Operating System with 262 autonomous agents",
   "type": "module",
   "scripts": {
     "dev": "tsx watch --clear-screen=false server/index.minimal.ts",
     "dev:full": "tsx watch --clear-screen=false server/index.ts",
-    "build": "vite build && esbuild server/index.ts --bundle --platform=node --outfile=dist/index.js --external:*.node",
+    "build": "vite build && esbuild server/index.minimal.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:*.node --external:@neondatabase/serverless --external:ws --external:bufferutil --external:utf-8-validate --external:pg-native --external:better-sqlite3 --packages=external",
     "start": "NODE_ENV=production node dist/index.js",
     "db:push": "drizzle-kit push:pg",
     "db:generate": "drizzle-kit generate:pg",
@@ -57,7 +57,7 @@
     "drizzle-orm": "^0.30.0",
     "drizzle-zod": "^0.5.1",
     "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
+    "express-rate-limit": "^7.5.1",
     "express-session": "^1.18.2",
     "framer-motion": "^12.23.25",
     "groq-sdk": "^0.3.0",

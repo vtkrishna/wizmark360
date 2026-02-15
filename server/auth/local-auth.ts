@@ -9,10 +9,19 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
+import rateLimit from "express-rate-limit";
 import type { Express, RequestHandler } from "express";
 import { db } from "../db";
 import { users } from "../../shared/schema";
 import { eq } from "drizzle-orm";
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many authentication attempts, please try again in 15 minutes' },
+});
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000;
@@ -31,6 +40,7 @@ export function getSession() {
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: sessionTtl,
     },
   });
@@ -182,7 +192,7 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", (req, res, next) => {
+  app.post("/api/login", authLimiter, (req, res, next) => {
     passport.authenticate("local", (err: any, user: any, info: any) => {
       if (err) {
         return res.status(500).json({ message: "Authentication error" });
@@ -208,7 +218,7 @@ export async function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.post("/api/register", async (req, res) => {
+  app.post("/api/register", authLimiter, async (req, res) => {
     try {
       const { username, email, password } = req.body;
 
