@@ -182,7 +182,7 @@ class RBACService {
     }
 
     for (const resource in result) {
-      result[resource] = [...new Set(result[resource])];
+      result[resource] = Array.from(new Set(result[resource]));
     }
 
     return result;
