@@ -85,3 +85,26 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 -   **Payment Gateway**: Razorpay.
 -   **Web Search APIs**: Perplexity AI, Google Custom Search, Bing Web Search.
 -   **Telegram API**.
+
+## Recent Changes
+
+### Feb 18, 2026 - Enterprise Security & Multi-Tenant Isolation (Phase 1)
+- **Global Auth Middleware**: Created `server/middleware/require-auth.ts` with `requireAuth` and `requireAdmin` middleware. All `/api/*` routes now require authentication except public endpoints (`/api/health`, `/api/auth/*`, `/api/login`, `/api/register`, `/api/logout`).
+- **Route Registration Restructure**: Moved all route registrations in `server/index.minimal.ts` into `registerRoutes()` function, called AFTER `setupAuth()` to fix middleware ordering (passport session must initialize before routes).
+- **Tenant Isolation**: `requireAuth` middleware extracts `organizationId` from DB and caches in session as `req.organizationId` for tenant-scoped queries.
+- **Frontend Auth Protection**: Created `client/src/components/ProtectedRoute.tsx` - wraps all authenticated routes. Unauthenticated users redirect to `/login`. All routes except `/`, `/login`, `/signin` are protected.
+- **Organization Management**: New `server/routes/organization-routes.ts` with 7 endpoints (CRUD, member invite, role change, remove). New `client/src/pages/organization-settings.tsx` with General/Members tabs.
+- **Audit Logs Dashboard**: New `server/routes/audit-log-routes.ts` with pagination and filtering. New `client/src/pages/audit-logs.tsx` with table, filters, pagination.
+- **Role-Based Navigation**: Admin section in sidebar (`app-shell.tsx`) with "Organization" link (all users) and "Audit Logs" link (admin/manager only).
+- **Landing Page Fix**: Updated all agent count references from 285 to 262 across `landing-page.tsx`.
+- **Admin Route Protection**: Added `requireAdmin` middleware to `/api/admin/llm` routes.
+
+### Key Security Files
+| File | Purpose |
+|------|---------|
+| `server/middleware/require-auth.ts` | Global auth + tenant isolation middleware |
+| `client/src/components/ProtectedRoute.tsx` | Frontend route guard |
+| `server/routes/organization-routes.ts` | Organization & member management API |
+| `server/routes/audit-log-routes.ts` | Audit log retrieval API |
+| `client/src/pages/organization-settings.tsx` | Org settings + team management UI |
+| `client/src/pages/audit-logs.tsx` | Audit logs dashboard UI |

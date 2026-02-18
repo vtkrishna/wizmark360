@@ -87,7 +87,7 @@ const verticals = [
 ];
 
 const stats = [
-  { value: '285', label: 'AI Agents', sublabel: 'Autonomous Marketing' },
+  { value: '262', label: 'AI Agents', sublabel: 'Autonomous Marketing' },
   { value: '24', label: 'LLMs', sublabel: '886+ Models' },
   { value: '22', label: 'Languages', sublabel: 'Indian Language Support' },
   { value: '8', label: 'Verticals', sublabel: 'Complete Marketing Stack' },
@@ -96,7 +96,7 @@ const stats = [
 const features = [
   { 
     icon: Bot, 
-    title: '285 Autonomous Agents', 
+    title: '262 Autonomous Agents', 
     description: 'Specialized AI agents for every marketing task - from content creation to bid optimization, powered by Claude Opus 4.6, GPT-5.2, and Gemini 3.' 
   },
   { 
@@ -194,7 +194,7 @@ export default function LandingPage() {
               </h1>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                285 autonomous AI agents across 8 marketing verticals. 
+                262 autonomous AI agents across 8 marketing verticals. 
                 Create content in 22 Indian languages. Voice AI for WhatsApp. 
                 Built on 24 LLM providers with 886+ models.
               </p>
@@ -249,7 +249,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <div className="text-white font-semibold">Chief of Staff AI</div>
-                      <div className="text-white/70 text-sm">24 LLMs | 285 Agents | 22 Languages</div>
+                      <div className="text-white/70 text-sm">24 LLMs | 262 Agents | 22 Languages</div>
                     </div>
                   </div>
                 </div>
@@ -260,7 +260,7 @@ export default function LandingPage() {
                     </div>
                     <div className="bg-gray-100 rounded-2xl rounded-tl-md p-4 text-sm">
                       नमस्ते! I'm your Chief of Staff AI. I can help you manage campaigns, 
-                      generate content in 22 Indian languages, and orchestrate 285 marketing agents. 
+                      generate content in 22 Indian languages, and orchestrate 262 marketing agents. 
                       What would you like to accomplish today?
                     </div>
                   </div>
@@ -343,7 +343,7 @@ export default function LandingPage() {
             <Badge className="mb-4 bg-purple-100 text-purple-700 border-purple-200">8 Marketing Verticals</Badge>
             <h2 className="text-4xl font-bold mb-4">One Platform. Complete Marketing Stack.</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              285 AI agents organized across 8 specialized verticals, each with dedicated tools and workflows.
+              262 AI agents organized across 8 specialized verticals, each with dedicated tools and workflows.
             </p>
           </div>
 
@@ -510,7 +510,7 @@ export default function LandingPage() {
             Ready to Transform Your Marketing Operations?
           </h2>
           <p className="text-xl text-white/80 mb-8">
-            Launch your enterprise marketing platform with 285 AI agents, advanced compliance, and full multi-brand management.
+            Launch your enterprise marketing platform with 262 AI agents, advanced compliance, and full multi-brand management.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
@@ -545,7 +545,7 @@ export default function LandingPage() {
                 <span className="text-xl font-bold">WizMark 360</span>
               </div>
               <p className="text-gray-400 text-sm">
-                The world's first AI-powered Marketing Operating System. 285 autonomous agents delivering enterprise-grade marketing automation across 8 verticals.
+                The world's first AI-powered Marketing Operating System. 262 autonomous agents delivering enterprise-grade marketing automation across 8 verticals.
               </p>
             </div>
             <div>

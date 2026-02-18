@@ -43,6 +43,7 @@ import paymentRoutes from "./routes/payment-routes";
 import clientPortalRoutes from "./routes/client-portal-routes";
 import influencerRoutes from "./routes/influencer-routes";
 import { auditMiddleware } from "./services/audit-logging-service";
+import { requireAuth, requireAdmin } from './middleware/require-auth';
 import webSearchRoutes from "./routes/web-search-routes";
 import documentProcessingRoutes from "./routes/document-processing-routes";
 import notebookLLMRoutes from "./routes/notebook-llm-routes";
@@ -64,6 +65,8 @@ import waiSDKv32Routes from "./routes/wai-sdk-v32-routes";
 import exportRoutes from "./routes/export-routes";
 import strategyPipelineRoutes from "./routes/strategy-pipeline-routes";
 import monitoringDashboardRoutes from "./routes/monitoring-dashboard-routes";
+import organizationRoutes from "./routes/organization-routes";
+import auditLogRoutes from "./routes/audit-log-routes";
 import { marketingAgentsLoader } from "./services/marketing-agents-loader";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -191,101 +194,66 @@ app.get('/api', (req, res) => {
   });
 });
 
-app.use('/api/market360', market360Router);
+function registerRoutes(app: express.Express) {
+  app.use('/api', (req, res, next) => {
+    const fullPath = req.baseUrl + req.path;
+    if (fullPath === '/api' || fullPath === '/api/health' ||
+        fullPath.startsWith('/api/login') || fullPath.startsWith('/api/register') ||
+        fullPath.startsWith('/api/logout') || fullPath.startsWith('/api/auth')) {
+      return next();
+    }
+    return requireAuth(req, res, next);
+  });
 
-app.use('/api/ai', llmLimiter, aiRouter);
+  app.use('/api/market360', market360Router);
+  app.use('/api/ai', llmLimiter, aiRouter);
+  app.use('/api/brands', brandsRouter);
+  app.use('/api', chatApiRoutes);
+  app.use('/api/market360/verticals', market360VerticalRoutes);
+  app.use('/api/admin/llm', requireAdmin, llmAdminRoutes);
+  app.use('/api/multimodal-content', multimodalContentRoutes);
+  app.use('/api/rbac', rbacRoutes);
+  app.use('/api/analytics', predictiveAnalyticsRoutes);
+  app.use('/api/orchestration', unifiedOrchestrationRoutes);
+  app.use('/api/content-library', contentLibraryRoutes);
+  app.use('/api/analytics/predictions', predictiveAnalyticsNewRoutes);
+  app.use('/api/ads', adPublishingRoutes);
+  app.use('/api/ai-visibility', aiVisibilityRoutes);
+  app.use('/api/translation', voiceLimiter, translationRoutes);
+  app.use('/api/whatsapp', whatsappRoutes);
+  app.use('/api/crm', crmRoutes);
+  app.use('/api/social', socialPublishingRoutes);
+  app.use('/api/voice', voiceLimiter, voiceRoutes);
+  app.use('/api/email', emailRoutes);
+  app.use('/api/payments', paymentRoutes);
+  app.use('/api/portal', clientPortalRoutes);
+  app.use('/api/influencers', influencerRoutes);
+  app.use('/api/v3/web-search', webSearchRoutes);
+  app.use('/api/v3/documents', documentProcessingRoutes);
+  app.use('/api/v3/notebook', notebookLLMRoutes);
+  app.use('/api/v3/orchestration', orchestrationPatternsRoutes);
+  app.use('/api/v3/memory', mem0EnhancedRoutes);
+  app.use('/api/v3/monitoring', camMonitoringRoutes);
+  app.use('/api/v3/learning', grpoLearningRoutes);
+  app.use('/api/v3/twins', digitalTwinRoutes);
+  app.use('/api/v3/content', contentPipelineRoutes);
+  app.use('/api/platform-connections', platformConnectionsRoutes);
+  app.use('/api/seo', seoToolkitRoutes);
+  app.use('/api/conversions', conversionTrackingRoutes);
+  app.use('/api/telegram', telegramRoutes);
+  app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
+  app.use('/api/vertical-workflows', verticalWorkflowRoutes);
+  app.use('/api/cross-vertical', crossVerticalRoutes);
+  app.use('/api/chat', llmLimiter, marketingChatRoutes);
+  app.use('/api/wai-sdk/v3.2', waiSDKv32Routes);
+  app.use('/api/export', exportRoutes);
+  app.use('/api/strategy-pipeline', strategyPipelineRoutes);
+  app.use('/api/monitoring-dashboard', monitoringDashboardRoutes);
+  app.use('/api/organizations', organizationRoutes);
+  app.use('/api/audit-logs', auditLogRoutes);
 
-// Brands/ERP API routes
-app.use('/api/brands', brandsRouter);
-
-app.use('/api', chatApiRoutes);
-
-// Market360 Vertical Workflow Routes
-app.use('/api/market360/verticals', market360VerticalRoutes);
-
-// LLM Admin Config Routes
-app.use('/api/admin/llm', llmAdminRoutes);
-
-// Multimodal Content Routes
-app.use('/api/multimodal-content', multimodalContentRoutes);
-
-// RBAC & Audit Routes
-app.use('/api/rbac', rbacRoutes);
-
-// Predictive Analytics Routes
-app.use('/api/analytics', predictiveAnalyticsRoutes);
-
-// Unified WAI SDK Orchestration Routes
-app.use('/api/orchestration', unifiedOrchestrationRoutes);
-
-// Brand-Aware Content Library Routes
-app.use('/api/content-library', contentLibraryRoutes);
-
-// New Predictive Analytics Routes (Phase 2)
-app.use('/api/analytics/predictions', predictiveAnalyticsNewRoutes);
-
-// Native Ad Publishing Routes
-app.use('/api/ads', adPublishingRoutes);
-
-// AI Visibility Tracker Routes (GEO - ChatGPT/Perplexity monitoring)
-app.use('/api/ai-visibility', aiVisibilityRoutes);
-
-app.use('/api/translation', voiceLimiter, translationRoutes);
-
-// WhatsApp Business API Routes
-app.use('/api/whatsapp', whatsappRoutes);
-
-// CRM Integration Routes (Salesforce/HubSpot)
-app.use('/api/crm', crmRoutes);
-
-// Social Publishing Routes (Meta/LinkedIn/Twitter)
-app.use('/api/social', socialPublishingRoutes);
-
-app.use('/api/voice', voiceLimiter, voiceRoutes);
-
-// Email Campaign Routes
-app.use('/api/email', emailRoutes);
-
-// Payment & Invoicing Routes (Stripe)
-app.use('/api/payments', paymentRoutes);
-
-// Client Portal Routes (White-label)
-app.use('/api/portal', clientPortalRoutes);
-
-// Influencer Marketplace Routes
-app.use('/api/influencers', influencerRoutes);
-
-// WAI SDK v3.1 P0 Enterprise Services
-app.use('/api/v3/web-search', webSearchRoutes);
-app.use('/api/v3/documents', documentProcessingRoutes);
-app.use('/api/v3/notebook', notebookLLMRoutes);
-app.use('/api/v3/orchestration', orchestrationPatternsRoutes);
-
-// WAI SDK v3.1 P1 Intelligence Layer
-app.use('/api/v3/memory', mem0EnhancedRoutes);
-app.use('/api/v3/monitoring', camMonitoringRoutes);
-app.use('/api/v3/learning', grpoLearningRoutes);
-
-// WAI SDK v3.1 P2 Advanced Features
-app.use('/api/v3/twins', digitalTwinRoutes);
-app.use('/api/v3/content', contentPipelineRoutes);
-
-// Platform v4.0 - Platform Integrations & OAuth
-app.use('/api/platform-connections', platformConnectionsRoutes);
-app.use('/api/seo', seoToolkitRoutes);
-app.use('/api/conversions', conversionTrackingRoutes);
-app.use('/api/telegram', telegramRoutes);
-app.use('/api/unified-analytics', unifiedAnalyticsRoutes);
-app.use('/api/vertical-workflows', verticalWorkflowRoutes);
-app.use('/api/cross-vertical', crossVerticalRoutes);
-app.use('/api/chat', llmLimiter, marketingChatRoutes);
-app.use('/api/wai-sdk/v3.2', waiSDKv32Routes);
-app.use('/api/export', exportRoutes);
-app.use('/api/strategy-pipeline', strategyPipelineRoutes);
-app.use('/api/monitoring-dashboard', monitoringDashboardRoutes);
-
-// Audit middleware for logging API access
-app.use(auditMiddleware());
+  app.use(auditMiddleware());
+}
 
 app.use((err: any, req: any, res: any, next: any) => {
   const statusCode = err.status || err.statusCode || 500;
@@ -331,6 +299,9 @@ async function startServer() {
     console.log('  Authentication configured (local + Google OAuth)');
     console.log('  PostgreSQL session store active');
     console.log('  Rate limiting enabled (200/min general, 30/min AI, 10/min voice)');
+
+    registerRoutes(app);
+    console.log('  Protected API routes registered with auth middleware');
 
     if (isProduction) {
       try {

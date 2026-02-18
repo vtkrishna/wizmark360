@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useAuth } from "../../hooks/use-auth";
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -27,7 +28,8 @@ import {
   Brain,
   PieChart,
   Calendar,
-  Compass
+  Compass,
+  Shield
 } from "lucide-react";
 
 interface AppShellProps {
@@ -49,9 +51,11 @@ const verticals = [
 
 export default function AppShell({ children, currentBrand, onBrandSwitch }: AppShellProps) {
   const [location, setLocation] = useLocation();
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [verticalsExpanded, setVerticalsExpanded] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAdminOrManager = user?.role === 'admin' || user?.role === 'manager';
 
   const isActive = (path: string) => location === path || location.startsWith(path + "/");
 
@@ -172,6 +176,19 @@ export default function AppShell({ children, currentBrand, onBrandSwitch }: AppS
             <NavItem icon={FileText} label="Content Library" path="/content" />
             <NavItem icon={Calendar} label="Calendar" path="/calendar" />
             <NavItem icon={BarChart3} label="Analytics" path="/analytics" />
+          </div>
+
+          {/* Admin Section */}
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+            {sidebarOpen && (
+              <span className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Admin
+              </span>
+            )}
+            <NavItem icon={Building2} label="Organization" path="/organization" />
+            {isAdminOrManager && (
+              <NavItem icon={Shield} label="Audit Logs" path="/admin/audit-logs" />
+            )}
           </div>
         </nav>
 
