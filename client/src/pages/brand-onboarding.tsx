@@ -8,8 +8,9 @@ import { Progress } from "@/components/ui/progress";
 import {
   Building2, Globe, Users, Palette, Target, FileText,
   ArrowRight, ArrowLeft, Check, Sparkles, Upload,
-  Phone, Mail, User, Briefcase, CreditCard, Languages
+  Phone, Mail, User, Briefcase, CreditCard, Languages, Loader2
 } from "lucide-react";
+import { useUpload } from "../hooks/use-upload";
 
 const steps = [
   { id: "company", title: "Company Info", icon: Building2 },
@@ -85,11 +86,17 @@ interface BrandFormData {
   monthlyRetainer: string;
   targetLanguages: string[];
   goals: string[];
+  logo: string;
 }
 
 export default function BrandOnboarding() {
   const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(0);
+  const { uploadFile, isUploading: isLogoUploading } = useUpload({
+    onSuccess: (response) => {
+      setFormData(prev => ({ ...prev, logo: response.objectPath }));
+    },
+  });
   const [formData, setFormData] = useState<BrandFormData>({
     name: "",
     legalName: "",
@@ -115,6 +122,7 @@ export default function BrandOnboarding() {
     monthlyRetainer: "",
     targetLanguages: ["en"],
     goals: [],
+    logo: "",
   });
 
   const queryClient = useQueryClient();
@@ -151,6 +159,7 @@ export default function BrandOnboarding() {
             verticals: data.selectedVerticals,
             monthlyRetainer: data.monthlyRetainer,
           },
+          logo: data.logo || undefined,
         }),
       });
       return res.json();
@@ -443,10 +452,37 @@ export default function BrandOnboarding() {
                   </div>
 
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-                    <Upload className="h-12 w-12 text-gray-400 mb-3" />
-                    <p className="font-medium text-gray-700">Upload Brand Assets</p>
-                    <p className="text-sm text-gray-500 mb-3">Logo, icons, brand book (PDF)</p>
-                    <Button variant="outline" size="sm">Choose Files</Button>
+                    {formData.logo ? (
+                      <>
+                        <img src={formData.logo} alt="Brand logo" className="w-20 h-20 rounded-xl object-cover mb-3" />
+                        <p className="font-medium text-green-700">Logo uploaded</p>
+                      </>
+                    ) : (
+                      <Upload className="h-12 w-12 text-gray-400 mb-3" />
+                    )}
+                    <p className="font-medium text-gray-700">{formData.logo ? "Replace Logo" : "Upload Brand Logo"}</p>
+                    <p className="text-sm text-gray-500 mb-3">PNG, SVG, or JPG (max 10MB)</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={isLogoUploading}
+                      onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.accept = "image/*";
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) uploadFile(file);
+                        };
+                        input.click();
+                      }}
+                    >
+                      {isLogoUploading ? (
+                        <><Loader2 className="w-4 h-4 animate-spin mr-2" />Uploading...</>
+                      ) : (
+                        "Choose File"
+                      )}
+                    </Button>
                   </div>
                 </div>
 

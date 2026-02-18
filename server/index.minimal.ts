@@ -68,6 +68,8 @@ import monitoringDashboardRoutes from "./routes/monitoring-dashboard-routes";
 import organizationRoutes from "./routes/organization-routes";
 import auditLogRoutes from "./routes/audit-log-routes";
 import { marketingAgentsLoader } from "./services/marketing-agents-loader";
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import smokeTestRoutes from "./routes/smoke-test-routes";
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT) || 5000;
@@ -172,9 +174,30 @@ const voiceLimiter = rateLimit({
 
 app.use('/api/', generalLimiter);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const checks: Record<string, { status: string; detail?: string }> = {};
+
+  checks.server = { status: 'ok' };
+
+  try {
+    const { pool } = await import('./db');
+    const result = await pool.query('SELECT 1 as health');
+    checks.database = { status: result.rows.length > 0 ? 'ok' : 'degraded' };
+  } catch (e: any) {
+    checks.database = { status: 'error', detail: e.message };
+  }
+
+  const llmKeys = ['OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_API_KEY', 'GROQ_API_KEY', 'COHERE_API_KEY', 'SARVAM_API_KEY'];
+  const configuredProviders = llmKeys.filter(k => !!process.env[k]).length;
+  checks.llmProviders = { status: configuredProviders > 0 ? 'ok' : 'warning', detail: `${configuredProviders}/${llmKeys.length} configured` };
+
+  checks.objectStorage = { status: process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID ? 'ok' : 'not_configured' };
+
+  const overallStatus = Object.values(checks).every(c => c.status === 'ok') ? 'healthy'
+    : Object.values(checks).some(c => c.status === 'error') ? 'unhealthy' : 'degraded';
+
   res.json({
-    status: 'ok',
+    status: overallStatus,
     version: '5.0.0',
     timestamp: new Date().toISOString(),
     platform: 'WizMark 360 - AI Marketing Operating System',
@@ -182,6 +205,7 @@ app.get('/api/health', (req, res) => {
     llmProviders: 24,
     models: '886+',
     environment: isProduction ? 'production' : 'development',
+    checks,
   });
 });
 
@@ -251,6 +275,10 @@ function registerRoutes(app: express.Express) {
   app.use('/api/monitoring-dashboard', monitoringDashboardRoutes);
   app.use('/api/organizations', organizationRoutes);
   app.use('/api/audit-logs', auditLogRoutes);
+
+  registerObjectStorageRoutes(app);
+
+  app.use('/api/smoke-test', requireAdmin, smokeTestRoutes);
 
   app.use(auditMiddleware());
 }

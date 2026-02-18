@@ -4,6 +4,7 @@ import AppShell from "../components/layout/app-shell";
 import { ContentSourceSelector, ContentSourceType } from "../components/content-source-selector";
 import StockImageModal from "../components/stock-image-modal";
 import WebSearchModal from "../components/web-search-modal";
+import { useUpload } from "../hooks/use-upload";
 import {
   FileText,
   Image,
@@ -95,6 +96,32 @@ export default function ContentLibraryPage() {
   const [showWebSearchModal, setShowWebSearchModal] = useState(false);
   const [inspirationContent, setInspirationContent] = useState<string>("");
 
+  const { uploadFile, isUploading, progress: uploadProgress } = useUpload({
+    onSuccess: async (response) => {
+      try {
+        await fetch("/api/content-library", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            name: response.metadata.name,
+            type: response.metadata.contentType?.startsWith("image/") ? "image"
+              : response.metadata.contentType?.startsWith("video/") ? "video"
+              : response.metadata.contentType?.startsWith("audio/") ? "audio"
+              : "text",
+            content: `Uploaded file: ${response.metadata.name}`,
+            url: response.objectPath,
+            status: "published",
+            metadata: { source: "upload", objectPath: response.objectPath, contentType: response.metadata.contentType }
+          }),
+        });
+        refetch();
+      } catch (err) {
+        console.error("Failed to save uploaded content:", err);
+      }
+    },
+  });
+
   const handleSourceSelect = (source: ContentSourceType) => {
     setSelectedSource(source);
     setShowCreateModal(false);
@@ -109,6 +136,17 @@ export default function ContentLibraryPage() {
       case "ai":
         window.location.href = "/god-mode";
         break;
+      case "upload": {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*,video/*,audio/*,.pdf,.doc,.docx,.txt";
+        input.onchange = (e) => {
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (file) uploadFile(file);
+        };
+        input.click();
+        break;
+      }
       case "library":
         break;
     }

@@ -229,9 +229,13 @@ export default function BrandsPage() {
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                              {brand.name.charAt(0)}
-                            </div>
+                            {brand.logo ? (
+                              <img src={brand.logo} alt={brand.name} className="w-12 h-12 rounded-xl object-cover" />
+                            ) : (
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                                {brand.name.charAt(0)}
+                              </div>
+                            )}
                             <div>
                               <h3 className="font-semibold text-gray-900 dark:text-white">{brand.name}</h3>
                               <p className="text-sm text-gray-500">{brand.industry}</p>

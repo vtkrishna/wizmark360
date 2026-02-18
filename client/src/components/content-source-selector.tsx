@@ -6,10 +6,11 @@ import {
   Search,
   Globe,
   ChevronRight,
-  Check
+  Check,
+  Upload
 } from "lucide-react";
 
-export type ContentSourceType = "ai" | "library" | "stock" | "web";
+export type ContentSourceType = "ai" | "library" | "stock" | "web" | "upload";
 
 export interface ContentSource {
   type: ContentSourceType;
@@ -59,6 +60,14 @@ const contentSources: ContentSource[] = [
     description: "Search the web for content inspiration and reference materials",
     icon: Globe,
     color: "from-orange-500 to-amber-500",
+    available: true
+  },
+  {
+    type: "upload",
+    label: "Upload Files",
+    description: "Upload images, documents, videos, or audio files from your device",
+    icon: Upload,
+    color: "from-indigo-500 to-violet-500",
     available: true
   }
 ];

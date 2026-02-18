@@ -1,13 +1,10 @@
 # WizMark 360 - AI Marketing Operating System
 
 ## Overview
-WizMark 360 is the world's first AI Marketing Operating System, a full-stack TypeScript application (React + Express) designed as a self-driving marketing agency platform. It automates and optimizes marketing operations, brand management, invoicing, and payments. The platform leverages a robust AI infrastructure with 24 LLM providers, 886 models across 4 tiers, and a comprehensive 262-agent architecture across 8 marketing verticals. The project's ambition is to provide an enterprise-grade "Marketing Command Center" for comprehensive marketing automation and intelligence.
+WizMark 360 is the world's first AI Marketing Operating System, a full-stack TypeScript application (React + Express) designed as a self-driving marketing agency platform. It automates and optimizes marketing operations, brand management, invoicing, and payments. The platform leverages a robust AI infrastructure with 24 LLM providers, 886 models across 4 tiers, and a comprehensive 262-agent architecture across 8 marketing verticals. The project's ambition is to provide an enterprise-grade "Marketing Command Center" for comprehensive marketing automation and intelligence, offering an enterprise-grade solution for marketing intelligence and operations.
 
 ## User Preferences
 I prefer iterative development, with a focus on delivering functional components incrementally. Please ask for clarification if a task is unclear or before making significant architectural changes. I value clear, concise explanations and prefer to review major changes. Do not make changes to the `shared/schema.ts` and `shared/market360-schema.ts` files without explicit instruction.
-
-### Agent Skills & Persona
-The project includes 15 specialized agent skills in `.local/skills/`. When the user triggers `/vamsi` or says "Vamsi, help me", activate the **Vamsi - The Starseed** superagent persona (`.local/skills/vamsi-superagent/SKILL.md`) which provides 360-degree analysis across all 13 domains (CTO Architecture, CPO Strategy, Fullstack Engineering, DevOps, Cloud, AI/LLM, Security/Compliance, Data Management, Debugging, Marketing, Investor Relations, Financial Planning, Advanced Reasoning). All skills are loaded from `.local/skills/` and can be activated with their respective trigger commands (`/cto`, `/cpo`, `/dev`, `/ai`, `/db`, `/debug`, `/sdlc`, `/prompt`, `/think`, `/research`, `/product`, `/reverse`, `/cicd`, `/vibe`, `/vamsi`).
 
 ### Mandatory Development Guardrails
 1. **Zero Mock/Stub/Placeholder Policy** — No dummy data, no stub functions, no temporary files. Every feature must be fully implemented with real integrations. Use `{ value, dataSource }` for all metrics.
@@ -18,17 +15,6 @@ The project includes 15 specialized agent skills in `.local/skills/`. When the u
 6. **Version Controlled** — Every change logged in `replit.md` Recent Changes with date and description. Pre-commit checklist in `DEVELOPMENT_GUARDRAILS.md` must be followed.
 7. **Single Source of Truth for LLM Models** — `shared/llm-config.ts` is the **sole authoritative source** for all LLM model names, IDs, providers, costs, capabilities, and tiers. Before writing or updating any code that references LLM models, **always read `shared/llm-config.ts` first** to get correct model IDs. Never hardcode model names/IDs in service files, agent configs, or route handlers — always import from or reference `shared/llm-config.ts`. Any model addition, removal, or update must be done in `shared/llm-config.ts` first, then propagated to dependent files.
 
-### Config File Registry
-| Domain | Config File | Purpose |
-|--------|-------------|---------|
-| Server/Platform | `server/config/platform-config.ts` | Port, host, DB, services, LLM provider keys, security, rate limits |
-| LLM Models | `shared/llm-config.ts` | All 24 providers, 886+ models, costs, capabilities, tiers |
-| Feature Flags | `server/config/feature-flags.ts` | Toggle features on/off via environment variables |
-| OAuth | `server/config/oauth-config.ts` | OAuth provider-specific settings (Google, GitHub, LinkedIn, Meta) |
-| Client API | `client/src/services/config.ts` | Frontend API base URL, WebSocket URL |
-| WAI SDK | `utils/config.ts` | Agent counts, integration counts, core settings |
-| LLM Providers | `server/services/llm-providers/` | Low-level SDK wrappers (use `unified-llm-service.ts` as entrypoint) |
-
 ## System Architecture
 
 ### UI/UX Decisions
@@ -38,37 +24,28 @@ The platform features an enterprise-grade "Marketing Command Center" dashboard c
 WizMark 360 is built with React for the frontend and Express for the backend, utilizing a PostgreSQL database managed by Drizzle ORM. It runs on a unified server with Vite middleware. The system includes full CRUD APIs, real-time KPI metrics, and a 4-Tier Model Architecture with a Smart Router for intelligent LLM selection. All 285 agents adhere to a standardized 6-part system prompt structure, supporting a Dual-Model Workflow Architecture.
 
 ### Feature Specifications
-- **AI Infrastructure**: Integration with 24 LLM providers, 50+ flagship models, and an LLM Auto-Update system.
-- **Intelligent Model Router**: Multi-factor scoring for optimal model selection.
-- **Market360 Agents**: 285 specialized agents across 8 verticals with ROMA (Reactive, Proactive, Autonomous, Collaborative, Self-Evolving) levels.
-- **Multilingual Support**: Content generation, chat, and translation in 22 Indian languages.
-- **Voice Capabilities**: Speech-to-Text (Sarvam Saarika v3) and Text-to-Speech (Sarvam Bulbul v2).
-- **Centralized LLM Configuration**: All models, providers, costs, and capabilities defined in `shared/llm-config.ts`.
-- **WizMark Intelligence Suite**: 10 proprietary AI capabilities including Competitor Intelligence Scanner, Visual Brand Monitor, AI Ad Creative Generator, and Campaign Performance Optimizer.
-- **Enterprise Marketing Features**: AI-powered workflow automation, multi-touch campaign orchestration, predictive lead scoring, real-time performance dashboards, AI content generation, and lead management.
-- **Multimodal Content Pipeline**: Strategy-to-text-to-image-to-video workflow.
-- **Brand-Aware Content Library**: Content management with brand context.
-- **Role-Based Access Control (RBAC) & Audit Logging**: 4 user roles with resource-based permissions.
-- **Auto-Remediation**: Automated issue resolution for predictive analytics alerts.
-- **Web Search Service**: Multi-provider real-time search with fallback.
-- **Document Processing Service**: Analysis of 15+ document formats.
-- **NotebookLLM Studio**: Interactive document Q&A with citations.
-- **Advanced Orchestration Patterns**: 6 patterns for multi-agent workflows.
-- **Enhanced Mem0 Memory Service**: Cross-session memory with semantic search and token reduction.
-- **CAM 2.0 Monitoring**: Real-time operations tracking, cost analytics, and quality scoring.
-- **GRPO Continuous Learning**: Reinforcement learning from user feedback.
-- **OAuth Integration Service**: Multi-platform OAuth.
-- **Conversion Tracking Service**: Pixel & Attribution with 6 models and server-side tracking.
-- **SEO Toolkit Service**: Comprehensive SEO tools.
-- **Marketing Agents Registry**: 300+ Specialized Agents with 22-point system prompts and ROMA autonomy.
-- **Vertical Workflow Engine**: 7 complete vertical workflows with orchestration.
-- **Cross-Vertical Orchestration**: Multi-vertical campaign creation, intelligent budget allocation, and optimization recommendations.
+-   **AI Infrastructure**: Integration with 24 LLM providers, 50+ flagship models, and an LLM Auto-Update system. Intelligent Model Router for optimal model selection.
+-   **Market360 Agents**: 285 specialized agents across 8 verticals with ROMA (Reactive, Proactive, Autonomous, Collaborative, Self-Evolving) levels and 6 orchestration patterns.
+-   **Multilingual & Multimodal**: Content generation, chat, and translation in 22 Indian languages, with voice capabilities (Speech-to-Text, Text-to-Speech), and a Strategy-to-text-to-image-to-video workflow.
+-   **WizMark Intelligence Suite**: 10 proprietary AI capabilities including Competitor Intelligence Scanner, Visual Brand Monitor, AI Ad Creative Generator, and Campaign Performance Optimizer.
+-   **Enterprise Marketing Features**: AI-powered workflow automation, multi-touch campaign orchestration, predictive lead scoring, real-time performance dashboards, AI content generation, and lead management.
+-   **Brand-Aware Content Library**: Content management with brand context.
+-   **Role-Based Access Control (RBAC) & Audit Logging**: 4 user roles with resource-based permissions.
+-   **Auto-Remediation**: Automated issue resolution for predictive analytics alerts.
+-   **Web Search Service**: Multi-provider real-time search with fallback.
+-   **Document Processing & Q&A**: Analysis of 15+ document formats and interactive document Q&A with citations via NotebookLLM Studio.
+-   **Enhanced Mem0 Memory Service**: Cross-session memory with semantic search and token reduction.
+-   **Monitoring & Learning**: CAM 2.0 for real-time operations, cost analytics, and quality scoring; GRPO Continuous Learning for reinforcement learning.
+-   **Integration Services**: OAuth Integration Service, Conversion Tracking Service (Pixel & Attribution), SEO Toolkit Service, and Replit Object Storage Integration for file uploads.
+-   **Agent Management**: Centralized LLM Configuration (`shared/llm-config.ts`) and a Marketing Agents Registry with 300+ Specialized Agents.
+-   **Workflow Engines**: Vertical Workflow Engine with 7 complete vertical workflows and Cross-Vertical Orchestration for multi-vertical campaigns.
 
 ### System Design Choices
-- **Orchestration Platform**: WAI SDK.
-- **Database**: PostgreSQL with Drizzle ORM.
-- **Package Manager**: pnpm.
-- **Build System**: Vite.
+-   **Orchestration Platform**: WAI SDK.
+-   **Database**: PostgreSQL with Drizzle ORM.
+-   **Package Manager**: pnpm.
+-   **Build System**: Vite.
+-   **Deployment**: Replit autoscale deployment with `npm run build` + `node dist/index.js`.
 
 ## External Dependencies
 
@@ -84,48 +61,4 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 -   **Social Media Platforms**: Meta (Facebook/Instagram), LinkedIn, Twitter, Pinterest, TikTok.
 -   **Payment Gateway**: Razorpay.
 -   **Web Search APIs**: Perplexity AI, Google Custom Search, Bing Web Search.
--   **Telegram API**.
-
-## Recent Changes
-
-### Feb 18, 2026 - Enterprise Security & Multi-Tenant Isolation (Phase 1)
-- **Global Auth Middleware**: Created `server/middleware/require-auth.ts` with `requireAuth` and `requireAdmin` middleware. All `/api/*` routes now require authentication except public endpoints (`/api/health`, `/api/auth/*`, `/api/login`, `/api/register`, `/api/logout`).
-- **Route Registration Restructure**: Moved all route registrations in `server/index.minimal.ts` into `registerRoutes()` function, called AFTER `setupAuth()` to fix middleware ordering (passport session must initialize before routes).
-- **Tenant Isolation**: `requireAuth` middleware extracts `organizationId` from DB and caches in session as `req.organizationId` for tenant-scoped queries.
-- **Frontend Auth Protection**: Created `client/src/components/ProtectedRoute.tsx` - wraps all authenticated routes. Unauthenticated users redirect to `/login`. All routes except `/`, `/login`, `/signin` are protected.
-- **Organization Management**: New `server/routes/organization-routes.ts` with 7 endpoints (CRUD, member invite, role change, remove). New `client/src/pages/organization-settings.tsx` with General/Members tabs.
-- **Audit Logs Dashboard**: New `server/routes/audit-log-routes.ts` with pagination and filtering. New `client/src/pages/audit-logs.tsx` with table, filters, pagination.
-- **Role-Based Navigation**: Admin section in sidebar (`app-shell.tsx`) with "Organization" link (all users) and "Audit Logs" link (admin/manager only).
-- **Landing Page Fix**: Updated all agent count references from 285 to 262 across `landing-page.tsx`.
-- **Admin Route Protection**: Added `requireAdmin` middleware to `/api/admin/llm` routes.
-
-### Key Security Files
-| File | Purpose |
-|------|---------|
-| `server/middleware/require-auth.ts` | Global auth + tenant isolation middleware |
-| `client/src/components/ProtectedRoute.tsx` | Frontend route guard |
-| `server/routes/organization-routes.ts` | Organization & member management API |
-| `server/routes/audit-log-routes.ts` | Audit log retrieval API |
-| `client/src/pages/organization-settings.tsx` | Org settings + team management UI |
-| `client/src/pages/audit-logs.tsx` | Audit logs dashboard UI |
-
-### Feb 18, 2026 - Phase 2 & 3: Production Readiness & Data Integrity
-- **Static Data Removal (P0)**: Replaced all static/mock data with real API-backed data across 5 core pages:
-  - `brands.tsx`: Removed `sampleBrands` array, now fetches from `/api/brands` with useQuery. Added loading/error/empty states.
-  - `analytics.tsx`: Replaced `overviewMetrics`, `verticalMetrics`, `agentPerformance` static arrays with API calls to `/api/unified-analytics/metrics`, `/api/monitoring-dashboard/kpis`, `/api/monitoring-dashboard/vertical-performance`. Added DataSourceIndicator (Live/Estimated).
-  - `settings.tsx`: Profile now loads from `useAuth()` hook. Added profile update endpoint (`PUT /api/auth/profile`).
-  - `new-dashboard.tsx`: Removed hardcoded `currentBrand = "Acme Corp"`, now derives from `/api/brands` API response.
-  - `content-library.tsx`: Removed `sampleContent` static array (270+ lines). Content now purely API-driven. Removed "Acme Corp" brandName hardcodes.
-- **All "Acme Corp" hardcodes removed** from all frontend pages.
-- **Orphan Page Cleanup (P2)**: Deleted 5 unused/duplicate pages (Homepage.tsx, market360-dashboard.tsx, PlatformDashboard.tsx, unified-platform.tsx, vertical-dashboard.tsx). Wired 4 keeper pages to App.tsx routes: `/orchestration`, `/agent-orchestration`, `/quickstart`, `/ai-capabilities`.
-- **LLM Health Check Fix (P3)**: Unconfigured providers (missing API keys) now skip health checks instead of spamming 401 errors. Health check interval increased to 30 minutes.
-- **Agent Count Consistency**: Fixed monitoring KPI endpoint from 285→262 agents.
-- **Production Deploy Config**: Set autoscale deployment with `npm run build` + `node dist/index.js`. Build validated successfully.
-- **Tenant Isolation Scaffolding (P1)**: Added `organizationId` extraction to all brands.ts route handlers. Full scoping pending `organizationId` column addition to brands table (requires schema change approval).
-
-### Known Gaps for Next Phase
-| Gap | Status | Blocker |
-|-----|--------|---------|
-| Tenant isolation on brands, content, chat, payments routes | Scaffolded (TODOs) | Needs `organizationId` column in brands/content tables (schema change) |
-| Analytics fallback data | Shows estimates when API returns 0 | Normal for new installations |
-| Settings profile save | Endpoint created, saves firstName/lastName | Full profile fields (phone, timezone) need schema support |
+-   **Messaging API**: Telegram API.
