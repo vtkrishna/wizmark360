@@ -82,7 +82,14 @@ export default function EnhancedAgentOrchestration() {
   const queryClient = useQueryClient();
   
   const [activeTab, setActiveTab] = useState('orchestrate');
-  const [taskForm, setTaskForm] = useState({
+  const [taskForm, setTaskForm] = useState<{
+    description: string;
+    type: string;
+    requirements: string[];
+    constraints: { timeframe: string; budget: string; quality: string };
+    priority: string;
+    userPreferences: Record<string, any>;
+  }>({
     description: '',
     type: 'development',
     requirements: [],
@@ -200,9 +207,9 @@ export default function EnhancedAgentOrchestration() {
     orchestrateTaskMutation.mutate(taskForm);
   };
 
-  const agents = agentsData?.data?.agents || [];
-  const providers = providersData?.data?.providers || [];
-  const status = statusData?.data;
+  const agents = (agentsData as any)?.data?.agents || (agentsData as any)?.agents || [];
+  const providers = (providersData as any)?.data?.providers || (providersData as any)?.providers || [];
+  const status = (statusData as any)?.data || statusData;
 
   if (statusLoading) {
     return (

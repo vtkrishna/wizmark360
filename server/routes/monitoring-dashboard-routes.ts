@@ -59,7 +59,7 @@ router.get('/kpis', async (_req: Request, res: Response) => {
         monthlyRevenue: { value: 0, dataSource: 'awaiting_data' },
         roi: { value: 0, dataSource: 'awaiting_data' },
         contentCreated: { value: totalDocuments, dataSource: 'live' },
-        agentsActive: { value: 285, dataSource: 'platform' }
+        agentsActive: { value: 262, dataSource: 'platform' }
       }
     });
   } catch (error: any) {

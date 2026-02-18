@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppShell from "../components/layout/app-shell";
+import { useAuth } from "../hooks/use-auth";
 import {
   Settings,
   User,
@@ -47,9 +48,11 @@ const settingsSections: SettingsSection[] = [
 ];
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState("profile");
   const [showApiKey, setShowApiKey] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
@@ -58,12 +61,45 @@ export default function SettingsPage() {
   });
 
   const [profile, setProfile] = useState({
-    name: "Admin User",
-    email: "admin@wizardstech.com",
-    phone: "+91 98765 43210",
-    role: "Platform Administrator",
-    timezone: "Asia/Kolkata"
+    name: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user?.username || 'User',
+    email: user?.email || '',
+    phone: '',
+    role: user?.role || 'user',
+    timezone: 'Asia/Kolkata'
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.username || 'User',
+        email: user.email || '',
+        phone: '',
+        role: user.role || 'user',
+        timezone: 'Asia/Kolkata'
+      });
+    }
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(profile),
+      });
+      if (res.ok) {
+        alert('Profile saved successfully!');
+      } else {
+        alert('Failed to save profile. Please try again.');
+      }
+    } catch {
+      alert('Failed to save profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const [aiSettings, setAiSettings] = useState({
     defaultProvider: "openai",
@@ -132,9 +168,13 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex justify-end">
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+              <button 
+                onClick={handleSaveProfile}
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium disabled:opacity-50"
+              >
                 <Save className="w-4 h-4" />
-                Save Changes
+                {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>
@@ -392,7 +432,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <AppShell currentBrand={{ id: 1, name: "Acme Corp" }}>
+    <AppShell currentBrand={{ id: 1, name: "Settings" }}>
       <div className="h-full flex bg-gray-50 dark:bg-gray-900">
         <div className="w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 overflow-y-auto">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-2">Settings</h2>

@@ -88,7 +88,6 @@ function DataSourceIndicator({ isLive }: { isLive: boolean }) {
 }
 
 export default function NewDashboard() {
-  const [currentBrand, setCurrentBrand] = useState({ id: 1, name: "Acme Corp" });
   const [activeTab, setActiveTab] = useState<TabId>("strategy");
   const [, setLocation] = useLocation();
 
@@ -118,6 +117,10 @@ export default function NewDashboard() {
       return res.json();
     },
   });
+
+  const currentBrand = brandsData && Array.isArray(brandsData) && brandsData.length > 0
+    ? { id: brandsData[0].id, name: brandsData[0].name }
+    : { id: 0, name: "WizMark 360" };
 
   const { data: kpiData } = useQuery({ queryKey: ['/api/monitoring-dashboard/kpis'], queryFn: async () => { const res = await fetch('/api/monitoring-dashboard/kpis'); return res.json(); } });
   const { data: verticalData } = useQuery({ queryKey: ['/api/monitoring-dashboard/vertical-performance'], queryFn: async () => { const res = await fetch('/api/monitoring-dashboard/vertical-performance'); return res.json(); } });

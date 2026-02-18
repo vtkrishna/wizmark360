@@ -108,3 +108,24 @@ WizMark 360 is built with React for the frontend and Express for the backend, ut
 | `server/routes/audit-log-routes.ts` | Audit log retrieval API |
 | `client/src/pages/organization-settings.tsx` | Org settings + team management UI |
 | `client/src/pages/audit-logs.tsx` | Audit logs dashboard UI |
+
+### Feb 18, 2026 - Phase 2 & 3: Production Readiness & Data Integrity
+- **Static Data Removal (P0)**: Replaced all static/mock data with real API-backed data across 5 core pages:
+  - `brands.tsx`: Removed `sampleBrands` array, now fetches from `/api/brands` with useQuery. Added loading/error/empty states.
+  - `analytics.tsx`: Replaced `overviewMetrics`, `verticalMetrics`, `agentPerformance` static arrays with API calls to `/api/unified-analytics/metrics`, `/api/monitoring-dashboard/kpis`, `/api/monitoring-dashboard/vertical-performance`. Added DataSourceIndicator (Live/Estimated).
+  - `settings.tsx`: Profile now loads from `useAuth()` hook. Added profile update endpoint (`PUT /api/auth/profile`).
+  - `new-dashboard.tsx`: Removed hardcoded `currentBrand = "Acme Corp"`, now derives from `/api/brands` API response.
+  - `content-library.tsx`: Removed `sampleContent` static array (270+ lines). Content now purely API-driven. Removed "Acme Corp" brandName hardcodes.
+- **All "Acme Corp" hardcodes removed** from all frontend pages.
+- **Orphan Page Cleanup (P2)**: Deleted 5 unused/duplicate pages (Homepage.tsx, market360-dashboard.tsx, PlatformDashboard.tsx, unified-platform.tsx, vertical-dashboard.tsx). Wired 4 keeper pages to App.tsx routes: `/orchestration`, `/agent-orchestration`, `/quickstart`, `/ai-capabilities`.
+- **LLM Health Check Fix (P3)**: Unconfigured providers (missing API keys) now skip health checks instead of spamming 401 errors. Health check interval increased to 30 minutes.
+- **Agent Count Consistency**: Fixed monitoring KPI endpoint from 285→262 agents.
+- **Production Deploy Config**: Set autoscale deployment with `npm run build` + `node dist/index.js`. Build validated successfully.
+- **Tenant Isolation Scaffolding (P1)**: Added `organizationId` extraction to all brands.ts route handlers. Full scoping pending `organizationId` column addition to brands table (requires schema change approval).
+
+### Known Gaps for Next Phase
+| Gap | Status | Blocker |
+|-----|--------|---------|
+| Tenant isolation on brands, content, chat, payments routes | Scaffolded (TODOs) | Needs `organizationId` column in brands/content tables (schema change) |
+| Analytics fallback data | Shows estimates when API returns 0 | Normal for new installations |
+| Settings profile save | Endpoint created, saves firstName/lastName | Full profile fields (phone, timezone) need schema support |

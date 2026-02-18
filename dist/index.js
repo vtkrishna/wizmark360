@@ -1,8 +1,294 @@
 var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
+
+// server/services/audit-logging-service.ts
+var audit_logging_service_exports = {};
+__export(audit_logging_service_exports, {
+  auditLoggingService: () => auditLoggingService,
+  auditMiddleware: () => auditMiddleware
+});
+function auditMiddleware() {
+  return (req, res, next) => {
+    const startTime = Date.now();
+    const originalSend = res.send;
+    res.send = function(body) {
+      const duration = Date.now() - startTime;
+      const success = res.statusCode >= 200 && res.statusCode < 400;
+      if (req.user?.id && req.path.startsWith("/api/")) {
+        auditLoggingService.log({
+          eventType: "api.accessed",
+          severity: success ? "info" : "warning",
+          userId: req.user.id,
+          userEmail: req.user.email,
+          userRole: req.user.role,
+          action: req.method,
+          description: `${req.method} ${req.path}`,
+          success,
+          duration,
+          ipAddress: req.ip,
+          userAgent: req.get("user-agent"),
+          metadata: {
+            statusCode: res.statusCode,
+            query: req.query
+          }
+        });
+      }
+      return originalSend.call(this, body);
+    };
+    next();
+  };
+}
+var auditLogs2, MAX_IN_MEMORY_LOGS, AuditLoggingService, auditLoggingService;
+var init_audit_logging_service = __esm({
+  "server/services/audit-logging-service.ts"() {
+    "use strict";
+    auditLogs2 = [];
+    MAX_IN_MEMORY_LOGS = 1e4;
+    AuditLoggingService = class {
+      enabled = true;
+      batchSize = 100;
+      flushInterval = 3e4;
+      pendingLogs = [];
+      flushTimer = null;
+      constructor() {
+        this.startFlushTimer();
+      }
+      startFlushTimer() {
+        if (this.flushTimer) {
+          clearInterval(this.flushTimer);
+        }
+        this.flushTimer = setInterval(() => {
+          this.flush();
+        }, this.flushInterval);
+      }
+      async log(entry) {
+        if (!this.enabled)
+          return;
+        const fullEntry = {
+          ...entry,
+          timestamp: /* @__PURE__ */ new Date()
+        };
+        auditLogs2.push(fullEntry);
+        this.pendingLogs.push(fullEntry);
+        if (auditLogs2.length > MAX_IN_MEMORY_LOGS) {
+          auditLogs2.splice(0, auditLogs2.length - MAX_IN_MEMORY_LOGS);
+        }
+        if (this.pendingLogs.length >= this.batchSize) {
+          await this.flush();
+        }
+        if (entry.severity === "critical" || entry.severity === "error") {
+          console.error(`[AUDIT][${entry.severity.toUpperCase()}] ${entry.eventType}: ${entry.description}`, entry.metadata);
+        }
+      }
+      async flush() {
+        if (this.pendingLogs.length === 0)
+          return;
+        const logsToFlush = [...this.pendingLogs];
+        this.pendingLogs = [];
+        try {
+          console.log(`[AUDIT] Flushed ${logsToFlush.length} audit log entries`);
+        } catch (error) {
+          console.error("[AUDIT] Failed to flush logs:", error);
+          this.pendingLogs.unshift(...logsToFlush);
+        }
+      }
+      async logUserAction(userId, userEmail, userRole, action, description, options = {}) {
+        await this.log({
+          eventType: "api.accessed",
+          severity: "info",
+          userId,
+          userEmail,
+          userRole,
+          action,
+          description,
+          success: true,
+          ...options
+        });
+      }
+      async logAgentExecution(agentId, agentName, userId, success, duration, metadata) {
+        await this.log({
+          eventType: "agent.executed",
+          severity: success ? "info" : "error",
+          userId,
+          resourceType: "agent",
+          resourceId: agentId,
+          action: "execute",
+          description: `Agent ${agentName} executed`,
+          success,
+          duration,
+          metadata: {
+            agentId,
+            agentName,
+            ...metadata
+          }
+        });
+      }
+      async logLLMRequest(provider, model, userId, success, tokensUsed, cost, duration) {
+        await this.log({
+          eventType: "llm.request",
+          severity: success ? "info" : "warning",
+          userId,
+          resourceType: "llm",
+          resourceId: `${provider}/${model}`,
+          action: "request",
+          description: `LLM request to ${provider}/${model}`,
+          success,
+          duration,
+          metadata: {
+            provider,
+            model,
+            tokensUsed,
+            cost
+          }
+        });
+      }
+      async logContentGeneration(contentType, userId, brandId, success, metadata) {
+        await this.log({
+          eventType: "content.generated",
+          severity: success ? "info" : "error",
+          userId,
+          brandId,
+          resourceType: "content",
+          action: "generate",
+          description: `Generated ${contentType} content`,
+          success,
+          metadata
+        });
+      }
+      async logWorkflowExecution(workflowId, workflowName, vertical, userId, success, stepsCompleted, duration) {
+        await this.log({
+          eventType: "workflow.executed",
+          severity: success ? "info" : "error",
+          userId,
+          resourceType: "workflow",
+          resourceId: workflowId,
+          action: "execute",
+          description: `Workflow ${workflowName} executed in ${vertical} vertical`,
+          success,
+          duration,
+          metadata: {
+            workflowId,
+            workflowName,
+            vertical,
+            stepsCompleted
+          }
+        });
+      }
+      async logSecurityEvent(eventType, userId, description, severity, metadata) {
+        await this.log({
+          eventType,
+          severity,
+          userId,
+          action: "security",
+          description,
+          success: severity !== "error" && severity !== "critical",
+          metadata
+        });
+      }
+      async logRoleChange(targetUserId, oldRole, newRole, changedByUserId) {
+        await this.log({
+          eventType: "user.role_changed",
+          severity: "warning",
+          userId: changedByUserId,
+          resourceType: "user",
+          resourceId: targetUserId,
+          action: "role_change",
+          description: `User role changed from ${oldRole} to ${newRole}`,
+          success: true,
+          metadata: {
+            targetUserId,
+            oldRole,
+            newRole
+          }
+        });
+      }
+      async logError(error, userId, context) {
+        await this.log({
+          eventType: "error.occurred",
+          severity: "error",
+          userId,
+          action: "error",
+          description: error.message,
+          success: false,
+          errorMessage: error.stack || error.message,
+          metadata: context
+        });
+      }
+      getRecentLogs(limit = 100, filters) {
+        let filtered = [...auditLogs2];
+        if (filters) {
+          if (filters.eventType) {
+            filtered = filtered.filter((l) => l.eventType === filters.eventType);
+          }
+          if (filters.userId) {
+            filtered = filtered.filter((l) => l.userId === filters.userId);
+          }
+          if (filters.severity) {
+            filtered = filtered.filter((l) => l.severity === filters.severity);
+          }
+          if (filters.startDate) {
+            filtered = filtered.filter((l) => l.timestamp >= filters.startDate);
+          }
+          if (filters.endDate) {
+            filtered = filtered.filter((l) => l.timestamp <= filters.endDate);
+          }
+        }
+        return filtered.slice(-limit).reverse();
+      }
+      getStatistics() {
+        const bySeverity = {
+          info: 0,
+          warning: 0,
+          error: 0,
+          critical: 0
+        };
+        const byEventType = {};
+        let totalDuration = 0;
+        let durationCount = 0;
+        const oneHourAgo = new Date(Date.now() - 36e5);
+        let recentErrors = 0;
+        for (const log2 of auditLogs2) {
+          bySeverity[log2.severity]++;
+          byEventType[log2.eventType] = (byEventType[log2.eventType] || 0) + 1;
+          if (log2.duration) {
+            totalDuration += log2.duration;
+            durationCount++;
+          }
+          if (log2.severity === "error" && log2.timestamp >= oneHourAgo) {
+            recentErrors++;
+          }
+        }
+        return {
+          total: auditLogs2.length,
+          bySeverity,
+          byEventType,
+          recentErrors,
+          avgDuration: durationCount > 0 ? totalDuration / durationCount : 0
+        };
+      }
+      setEnabled(enabled) {
+        this.enabled = enabled;
+      }
+      isEnabled() {
+        return this.enabled;
+      }
+      destroy() {
+        if (this.flushTimer) {
+          clearInterval(this.flushTimer);
+          this.flushTimer = null;
+        }
+      }
+    };
+    auditLoggingService = new AuditLoggingService();
+  }
+});
 
 // server/index.minimal.ts
 import { webcrypto } from "crypto";
@@ -9339,6 +9625,12 @@ async function setupAuth(app2) {
     });
   });
 }
+var isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.status(401).json({ message: "Unauthorized" });
+};
 async function createAdminUser() {
   try {
     const [existingAdmin] = await db.select().from(users).where(eq(users.username, "admin")).limit(1);
@@ -9800,12 +10092,12 @@ var LLM_REGISTRY = [
   { id: "gpt-4.1-nano", name: "GPT-4.1 Nano", provider: "openai", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "classification", "autocompletion"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gpt-4o", name: "GPT-4o", provider: "openai", contextWindow: 128e3, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision", "multimodal"], languages: ["en"], isMultilingual: true, supportsVoice: true },
   { id: "gpt-4o-mini", name: "GPT-4o Mini", provider: "openai", contextWindow: 128e3, maxOutput: 16384, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "vision"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  // Anthropic Models (Latest: Claude Sonnet 4.5, Opus 4.5, Haiku 4.5 - Nov 2025)
-  { id: "claude-sonnet-4.5", name: "Claude Sonnet 4.5", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "agents", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-opus-4.5", name: "Claude Opus 4.5", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code", "agentic"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-opus-4", name: "Claude Opus 4", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "code", "sustained-performance"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-sonnet-4", name: "Claude Sonnet 4", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "claude-haiku-4.5", name: "Claude Haiku 4.5", provider: "anthropic", contextWindow: 2e5, maxOutput: 8192, inputCostPer1M: 0.8, outputCostPer1M: 4, capabilities: ["text", "fast", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  // Anthropic Models (Latest: Claude Opus 4.6, Sonnet 4, Haiku 4.5)
+  { id: "claude-opus-4-6", name: "Claude Opus 4.6", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "advanced-reasoning", "code", "agentic", "tool-use", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "tool-use", "fast"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-opus-4-5", name: "Claude Opus 4.5", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 15, outputCostPer1M: 75, capabilities: ["text", "vision", "code", "reasoning"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-sonnet-4-5", name: "Claude Sonnet 4.5", provider: "anthropic", contextWindow: 2e5, maxOutput: 16384, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code", "agents", "computer-use"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "claude-haiku-4-5", name: "Claude Haiku 4.5", provider: "anthropic", contextWindow: 2e5, maxOutput: 8192, inputCostPer1M: 0.8, outputCostPer1M: 4, capabilities: ["text", "fast", "code"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   // Google Gemini Models (Latest: Gemini 3 Flash/Pro - Dec 2024)
   { id: "gemini-3-flash", name: "Gemini 3 Flash", provider: "gemini", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.5, outputCostPer1M: 3, capabilities: ["text", "vision", "multimodal", "agentic-coding", "video-analysis"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "gemini-3-pro", name: "Gemini 3 Pro", provider: "gemini", contextWindow: 2e6, maxOutput: 16384, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "advanced-reasoning", "vibe-coding", "long-context"], languages: ["en"], isMultilingual: true, supportsVoice: false },
@@ -9834,8 +10126,9 @@ var LLM_REGISTRY = [
   { id: "pixtral-large", name: "Pixtral Large", provider: "mistral", contextWindow: 128e3, maxOutput: 8192, inputCostPer1M: 2, outputCostPer1M: 6, capabilities: ["text", "vision", "multimodal", "documents"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "codestral", name: "Codestral", provider: "mistral", contextWindow: 32e3, maxOutput: 8192, inputCostPer1M: 1, outputCostPer1M: 3, capabilities: ["code", "fill-in-middle"], languages: ["en"], isMultilingual: false, supportsVoice: false },
   // Cohere Models
-  { id: "command-r-plus", name: "Command R+", provider: "cohere", contextWindow: 128e3, maxOutput: 4096, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
-  { id: "command-r", name: "Command R", provider: "cohere", contextWindow: 128e3, maxOutput: 4096, inputCostPer1M: 0.5, outputCostPer1M: 1.5, capabilities: ["text", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-a-03-2025", name: "Command A", provider: "cohere", contextWindow: 256e3, maxOutput: 4096, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-r-plus-08-2024", name: "Command R+ 08-2024", provider: "cohere", contextWindow: 128e3, maxOutput: 4096, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "rag", "enterprise"], languages: ["en"], isMultilingual: true, supportsVoice: false },
+  { id: "command-r-08-2024", name: "Command R 08-2024", provider: "cohere", contextWindow: 128e3, maxOutput: 4096, inputCostPer1M: 0.15, outputCostPer1M: 0.6, capabilities: ["text", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   { id: "embed-v3", name: "Embed V3", provider: "cohere", contextWindow: 512, maxOutput: 1024, inputCostPer1M: 0.1, outputCostPer1M: 0, capabilities: ["embedding", "rag"], languages: ["en"], isMultilingual: true, supportsVoice: false },
   // Perplexity Models
   { id: "sonar-pro", name: "Perplexity Sonar Pro", provider: "perplexity", contextWindow: 2e5, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "search", "real-time"], languages: ["en"], isMultilingual: true, supportsVoice: false },
@@ -9983,14 +10276,14 @@ var EnhancedAIService = class {
     if (!openai)
       throw new Error("OpenAI provider not configured. Please set OPENAI_API_KEY.");
     const response = await openai.chat.completions.create({
-      model: model || "gpt-5.2",
+      model: model || "gpt-4o-mini",
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
       max_completion_tokens: 4096
     });
     return {
       content: response.choices[0].message.content || "",
       provider: "openai",
-      model: model || "gpt-5.2",
+      model: model || "gpt-4o-mini",
       tokensUsed: response.usage?.total_tokens
     };
   }
@@ -10000,7 +10293,7 @@ var EnhancedAIService = class {
     if (!anthropic)
       throw new Error("Anthropic provider not configured. Please set ANTHROPIC_API_KEY.");
     const response = await anthropic.messages.create({
-      model: model || "claude-sonnet-5-0",
+      model: model || "claude-sonnet-4-20250514",
       max_tokens: 4096,
       system: systemMessage?.content,
       messages: chatMessages2.map((m) => ({
@@ -10055,7 +10348,7 @@ ${chatMessages2.map((m) => `${m.role}: ${m.content}`).join("\n\n")}` : chatMessa
     const systemMessage = messages.find((m) => m.role === "system");
     const chatMessages2 = messages.filter((m) => m.role !== "system");
     const response = await cohere.chat({
-      model: model || "command-r-plus",
+      model: model || "command-a-03-2025",
       messages: chatMessages2.map((m) => ({
         role: m.role === "user" ? "user" : "assistant",
         content: m.content
@@ -10072,7 +10365,7 @@ ${chatMessages2.map((m) => `${m.role}: ${m.content}`).join("\n\n")}` : chatMessa
     return {
       content: textContent,
       provider: "cohere",
-      model: model || "command-r-plus"
+      model: model || "command-a-03-2025"
     };
   }
   async chatWithSarvam(messages, model) {
@@ -12621,7 +12914,7 @@ var PROVIDER_MANIFESTS = [
       { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal", "fast"], isDefault: true, isActive: true },
       { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", contextWindow: 2e6, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "reasoning"], isActive: true },
       { id: "gemini-3-pro-image", name: "Nano Banana Pro", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision", "image-generation"], isActive: true },
-      { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "vision", "multimodal"], isActive: true },
       { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", contextWindow: 2e6, maxOutput: 8192, inputCostPer1M: 1.25, outputCostPer1M: 5, capabilities: ["text", "vision"], isActive: true },
       { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.075, outputCostPer1M: 0.3, capabilities: ["text", "fast"], isActive: true }
     ]
@@ -12717,7 +13010,7 @@ var PROVIDER_MANIFESTS = [
     capabilities: ["text", "rag", "embedding"],
     bestFor: ["Enterprise RAG", "Semantic search", "Embeddings"],
     models: [
-      { id: "command-r-plus", name: "Command R+", contextWindow: 128e3, maxOutput: 4096, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "rag"], isDefault: true, isActive: true },
+      { id: "command-a-03-2025", name: "Command A", contextWindow: 256e3, maxOutput: 4096, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "rag"], isDefault: true, isActive: true },
       { id: "command-r", name: "Command R", contextWindow: 128e3, maxOutput: 4096, inputCostPer1M: 0.5, outputCostPer1M: 1.5, capabilities: ["text", "rag"], isActive: true },
       { id: "command-light", name: "Command Light", contextWindow: 4096, maxOutput: 4096, inputCostPer1M: 0.3, outputCostPer1M: 0.6, capabilities: ["text", "fast"], isActive: true },
       { id: "embed-english-v3.0", name: "Embed English V3", contextWindow: 512, maxOutput: 1024, inputCostPer1M: 0.1, outputCostPer1M: 0, capabilities: ["embedding", "rag"], isActive: true },
@@ -12809,7 +13102,7 @@ var PROVIDER_MANIFESTS = [
       // MID-TIER - Quality at reasonable cost
       { id: "meta-llama/llama-3.3-70b-instruct", name: "Llama 3.3 70B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.12, outputCostPer1M: 0.3, capabilities: ["text", "code", "reasoning"], isActive: true },
       { id: "qwen/qwen-2.5-72b-instruct", name: "Qwen 2.5 72B", contextWindow: 131072, maxOutput: 8192, inputCostPer1M: 0.35, outputCostPer1M: 0.4, capabilities: ["text", "code", "reasoning"], isActive: true },
-      { id: "google/gemini-2.0-flash-001", name: "Gemini 2.0 Flash", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "vision", "multimodal"], isActive: true },
+      { id: "google/gemini-2.5-flash", name: "Gemini 2.5 Flash", contextWindow: 1e6, maxOutput: 8192, inputCostPer1M: 0.1, outputCostPer1M: 0.4, capabilities: ["text", "vision", "multimodal"], isActive: true },
       // PREMIUM MODELS - via OpenRouter for fallback
       { id: "openai/gpt-4o", name: "GPT-4o via OpenRouter", contextWindow: 128e3, maxOutput: 16384, inputCostPer1M: 2.5, outputCostPer1M: 10, capabilities: ["text", "vision"], isActive: true },
       { id: "anthropic/claude-3.5-sonnet", name: "Claude 3.5 Sonnet via OpenRouter", contextWindow: 2e5, maxOutput: 8192, inputCostPer1M: 3, outputCostPer1M: 15, capabilities: ["text", "vision", "code"], isActive: true },
@@ -14771,7 +15064,7 @@ Generate the implementation code. Be concise and production-ready.`;
     if (!process.env.GEMINI_API_KEY) {
       if (process.env.OPENROUTER_API_KEY) {
         executionProvider = "openrouter";
-        executionModel = "google/gemini-2.0-flash-001";
+        executionModel = "google/gemini-2.5-flash";
       } else if (process.env.GROQ_API_KEY) {
         executionProvider = "groq";
         executionModel = "llama-3.3-70b-versatile";
@@ -16399,7 +16692,7 @@ import Groq2 from "groq-sdk";
 var PROVIDER_PRIORITY = ["openrouter", "openai", "gemini", "anthropic", "groq"];
 var OPENROUTER_FREE_MODELS = [
   "meta-llama/llama-3.3-70b-instruct:free",
-  "google/gemini-2.0-flash-exp:free",
+  "google/gemini-2.5-flash:free",
   "deepseek/deepseek-chat-v3-0324:free"
 ];
 var MARKETING_SYSTEM_PROMPTS = {
@@ -17219,6 +17512,7 @@ async function generateAllBrandDocuments(brandData) {
 var router3 = Router3();
 router3.get("/", async (req, res) => {
   try {
+    const orgId = req.organizationId;
     const allBrands = await db.select().from(brands2).orderBy(desc3(brands2.createdAt));
     res.json(allBrands);
   } catch (error) {
@@ -17229,6 +17523,7 @@ router3.get("/", async (req, res) => {
 router3.get("/:id", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     const [brand] = await db.select().from(brands2).where(eq4(brands2.id, brandId));
     if (!brand) {
       return res.status(404).json({ error: "Brand not found" });
@@ -17250,6 +17545,7 @@ router3.get("/:id", async (req, res) => {
 router3.post("/", async (req, res) => {
   try {
     const { brand: brandData, guidelines: guidelinesData, contacts: contactsData, servicePackage: packageData } = req.body;
+    const orgId = req.organizationId;
     const parsedBrand = insertBrandSchema.parse(brandData);
     const [newBrand] = await db.insert(brands2).values(parsedBrand).returning();
     if (guidelinesData && newBrand.id) {
@@ -17287,6 +17583,7 @@ router3.put("/:id", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
     const updateData = req.body;
+    const orgId = req.organizationId;
     const [updatedBrand] = await db.update(brands2).set({ ...updateData, updatedAt: /* @__PURE__ */ new Date() }).where(eq4(brands2.id, brandId)).returning();
     if (!updatedBrand) {
       return res.status(404).json({ error: "Brand not found" });
@@ -17300,6 +17597,7 @@ router3.put("/:id", async (req, res) => {
 router3.delete("/:id", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     await db.delete(brandContacts).where(eq4(brandContacts.brandId, brandId));
     await db.delete(servicePackages).where(eq4(servicePackages.brandId, brandId));
     await db.delete(brandGuidelines).where(eq4(brandGuidelines.brandId, brandId));
@@ -17316,6 +17614,7 @@ router3.delete("/:id", async (req, res) => {
 router3.get("/:id/guidelines", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     const [guidelines] = await db.select().from(brandGuidelines).where(eq4(brandGuidelines.brandId, brandId));
     res.json(guidelines || null);
   } catch (error) {
@@ -17327,6 +17626,7 @@ router3.put("/:id/guidelines", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
     const guidelinesData = req.body;
+    const orgId = req.organizationId;
     const [existing] = await db.select().from(brandGuidelines).where(eq4(brandGuidelines.brandId, brandId));
     if (existing) {
       const [updated] = await db.update(brandGuidelines).set({ ...guidelinesData, updatedAt: /* @__PURE__ */ new Date() }).where(eq4(brandGuidelines.brandId, brandId)).returning();
@@ -17344,6 +17644,7 @@ router3.put("/:id/guidelines", async (req, res) => {
 router3.get("/:id/contacts", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     const contacts = await db.select().from(brandContacts).where(eq4(brandContacts.brandId, brandId));
     res.json(contacts);
   } catch (error) {
@@ -17354,6 +17655,7 @@ router3.get("/:id/contacts", async (req, res) => {
 router3.post("/:id/contacts", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     const parsed = insertBrandContactSchema.parse({ ...req.body, brandId });
     const [created] = await db.insert(brandContacts).values(parsed).returning();
     res.status(201).json(created);
@@ -17365,6 +17667,7 @@ router3.post("/:id/contacts", async (req, res) => {
 router3.post("/:id/generate-documents", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     const [brand] = await db.select().from(brands2).where(eq4(brands2.id, brandId));
     if (!brand) {
       return res.status(404).json({ error: "Brand not found" });
@@ -17408,6 +17711,7 @@ router3.post("/:id/generate-documents", async (req, res) => {
 router3.get("/:id/documents", async (req, res) => {
   try {
     const brandId = parseInt(req.params.id);
+    const orgId = req.organizationId;
     const [brand] = await db.select().from(brands2).where(eq4(brands2.id, brandId));
     if (!brand) {
       return res.status(404).json({ error: "Brand not found" });
@@ -18687,7 +18991,7 @@ ${assetsDescription}${libraryNote}`;
         });
         response = result.choices[0]?.message?.content || "";
       } else if (provider === "gemini" && this.gemini) {
-        model = "gemini-2.0-flash";
+        model = "gemini-2.5-flash";
         const fullPrompt = `${systemPrompt}
 
 Conversation:
@@ -18992,7 +19296,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["crisis-detection", "rapid-response", "stakeholder-notification", "reputation-protection"],
     tools: ["crisis-monitor", "sentiment-tracker", "stakeholder-alert", "response-templates", "media-tracker"],
     protocols: ["supervisor", "handoff", "sequential"],
-    preferredModels: ["gpt-5-2-pro", "claude-sonnet-5-0"],
+    preferredModels: ["gpt-5-2-pro", "claude-sonnet-4-20250514"],
     fallbackModels: ["gemini-3-pro", "gpt-5-2"],
     operationModes: { autonomous: false, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "critical",
@@ -19038,7 +19342,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["journalist-relations", "pitch-development", "media-outreach", "coverage-tracking"],
     tools: ["journalist-database", "pitch-tracker", "email-outreach", "coverage-monitor", "relationship-crm"],
     protocols: ["sequential", "concurrent", "handoff"],
-    preferredModels: ["claude-sonnet-5-0", "gpt-5-2"],
+    preferredModels: ["claude-sonnet-4-20250514", "gpt-5-2"],
     fallbackModels: ["gemini-3-flash", "gpt-5-2-instant"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "high",
@@ -19047,7 +19351,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["content-team", "social-team", "event-team"],
     supportedLanguages: ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "ur", "or"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: false },
-    costOptimization: { maxCostPerTask: 1.5, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-5-0" },
+    costOptimization: { maxCostPerTask: 1.5, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-4-20250514" },
     prSpecificConfig: { mediaTypes: ["print", "digital", "broadcast", "podcast"], crisisEnabled: false, sentimentTracking: true, mediaMonitoring: true },
     status: "active"
   },
@@ -19084,7 +19388,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["press-release-writing", "headline-optimization", "quote-integration", "seo-optimization"],
     tools: ["content-editor", "style-checker", "seo-analyzer", "distribution-platform", "translation-service"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["claude-sonnet-5-0", "gpt-5-2"],
+    preferredModels: ["claude-sonnet-4-20250514", "gpt-5-2"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -19093,7 +19397,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["content-editor-*", "seo-specialist-*"],
     supportedLanguages: ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "ur", "or"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: false },
-    costOptimization: { maxCostPerTask: 0.5, preferCheaperModels: true, routineModel: "deepseek-r2", complexModel: "claude-sonnet-5-0" },
+    costOptimization: { maxCostPerTask: 0.5, preferCheaperModels: true, routineModel: "deepseek-r2", complexModel: "claude-sonnet-4-20250514" },
     prSpecificConfig: { mediaTypes: ["press-release"], crisisEnabled: false, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -19130,7 +19434,7 @@ var PR_VERTICAL_AGENTS = [
     tools: ["content-editor", "research-database", "publication-tracker", "voice-analyzer", "plagiarism-checker"],
     protocols: ["sequential", "handoff"],
     preferredModels: ["claude-opus-4-6", "gpt-5-2-pro"],
-    fallbackModels: ["claude-sonnet-5-0", "gemini-3-pro"],
+    fallbackModels: ["claude-sonnet-4-20250514", "gemini-3-pro"],
     operationModes: { autonomous: false, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "high",
     reportsTo: ["pr-director-001"],
@@ -19138,7 +19442,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["research-analyst-*", "content-editor-*"],
     supportedLanguages: ["en", "hi", "ta", "te", "bn", "mr"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: false },
-    costOptimization: { maxCostPerTask: 2, preferCheaperModels: false, routineModel: "claude-sonnet-5-0", complexModel: "claude-opus-4-6" },
+    costOptimization: { maxCostPerTask: 2, preferCheaperModels: false, routineModel: "claude-sonnet-4-20250514", complexModel: "claude-opus-4-6" },
     prSpecificConfig: { mediaTypes: ["oped", "byline", "thought-leadership"], crisisEnabled: false, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -19174,7 +19478,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["speech-writing", "video-scripting", "podcast-scripting", "keynote-development"],
     tools: ["script-editor", "timing-calculator", "voice-analyzer", "teleprompter-formatter", "video-generator"],
     protocols: ["sequential", "handoff"],
-    preferredModels: ["claude-sonnet-5-0", "gpt-5-2"],
+    preferredModels: ["claude-sonnet-4-20250514", "gpt-5-2"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "high",
@@ -19183,7 +19487,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["video-producer-*", "event-manager-*"],
     supportedLanguages: ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "ur", "or"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: false },
-    costOptimization: { maxCostPerTask: 1, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-5-0" },
+    costOptimization: { maxCostPerTask: 1, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-4-20250514" },
     prSpecificConfig: { mediaTypes: ["speech", "video", "podcast", "presentation"], crisisEnabled: false, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -19449,7 +19753,7 @@ var PR_VERTICAL_AGENTS = [
     tools: ["sec-compliance-checker", "presentation-builder", "investor-database", "earnings-calendar", "filing-system"],
     protocols: ["sequential", "handoff", "supervisor"],
     preferredModels: ["claude-opus-4-6", "gpt-5-2-pro"],
-    fallbackModels: ["gemini-3-pro", "claude-sonnet-5-0"],
+    fallbackModels: ["gemini-3-pro", "claude-sonnet-4-20250514"],
     operationModes: { autonomous: false, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "critical",
     reportsTo: ["pr-director-001", "cfo"],
@@ -19457,7 +19761,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["legal-team", "finance-team", "executive-comms"],
     supportedLanguages: ["en"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: true },
-    costOptimization: { maxCostPerTask: 3, preferCheaperModels: false, routineModel: "claude-sonnet-5-0", complexModel: "claude-opus-4-6" },
+    costOptimization: { maxCostPerTask: 3, preferCheaperModels: false, routineModel: "claude-sonnet-4-20250514", complexModel: "claude-opus-4-6" },
     prSpecificConfig: { mediaTypes: ["financial", "investor"], crisisEnabled: true, sentimentTracking: true, mediaMonitoring: true },
     status: "active"
   },
@@ -19493,7 +19797,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["employee-communications", "change-management", "culture-messaging", "internal-campaigns"],
     tools: ["newsletter-builder", "intranet-cms", "survey-tool", "video-platform", "analytics-tracker"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["claude-sonnet-5-0", "gpt-5-2"],
+    preferredModels: ["claude-sonnet-4-20250514", "gpt-5-2"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "high",
@@ -19502,7 +19806,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["hr-team", "leadership-team", "it-team"],
     supportedLanguages: ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "ur", "or"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: true },
-    costOptimization: { maxCostPerTask: 0.5, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-5-0" },
+    costOptimization: { maxCostPerTask: 0.5, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-4-20250514" },
     prSpecificConfig: { mediaTypes: ["internal", "employee"], crisisEnabled: true, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -19539,7 +19843,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["industry-research", "competitive-analysis", "journalist-profiling", "message-testing"],
     tools: ["research-database", "web-search", "journalist-database", "survey-tool", "report-generator"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["gemini-3-pro", "claude-sonnet-5-0"],
+    preferredModels: ["gemini-3-pro", "claude-sonnet-4-20250514"],
     fallbackModels: ["gpt-5-2", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: false, collaborative: true, swarm: true, hierarchical: true },
     securityLevel: "medium",
@@ -19585,7 +19889,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["content-editing", "fact-checking", "style-compliance", "brand-consistency"],
     tools: ["grammar-checker", "style-guide", "fact-verifier", "plagiarism-detector", "accessibility-checker"],
     protocols: ["sequential", "handoff"],
-    preferredModels: ["claude-sonnet-5-0", "gpt-5-2"],
+    preferredModels: ["claude-sonnet-4-20250514", "gpt-5-2"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -19594,7 +19898,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["press-release-writer-*", "oped-writer-*", "speech-writer-*"],
     supportedLanguages: ["en", "hi", "ta", "te", "bn", "mr", "gu", "kn", "ml", "pa", "ur", "or"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: false },
-    costOptimization: { maxCostPerTask: 0.3, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-5-0" },
+    costOptimization: { maxCostPerTask: 0.3, preferCheaperModels: true, routineModel: "gemini-3-flash", complexModel: "claude-sonnet-4-20250514" },
     prSpecificConfig: { mediaTypes: ["all"], crisisEnabled: false, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -19631,7 +19935,7 @@ var PR_VERTICAL_AGENTS = [
     tools: ["compliance-database", "regulation-tracker", "disclosure-checker", "risk-calculator", "audit-logger"],
     protocols: ["sequential", "supervisor"],
     preferredModels: ["claude-opus-4-6", "gpt-5-2-pro"],
-    fallbackModels: ["gemini-3-pro", "claude-sonnet-5-0"],
+    fallbackModels: ["gemini-3-pro", "claude-sonnet-4-20250514"],
     operationModes: { autonomous: false, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "critical",
     reportsTo: ["pr-director-001", "legal-director"],
@@ -19639,7 +19943,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["legal-team", "investor-relations-*"],
     supportedLanguages: ["en"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: true },
-    costOptimization: { maxCostPerTask: 1, preferCheaperModels: false, routineModel: "claude-sonnet-5-0", complexModel: "claude-opus-4-6" },
+    costOptimization: { maxCostPerTask: 1, preferCheaperModels: false, routineModel: "claude-sonnet-4-20250514", complexModel: "claude-opus-4-6" },
     prSpecificConfig: { mediaTypes: ["all"], crisisEnabled: true, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -19742,7 +20046,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["journalist-outreach", "pitch-development", "relationship-management", "coverage-tracking"],
     tools: ["journalist-crm", "pitch-tracker", "media-database", "email-scheduler", "coverage-monitor"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["gpt-5-2", "claude-sonnet-5-0"],
+    preferredModels: ["gpt-5-2", "claude-sonnet-4-20250514"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -19775,7 +20079,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["press-release-writing", "ap-style", "seo-optimization", "headline-crafting"],
     tools: ["press-release-templates", "ap-style-checker", "seo-optimizer", "quote-library", "boilerplate-manager"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["gpt-5-2", "claude-sonnet-5-0"],
+    preferredModels: ["gpt-5-2", "claude-sonnet-4-20250514"],
     fallbackModels: ["gemini-3-pro", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -19875,7 +20179,7 @@ var PR_VERTICAL_AGENTS = [
     tools: ["image-generator", "infographic-builder", "brand-asset-library", "template-engine", "platform-optimizer"],
     protocols: ["sequential", "concurrent"],
     preferredModels: ["gemini-3-pro", "gpt-5-2"],
-    fallbackModels: ["claude-sonnet-5-0", "flux"],
+    fallbackModels: ["claude-sonnet-4-20250514", "flux"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
     reportsTo: ["pr-director-001"],
@@ -19908,7 +20212,7 @@ var PR_VERTICAL_AGENTS = [
     tools: ["video-generator", "script-writer", "caption-generator", "thumbnail-creator", "platform-exporter"],
     protocols: ["sequential", "concurrent"],
     preferredModels: ["gemini-3-pro", "gpt-5-2"],
-    fallbackModels: ["claude-sonnet-5-0", "runway"],
+    fallbackModels: ["claude-sonnet-4-20250514", "runway"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
     reportsTo: ["pr-director-001"],
@@ -19973,7 +20277,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["internal-comms", "employee-engagement", "culture-content", "change-management"],
     tools: ["intranet-cms", "newsletter-builder", "employee-survey", "announcement-scheduler", "culture-library"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["gpt-5-2", "claude-sonnet-5-0"],
+    preferredModels: ["gpt-5-2", "claude-sonnet-4-20250514"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -20006,7 +20310,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["thought-leadership", "byline-writing", "executive-positioning", "content-placement"],
     tools: ["byline-templates", "publication-tracker", "speaking-calendar", "award-database", "voice-library"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["gpt-5-2", "claude-sonnet-5-0"],
+    preferredModels: ["gpt-5-2", "claude-sonnet-4-20250514"],
     fallbackModels: ["gemini-3-pro", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -20015,7 +20319,7 @@ var PR_VERTICAL_AGENTS = [
     collaboratesWith: ["pr-media-relations-001", "pr-editor-001"],
     supportedLanguages: ["en", "hi"],
     guardrails: { parlantCompliant: true, antiHallucination: true, piiProtection: true, requiresCitation: true, brandGuidelinesCompliant: true, mediaEthicsCompliant: true, crisisProtocol: false },
-    costOptimization: { maxCostPerTask: 2, preferCheaperModels: false, routineModel: "gpt-5-2", complexModel: "claude-sonnet-5-0" },
+    costOptimization: { maxCostPerTask: 2, preferCheaperModels: false, routineModel: "gpt-5-2", complexModel: "claude-sonnet-4-20250514" },
     prSpecificConfig: { mediaTypes: ["byline", "op-ed", "speaking"], crisisEnabled: false, sentimentTracking: false, mediaMonitoring: false },
     status: "active"
   },
@@ -20039,7 +20343,7 @@ var PR_VERTICAL_AGENTS = [
     capabilities: ["event-planning", "media-briefings", "launch-events", "press-coordination"],
     tools: ["event-planner", "rsvp-tracker", "press-kit-builder", "scheduling-system", "logistics-manager"],
     protocols: ["sequential", "concurrent"],
-    preferredModels: ["gpt-5-2", "claude-sonnet-5-0"],
+    preferredModels: ["gpt-5-2", "claude-sonnet-4-20250514"],
     fallbackModels: ["gemini-3-flash", "deepseek-r2"],
     operationModes: { autonomous: true, supervised: true, collaborative: true, swarm: false, hierarchical: true },
     securityLevel: "medium",
@@ -25705,7 +26009,7 @@ var RBACService = class {
       result[perm.resource].push(...perm.actions);
     }
     for (const resource in result) {
-      result[resource] = [...new Set(result[resource])];
+      result[resource] = Array.from(new Set(result[resource]));
     }
     return result;
   }
@@ -25726,278 +26030,8 @@ function requireRole(...roles) {
   };
 }
 
-// server/services/audit-logging-service.ts
-var auditLogs2 = [];
-var MAX_IN_MEMORY_LOGS = 1e4;
-var AuditLoggingService = class {
-  enabled = true;
-  batchSize = 100;
-  flushInterval = 3e4;
-  pendingLogs = [];
-  flushTimer = null;
-  constructor() {
-    this.startFlushTimer();
-  }
-  startFlushTimer() {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
-    }
-    this.flushTimer = setInterval(() => {
-      this.flush();
-    }, this.flushInterval);
-  }
-  async log(entry) {
-    if (!this.enabled)
-      return;
-    const fullEntry = {
-      ...entry,
-      timestamp: /* @__PURE__ */ new Date()
-    };
-    auditLogs2.push(fullEntry);
-    this.pendingLogs.push(fullEntry);
-    if (auditLogs2.length > MAX_IN_MEMORY_LOGS) {
-      auditLogs2.splice(0, auditLogs2.length - MAX_IN_MEMORY_LOGS);
-    }
-    if (this.pendingLogs.length >= this.batchSize) {
-      await this.flush();
-    }
-    if (entry.severity === "critical" || entry.severity === "error") {
-      console.error(`[AUDIT][${entry.severity.toUpperCase()}] ${entry.eventType}: ${entry.description}`, entry.metadata);
-    }
-  }
-  async flush() {
-    if (this.pendingLogs.length === 0)
-      return;
-    const logsToFlush = [...this.pendingLogs];
-    this.pendingLogs = [];
-    try {
-      console.log(`[AUDIT] Flushed ${logsToFlush.length} audit log entries`);
-    } catch (error) {
-      console.error("[AUDIT] Failed to flush logs:", error);
-      this.pendingLogs.unshift(...logsToFlush);
-    }
-  }
-  async logUserAction(userId, userEmail, userRole, action, description, options = {}) {
-    await this.log({
-      eventType: "api.accessed",
-      severity: "info",
-      userId,
-      userEmail,
-      userRole,
-      action,
-      description,
-      success: true,
-      ...options
-    });
-  }
-  async logAgentExecution(agentId, agentName, userId, success, duration, metadata) {
-    await this.log({
-      eventType: "agent.executed",
-      severity: success ? "info" : "error",
-      userId,
-      resourceType: "agent",
-      resourceId: agentId,
-      action: "execute",
-      description: `Agent ${agentName} executed`,
-      success,
-      duration,
-      metadata: {
-        agentId,
-        agentName,
-        ...metadata
-      }
-    });
-  }
-  async logLLMRequest(provider, model, userId, success, tokensUsed, cost, duration) {
-    await this.log({
-      eventType: "llm.request",
-      severity: success ? "info" : "warning",
-      userId,
-      resourceType: "llm",
-      resourceId: `${provider}/${model}`,
-      action: "request",
-      description: `LLM request to ${provider}/${model}`,
-      success,
-      duration,
-      metadata: {
-        provider,
-        model,
-        tokensUsed,
-        cost
-      }
-    });
-  }
-  async logContentGeneration(contentType, userId, brandId, success, metadata) {
-    await this.log({
-      eventType: "content.generated",
-      severity: success ? "info" : "error",
-      userId,
-      brandId,
-      resourceType: "content",
-      action: "generate",
-      description: `Generated ${contentType} content`,
-      success,
-      metadata
-    });
-  }
-  async logWorkflowExecution(workflowId, workflowName, vertical, userId, success, stepsCompleted, duration) {
-    await this.log({
-      eventType: "workflow.executed",
-      severity: success ? "info" : "error",
-      userId,
-      resourceType: "workflow",
-      resourceId: workflowId,
-      action: "execute",
-      description: `Workflow ${workflowName} executed in ${vertical} vertical`,
-      success,
-      duration,
-      metadata: {
-        workflowId,
-        workflowName,
-        vertical,
-        stepsCompleted
-      }
-    });
-  }
-  async logSecurityEvent(eventType, userId, description, severity, metadata) {
-    await this.log({
-      eventType,
-      severity,
-      userId,
-      action: "security",
-      description,
-      success: severity !== "error" && severity !== "critical",
-      metadata
-    });
-  }
-  async logRoleChange(targetUserId, oldRole, newRole, changedByUserId) {
-    await this.log({
-      eventType: "user.role_changed",
-      severity: "warning",
-      userId: changedByUserId,
-      resourceType: "user",
-      resourceId: targetUserId,
-      action: "role_change",
-      description: `User role changed from ${oldRole} to ${newRole}`,
-      success: true,
-      metadata: {
-        targetUserId,
-        oldRole,
-        newRole
-      }
-    });
-  }
-  async logError(error, userId, context) {
-    await this.log({
-      eventType: "error.occurred",
-      severity: "error",
-      userId,
-      action: "error",
-      description: error.message,
-      success: false,
-      errorMessage: error.stack || error.message,
-      metadata: context
-    });
-  }
-  getRecentLogs(limit = 100, filters) {
-    let filtered = [...auditLogs2];
-    if (filters) {
-      if (filters.eventType) {
-        filtered = filtered.filter((l) => l.eventType === filters.eventType);
-      }
-      if (filters.userId) {
-        filtered = filtered.filter((l) => l.userId === filters.userId);
-      }
-      if (filters.severity) {
-        filtered = filtered.filter((l) => l.severity === filters.severity);
-      }
-      if (filters.startDate) {
-        filtered = filtered.filter((l) => l.timestamp >= filters.startDate);
-      }
-      if (filters.endDate) {
-        filtered = filtered.filter((l) => l.timestamp <= filters.endDate);
-      }
-    }
-    return filtered.slice(-limit).reverse();
-  }
-  getStatistics() {
-    const bySeverity = {
-      info: 0,
-      warning: 0,
-      error: 0,
-      critical: 0
-    };
-    const byEventType = {};
-    let totalDuration = 0;
-    let durationCount = 0;
-    const oneHourAgo = new Date(Date.now() - 36e5);
-    let recentErrors = 0;
-    for (const log2 of auditLogs2) {
-      bySeverity[log2.severity]++;
-      byEventType[log2.eventType] = (byEventType[log2.eventType] || 0) + 1;
-      if (log2.duration) {
-        totalDuration += log2.duration;
-        durationCount++;
-      }
-      if (log2.severity === "error" && log2.timestamp >= oneHourAgo) {
-        recentErrors++;
-      }
-    }
-    return {
-      total: auditLogs2.length,
-      bySeverity,
-      byEventType,
-      recentErrors,
-      avgDuration: durationCount > 0 ? totalDuration / durationCount : 0
-    };
-  }
-  setEnabled(enabled) {
-    this.enabled = enabled;
-  }
-  isEnabled() {
-    return this.enabled;
-  }
-  destroy() {
-    if (this.flushTimer) {
-      clearInterval(this.flushTimer);
-      this.flushTimer = null;
-    }
-  }
-};
-var auditLoggingService = new AuditLoggingService();
-function auditMiddleware() {
-  return (req, res, next) => {
-    const startTime = Date.now();
-    const originalSend = res.send;
-    res.send = function(body) {
-      const duration = Date.now() - startTime;
-      const success = res.statusCode >= 200 && res.statusCode < 400;
-      if (req.user?.id && req.path.startsWith("/api/")) {
-        auditLoggingService.log({
-          eventType: "api.accessed",
-          severity: success ? "info" : "warning",
-          userId: req.user.id,
-          userEmail: req.user.email,
-          userRole: req.user.role,
-          action: req.method,
-          description: `${req.method} ${req.path}`,
-          success,
-          duration,
-          ipAddress: req.ip,
-          userAgent: req.get("user-agent"),
-          metadata: {
-            statusCode: res.statusCode,
-            query: req.query
-          }
-        });
-      }
-      return originalSend.call(this, body);
-    };
-    next();
-  };
-}
-
 // server/routes/rbac-routes.ts
+init_audit_logging_service();
 var router8 = Router8();
 router8.get("/roles", (req, res) => {
   const roles = rbacService.getRoleDefinitions();
@@ -28848,9 +28882,9 @@ var LATEST_MODELS_MANIFEST = {
     lastUpdate: "2025-02-17"
   },
   cohere: {
-    flagship: "command-r-plus",
-    models: ["command-r-plus", "command-r", "embed-v3"],
-    lastUpdate: "2024-09-01"
+    flagship: "command-a-03-2025",
+    models: ["command-a-03-2025", "command-r-plus-08-2024", "command-r-08-2024", "embed-v3"],
+    lastUpdate: "2025-03-01"
   },
   perplexity: {
     flagship: "sonar-pro",
@@ -33276,7 +33310,7 @@ var SarvamTranslationService = class extends EventEmitter4 {
     if (geminiKey) {
       try {
         const langName = this.getLanguageName(request.targetLanguage);
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -37003,6 +37037,42 @@ router23.post("/campaigns/:brandId/:campaignId/influencer", async (req, res) => 
 });
 var influencer_routes_default = router23;
 
+// server/index.minimal.ts
+init_audit_logging_service();
+
+// server/middleware/require-auth.ts
+import { eq as eq8 } from "drizzle-orm";
+var requireAuth = async (req, res, next) => {
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(401).json({ success: false, error: "Authentication required" });
+  }
+  const user = req.user;
+  if (req.session.organizationId) {
+    req.organizationId = req.session.organizationId;
+  } else {
+    try {
+      const [dbUser] = await db.select({ organizationId: users.organizationId }).from(users).where(eq8(users.id, user.id)).limit(1);
+      if (dbUser?.organizationId) {
+        req.organizationId = dbUser.organizationId;
+        req.session.organizationId = dbUser.organizationId;
+      }
+    } catch (error) {
+      console.error("Error fetching user org:", error);
+    }
+  }
+  next();
+};
+var requireAdmin = async (req, res, next) => {
+  if (!req.isAuthenticated() || !req.user) {
+    return res.status(401).json({ success: false, error: "Authentication required" });
+  }
+  const user = req.user;
+  if (user.role !== "admin") {
+    return res.status(403).json({ success: false, error: "Admin access required" });
+  }
+  next();
+};
+
 // server/routes/web-search-routes.ts
 import { Router as Router23 } from "express";
 
@@ -37532,12 +37602,17 @@ var UnifiedLLMAdapter = class extends EventEmitter6 {
    */
   startHealthMonitoring() {
     setInterval(async () => {
+      if (!this.apiKey || this.apiKey.trim() === "" || this.apiKey === "undefined" || this.apiKey === "null") {
+        this.provider.status = "offline";
+        this.provider.healthScore = 0;
+        return;
+      }
       try {
         await this.performHealthCheck();
       } catch (error) {
         console.error(`Health monitoring error for ${this.provider.name}:`, error);
       }
-    }, 5 * 60 * 1e3);
+    }, 30 * 60 * 1e3);
   }
   startCostTracking() {
     setInterval(() => {
@@ -37626,30 +37701,19 @@ var ProviderError = class extends OrchestrationError {
 };
 
 // server/services/llm-providers/perplexity-provider.ts
-var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
+var PerplexityProvider = class extends UnifiedLLMAdapter {
   models = {
-    // Online Models (with real-time search)
-    "llama-3.1-sonar-large-128k-online": { inputCost: 1, outputCost: 1, contextWindow: 127072, maxOutput: 4096, search: true },
-    "llama-3.1-sonar-small-128k-online": { inputCost: 0.2, outputCost: 0.2, contextWindow: 127072, maxOutput: 4096, search: true },
-    "llama-3.1-sonar-huge-128k-online": { inputCost: 5, outputCost: 5, contextWindow: 127072, maxOutput: 4096, search: true },
-    // Chat Models (without search)
-    "llama-3.1-sonar-large-128k-chat": { inputCost: 1, outputCost: 1, contextWindow: 131072, maxOutput: 4096, search: false },
-    "llama-3.1-sonar-small-128k-chat": { inputCost: 0.2, outputCost: 0.2, contextWindow: 131072, maxOutput: 4096, search: false },
-    "llama-3.1-8b-instruct": { inputCost: 0.2, outputCost: 0.2, contextWindow: 131072, maxOutput: 4096, search: false },
-    "llama-3.1-70b-instruct": { inputCost: 1, outputCost: 1, contextWindow: 131072, maxOutput: 4096, search: false },
-    // Legacy Models
-    "pplx-7b-online": { inputCost: 0, outputCost: 0.28, contextWindow: 4096, maxOutput: 4096, search: true },
-    // $0.28 per 1k requests
-    "pplx-70b-online": { inputCost: 0, outputCost: 2.8, contextWindow: 4096, maxOutput: 4096, search: true },
-    // $2.80 per 1k requests
-    "pplx-7b-chat": { inputCost: 0.07, outputCost: 0.07, contextWindow: 8192, maxOutput: 8192, search: false },
-    "pplx-70b-chat": { inputCost: 0.7, outputCost: 0.7, contextWindow: 4096, maxOutput: 4096, search: false }
+    "sonar": { inputCost: 1, outputCost: 1, contextWindow: 128e3, maxOutput: 4096, search: true },
+    "sonar-pro": { inputCost: 3, outputCost: 15, contextWindow: 2e5, maxOutput: 4096, search: true },
+    "sonar-reasoning": { inputCost: 1, outputCost: 5, contextWindow: 128e3, maxOutput: 4096, search: true },
+    "sonar-reasoning-pro": { inputCost: 2, outputCost: 8, contextWindow: 128e3, maxOutput: 4096, search: true },
+    "sonar-deep-research": { inputCost: 5, outputCost: 20, contextWindow: 128e3, maxOutput: 8192, search: true }
   };
   constructor(apiKey) {
     const provider = {
       id: "perplexity",
       name: "Perplexity AI",
-      models: Object.keys(_PerplexityProvider.prototype.models),
+      models: ["sonar", "sonar-pro", "sonar-reasoning", "sonar-reasoning-pro", "sonar-deep-research"],
       capabilities: {
         textGeneration: true,
         codeGeneration: true,
@@ -37714,7 +37778,7 @@ var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama-3.1-sonar-small-128k-chat",
+          model: "sonar",
           messages: [{ role: "user", content: "Test" }],
           max_tokens: 10
         })
@@ -37729,7 +37793,7 @@ var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
     const correlationId = request.correlationId || generateCorrelationId();
     const startTime = Date.now();
     try {
-      console.log(`\u{1F504} [${correlationId}] Perplexity generating response with model: ${request.model || "llama-3.1-sonar-large-128k-online"}`);
+      console.log(`\u{1F504} [${correlationId}] Perplexity generating response with model: ${request.model || "sonar-pro"}`);
       if (!await this.checkRateLimit()) {
         throw new ProviderError("Rate limit exceeded", "perplexity", { correlationId });
       }
@@ -37828,7 +37892,7 @@ var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
     const correlationId = request.correlationId || generateCorrelationId();
     const startTime = Date.now();
     try {
-      console.log(`\u{1F504} [${correlationId}] Perplexity streaming response with model: ${request.model || "llama-3.1-sonar-large-128k-online"}`);
+      console.log(`\u{1F504} [${correlationId}] Perplexity streaming response with model: ${request.model || "sonar-pro"}`);
       const model = request.model || this.selectOptimalModel(request);
       const messages = this.formatMessages(request);
       const requestBody = {
@@ -37962,7 +38026,7 @@ var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
       console.log(`\u{1F50D} [${correlationId}] Perplexity search query: ${query}`);
       const response = await this.generateResponse({
         messages: [{ role: "user", content: query }],
-        model: "llama-3.1-sonar-large-128k-online",
+        model: "sonar-pro",
         correlationId
       });
       return {
@@ -37985,14 +38049,14 @@ var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
     const needsSearch = this.needsRealTimeSearch(request.messages);
     if (needsSearch) {
       if (messageLength > 2e4)
-        return "llama-3.1-sonar-large-128k-online";
-      return "llama-3.1-sonar-small-128k-online";
+        return "sonar-pro";
+      return "sonar";
     } else {
       if (hasTools)
-        return "llama-3.1-sonar-large-128k-chat";
+        return "sonar-pro";
       if (messageLength > 2e4)
-        return "llama-3.1-sonar-large-128k-chat";
-      return "llama-3.1-sonar-small-128k-chat";
+        return "sonar-pro";
+      return "sonar";
     }
   }
   needsRealTimeSearch(messages) {
@@ -38036,9 +38100,6 @@ var PerplexityProvider = class _PerplexityProvider extends UnifiedLLMAdapter {
     const modelConfig = this.models[model];
     if (!modelConfig)
       return 0;
-    if (model.includes("pplx-") && model.includes("online")) {
-      return modelConfig.outputCost / 1e3;
-    }
     const inputCost = usage.prompt_tokens / 1e6 * modelConfig.inputCost;
     const outputCost = usage.completion_tokens / 1e6 * modelConfig.outputCost;
     return inputCost + outputCost;
@@ -41495,7 +41556,7 @@ var GRPOLearningService = class {
     const providers = [
       { id: "openai", models: ["gpt-4o", "gpt-4o-mini", "o1-preview"] },
       { id: "anthropic", models: ["claude-sonnet-4-20250514", "claude-3-5-haiku-20241022"] },
-      { id: "google", models: ["gemini-2.0-flash", "gemini-1.5-pro"] },
+      { id: "google", models: ["gemini-2.5-flash", "gemini-2.5-pro"] },
       { id: "groq", models: ["llama-3.1-70b-versatile", "mixtral-8x7b-32768"] }
     ];
     const taskTypes = ["code", "content", "analysis", "conversation", "creative", "research"];
@@ -48827,6 +48888,242 @@ router44.get("/alerts", async (_req, res) => {
 });
 var monitoring_dashboard_routes_default = router44;
 
+// server/routes/organization-routes.ts
+import { Router as Router44 } from "express";
+import { eq as eq9, and as and4, desc as desc6 } from "drizzle-orm";
+var router45 = Router44();
+router45.get("/current", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    const orgId = req.organizationId;
+    if (!orgId) {
+      return res.json({ organization: null, message: "No organization assigned" });
+    }
+    const [org] = await db.select().from(organizations).where(eq9(organizations.id, orgId));
+    if (!org) {
+      return res.json({ organization: null });
+    }
+    const members = await db.select({ id: users.id }).from(users).where(eq9(users.organizationId, orgId));
+    res.json({
+      organization: { ...org, memberCount: members.length }
+    });
+  } catch (error) {
+    console.error("Error fetching organization:", error);
+    res.status(500).json({ error: "Failed to fetch organization" });
+  }
+});
+router45.post("/", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    const { name, description, logo } = req.body;
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ error: "Organization name is required (min 2 characters)" });
+    }
+    const [org] = await db.insert(organizations).values({
+      name: name.trim(),
+      description: description || null,
+      logo: logo || null,
+      ownerId: parseInt(user.id) || null,
+      plan: "alpha",
+      isActive: true
+    }).returning();
+    await db.update(users).set({
+      organizationId: org.id,
+      role: "admin"
+    }).where(eq9(users.id, user.id));
+    req.session.organizationId = org.id;
+    res.status(201).json({ organization: org });
+  } catch (error) {
+    console.error("Error creating organization:", error);
+    res.status(500).json({ error: "Failed to create organization" });
+  }
+});
+router45.put("/current", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    const orgId = req.organizationId;
+    if (!orgId) {
+      return res.status(400).json({ error: "No organization assigned" });
+    }
+    if (!["admin", "manager"].includes(user.role)) {
+      return res.status(403).json({ error: "Only admins and managers can update organization settings" });
+    }
+    const { name, description, logo, settings } = req.body;
+    const updateData = { updatedAt: /* @__PURE__ */ new Date() };
+    if (name)
+      updateData.name = name.trim();
+    if (description !== void 0)
+      updateData.description = description;
+    if (logo !== void 0)
+      updateData.logo = logo;
+    if (settings !== void 0)
+      updateData.settings = settings;
+    const [updated] = await db.update(organizations).set(updateData).where(eq9(organizations.id, orgId)).returning();
+    res.json({ organization: updated });
+  } catch (error) {
+    console.error("Error updating organization:", error);
+    res.status(500).json({ error: "Failed to update organization" });
+  }
+});
+router45.get("/members", isAuthenticated, async (req, res) => {
+  try {
+    const orgId = req.organizationId;
+    if (!orgId) {
+      return res.json({ members: [] });
+    }
+    const members = await db.select({
+      id: users.id,
+      username: users.username,
+      email: users.email,
+      role: users.role,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      avatarUrl: users.avatarUrl,
+      status: users.status,
+      lastLoginAt: users.lastLoginAt,
+      createdAt: users.createdAt
+    }).from(users).where(eq9(users.organizationId, orgId)).orderBy(desc6(users.createdAt));
+    res.json({ members });
+  } catch (error) {
+    console.error("Error fetching members:", error);
+    res.status(500).json({ error: "Failed to fetch members" });
+  }
+});
+router45.post("/members/invite", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    const orgId = req.organizationId;
+    if (!orgId) {
+      return res.status(400).json({ error: "No organization assigned" });
+    }
+    if (!["admin", "manager"].includes(user.role)) {
+      return res.status(403).json({ error: "Only admins and managers can invite members" });
+    }
+    const { email, role } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+    const [targetUser] = await db.select().from(users).where(eq9(users.email, email)).limit(1);
+    if (!targetUser) {
+      return res.status(404).json({ error: "User not found. They must register first." });
+    }
+    if (targetUser.organizationId === orgId) {
+      return res.status(400).json({ error: "User is already a member of this organization" });
+    }
+    await db.update(users).set({
+      organizationId: orgId,
+      role: role || "user"
+    }).where(eq9(users.id, targetUser.id));
+    res.json({ success: true, message: `${email} has been added to the organization` });
+  } catch (error) {
+    console.error("Error inviting member:", error);
+    res.status(500).json({ error: "Failed to invite member" });
+  }
+});
+router45.put("/members/:userId/role", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    const orgId = req.organizationId;
+    const targetUserId = req.params.userId;
+    if (!orgId) {
+      return res.status(400).json({ error: "No organization assigned" });
+    }
+    if (user.role !== "admin") {
+      return res.status(403).json({ error: "Only admins can change member roles" });
+    }
+    const { role } = req.body;
+    if (!["admin", "manager", "user", "viewer"].includes(role)) {
+      return res.status(400).json({ error: "Invalid role. Must be admin, manager, user, or viewer" });
+    }
+    const [targetUser] = await db.select().from(users).where(
+      and4(eq9(users.id, targetUserId), eq9(users.organizationId, orgId))
+    ).limit(1);
+    if (!targetUser) {
+      return res.status(404).json({ error: "User not found in your organization" });
+    }
+    if (targetUserId === user.id) {
+      return res.status(400).json({ error: "Cannot change your own role" });
+    }
+    await db.update(users).set({ role }).where(eq9(users.id, targetUserId));
+    res.json({ success: true, message: `Role updated to ${role}` });
+  } catch (error) {
+    console.error("Error updating role:", error);
+    res.status(500).json({ error: "Failed to update role" });
+  }
+});
+router45.delete("/members/:userId", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    const orgId = req.organizationId;
+    const targetUserId = req.params.userId;
+    if (!orgId) {
+      return res.status(400).json({ error: "No organization assigned" });
+    }
+    if (user.role !== "admin") {
+      return res.status(403).json({ error: "Only admins can remove members" });
+    }
+    if (targetUserId === user.id) {
+      return res.status(400).json({ error: "Cannot remove yourself from the organization" });
+    }
+    await db.update(users).set({
+      organizationId: null,
+      role: "user"
+    }).where(and4(eq9(users.id, targetUserId), eq9(users.organizationId, orgId)));
+    res.json({ success: true, message: "Member removed from organization" });
+  } catch (error) {
+    console.error("Error removing member:", error);
+    res.status(500).json({ error: "Failed to remove member" });
+  }
+});
+var organization_routes_default = router45;
+
+// server/routes/audit-log-routes.ts
+import { Router as Router45 } from "express";
+var router46 = Router45();
+router46.get("/", isAuthenticated, async (req, res) => {
+  try {
+    const user = req.user;
+    if (!["admin", "manager"].includes(user.role)) {
+      return res.status(403).json({ error: "Only admins and managers can view audit logs" });
+    }
+    const { page = "1", limit = "50", action, userId, startDate, endDate } = req.query;
+    const pageNum = parseInt(page) || 1;
+    const limitNum = Math.min(parseInt(limit) || 50, 100);
+    const { auditLoggingService: auditLoggingService2 } = await Promise.resolve().then(() => (init_audit_logging_service(), audit_logging_service_exports));
+    let logs = auditLoggingService2.getRecentLogs ? auditLoggingService2.getRecentLogs(500) : [];
+    if (action) {
+      logs = logs.filter((log2) => log2.action?.includes(action));
+    }
+    if (userId) {
+      logs = logs.filter((log2) => log2.userId === userId);
+    }
+    if (startDate) {
+      const start = new Date(startDate);
+      logs = logs.filter((log2) => new Date(log2.timestamp) >= start);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      logs = logs.filter((log2) => new Date(log2.timestamp) <= end);
+    }
+    const total = logs.length;
+    const offset = (pageNum - 1) * limitNum;
+    const paginatedLogs = logs.slice(offset, offset + limitNum);
+    res.json({
+      logs: paginatedLogs,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum)
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching audit logs:", error);
+    res.status(500).json({ error: "Failed to fetch audit logs" });
+  }
+});
+var audit_log_routes_default = router46;
+
 // server/index.minimal.ts
 if (typeof globalThis.crypto === "undefined") {
   globalThis.crypto = webcrypto;
@@ -48940,51 +49237,62 @@ app.get("/api", (req, res) => {
     verticals: ["social", "seo", "web", "sales", "whatsapp", "linkedin", "performance", "pr-comms"]
   });
 });
-app.use("/api/market360", market360_default);
-app.use("/api/ai", llmLimiter, ai_default);
-app.use("/api/brands", brands_default);
-app.use("/api", chat_api_default);
-app.use("/api/market360/verticals", market360_vertical_routes_default);
-app.use("/api/admin/llm", llm_admin_routes_default);
-app.use("/api/multimodal-content", multimodal_content_routes_default);
-app.use("/api/rbac", rbac_routes_default);
-app.use("/api/analytics", predictive_analytics_api_default);
-app.use("/api/orchestration", unified_orchestration_api_default);
-app.use("/api/content-library", content_library_routes_default);
-app.use("/api/analytics/predictions", predictive_analytics_routes_default);
-app.use("/api/ads", ad_publishing_routes_default);
-app.use("/api/ai-visibility", ai_visibility_routes_default);
-app.use("/api/translation", voiceLimiter, translation_routes_default);
-app.use("/api/whatsapp", whatsapp_routes_default);
-app.use("/api/crm", crm_full_routes_default);
-app.use("/api/social", social_publishing_routes_default);
-app.use("/api/voice", voiceLimiter, voice_routes_default);
-app.use("/api/email", email_routes_default);
-app.use("/api/payments", payment_routes_default);
-app.use("/api/portal", client_portal_routes_default);
-app.use("/api/influencers", influencer_routes_default);
-app.use("/api/v3/web-search", web_search_routes_default);
-app.use("/api/v3/documents", document_processing_routes_default);
-app.use("/api/v3/notebook", notebook_llm_routes_default);
-app.use("/api/v3/orchestration", orchestration_patterns_routes_default);
-app.use("/api/v3/memory", mem0_enhanced_routes_default);
-app.use("/api/v3/monitoring", cam_monitoring_routes_default);
-app.use("/api/v3/learning", grpo_learning_routes_default);
-app.use("/api/v3/twins", digital_twin_routes_default);
-app.use("/api/v3/content", content_pipeline_routes_default);
-app.use("/api/platform-connections", platform_connections_default);
-app.use("/api/seo", seo_toolkit_routes_default);
-app.use("/api/conversions", conversion_tracking_routes_default);
-app.use("/api/telegram", telegram_routes_default);
-app.use("/api/unified-analytics", unified_analytics_routes_default);
-app.use("/api/vertical-workflows", vertical_workflow_routes_default);
-app.use("/api/cross-vertical", cross_vertical_routes_default);
-app.use("/api/chat", llmLimiter, marketing_chat_routes_default);
-app.use("/api/wai-sdk/v3.2", wai_sdk_v32_routes_default);
-app.use("/api/export", export_routes_default);
-app.use("/api/strategy-pipeline", strategy_pipeline_routes_default);
-app.use("/api/monitoring-dashboard", monitoring_dashboard_routes_default);
-app.use(auditMiddleware());
+function registerRoutes(app2) {
+  app2.use("/api", (req, res, next) => {
+    const fullPath = req.baseUrl + req.path;
+    if (fullPath === "/api" || fullPath === "/api/health" || fullPath.startsWith("/api/login") || fullPath.startsWith("/api/register") || fullPath.startsWith("/api/logout") || fullPath.startsWith("/api/auth")) {
+      return next();
+    }
+    return requireAuth(req, res, next);
+  });
+  app2.use("/api/market360", market360_default);
+  app2.use("/api/ai", llmLimiter, ai_default);
+  app2.use("/api/brands", brands_default);
+  app2.use("/api", chat_api_default);
+  app2.use("/api/market360/verticals", market360_vertical_routes_default);
+  app2.use("/api/admin/llm", requireAdmin, llm_admin_routes_default);
+  app2.use("/api/multimodal-content", multimodal_content_routes_default);
+  app2.use("/api/rbac", rbac_routes_default);
+  app2.use("/api/analytics", predictive_analytics_api_default);
+  app2.use("/api/orchestration", unified_orchestration_api_default);
+  app2.use("/api/content-library", content_library_routes_default);
+  app2.use("/api/analytics/predictions", predictive_analytics_routes_default);
+  app2.use("/api/ads", ad_publishing_routes_default);
+  app2.use("/api/ai-visibility", ai_visibility_routes_default);
+  app2.use("/api/translation", voiceLimiter, translation_routes_default);
+  app2.use("/api/whatsapp", whatsapp_routes_default);
+  app2.use("/api/crm", crm_full_routes_default);
+  app2.use("/api/social", social_publishing_routes_default);
+  app2.use("/api/voice", voiceLimiter, voice_routes_default);
+  app2.use("/api/email", email_routes_default);
+  app2.use("/api/payments", payment_routes_default);
+  app2.use("/api/portal", client_portal_routes_default);
+  app2.use("/api/influencers", influencer_routes_default);
+  app2.use("/api/v3/web-search", web_search_routes_default);
+  app2.use("/api/v3/documents", document_processing_routes_default);
+  app2.use("/api/v3/notebook", notebook_llm_routes_default);
+  app2.use("/api/v3/orchestration", orchestration_patterns_routes_default);
+  app2.use("/api/v3/memory", mem0_enhanced_routes_default);
+  app2.use("/api/v3/monitoring", cam_monitoring_routes_default);
+  app2.use("/api/v3/learning", grpo_learning_routes_default);
+  app2.use("/api/v3/twins", digital_twin_routes_default);
+  app2.use("/api/v3/content", content_pipeline_routes_default);
+  app2.use("/api/platform-connections", platform_connections_default);
+  app2.use("/api/seo", seo_toolkit_routes_default);
+  app2.use("/api/conversions", conversion_tracking_routes_default);
+  app2.use("/api/telegram", telegram_routes_default);
+  app2.use("/api/unified-analytics", unified_analytics_routes_default);
+  app2.use("/api/vertical-workflows", vertical_workflow_routes_default);
+  app2.use("/api/cross-vertical", cross_vertical_routes_default);
+  app2.use("/api/chat", llmLimiter, marketing_chat_routes_default);
+  app2.use("/api/wai-sdk/v3.2", wai_sdk_v32_routes_default);
+  app2.use("/api/export", export_routes_default);
+  app2.use("/api/strategy-pipeline", strategy_pipeline_routes_default);
+  app2.use("/api/monitoring-dashboard", monitoring_dashboard_routes_default);
+  app2.use("/api/organizations", organization_routes_default);
+  app2.use("/api/audit-logs", audit_log_routes_default);
+  app2.use(auditMiddleware());
+}
 app.use((err, req, res, next) => {
   const statusCode = err.status || err.statusCode || 500;
   console.error(`[ERROR] ${req.method} ${req.path}:`, err.message || err);
@@ -49026,6 +49334,8 @@ async function startServer() {
     console.log("  Authentication configured (local + Google OAuth)");
     console.log("  PostgreSQL session store active");
     console.log("  Rate limiting enabled (200/min general, 30/min AI, 10/min voice)");
+    registerRoutes(app);
+    console.log("  Protected API routes registered with auth middleware");
     if (isProduction) {
       try {
         serveStatic(app);

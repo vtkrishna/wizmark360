@@ -70,289 +70,6 @@ const indianLanguages = [
   { code: "en", name: "English", native: "English" }
 ];
 
-const sampleContent: ContentItem[] = [
-  {
-    id: "1",
-    name: "Diwali Campaign - Instagram Post",
-    type: "image",
-    status: "published",
-    content: "दीपावली की हार्दिक शुभकामनाएं! इस त्योहार पर विशेष ऑफर...",
-    language: "Hindi",
-    createdAt: "2024-10-15",
-    updatedAt: "2024-10-18",
-    author: "Content Creator AI",
-    tags: ["diwali", "festival", "campaign"],
-    metadata: { platform: "Instagram" },
-    vertical: "social"
-  },
-  {
-    id: "2",
-    name: "Tamil Pongal Festival Promo",
-    type: "image",
-    status: "published",
-    content: "பொங்கல் வாழ்த்துக்கள்! சிறப்பு தள்ளுபடி...",
-    language: "Tamil",
-    createdAt: "2024-01-10",
-    updatedAt: "2024-01-12",
-    author: "Content Creator AI",
-    tags: ["pongal", "festival", "tamil"],
-    metadata: { platform: "Instagram" },
-    vertical: "social"
-  },
-  {
-    id: "3",
-    name: "Telugu Sankranti Campaign",
-    type: "image",
-    status: "published",
-    content: "సంక్రాంతి శుభాకాంక్షలు! ప్రత్యేక ఆఫర్లు...",
-    language: "Telugu",
-    createdAt: "2024-01-08",
-    updatedAt: "2024-01-10",
-    author: "Creative Factory AI",
-    tags: ["sankranti", "telugu", "festival"],
-    metadata: { platform: "Facebook" },
-    vertical: "performance"
-  },
-  {
-    id: "4",
-    name: "Bengali Durga Puja Special",
-    type: "text",
-    status: "published",
-    content: "শারদীয়া শুভেচ্ছা! দুর্গা পূজার বিশেষ অফার...",
-    language: "Bengali",
-    createdAt: "2024-10-01",
-    updatedAt: "2024-10-03",
-    author: "Campaign Automator AI",
-    tags: ["durga-puja", "bengali", "festival"],
-    metadata: { platform: "WhatsApp" },
-    vertical: "whatsapp"
-  },
-  {
-    id: "5",
-    name: "Marathi Ganesh Chaturthi Post",
-    type: "image",
-    status: "published",
-    content: "गणपती बाप्पा मोरया! विशेष सवलत...",
-    language: "Marathi",
-    createdAt: "2024-09-05",
-    updatedAt: "2024-09-07",
-    author: "Content Creator AI",
-    tags: ["ganesh-chaturthi", "marathi", "festival"],
-    metadata: { platform: "Instagram" },
-    vertical: "social"
-  },
-  {
-    id: "6",
-    name: "Gujarati Navratri Campaign",
-    type: "video",
-    status: "published",
-    content: "નવરાત્રીની શુભકામના! વિશેષ ઓફર...",
-    language: "Gujarati",
-    createdAt: "2024-09-28",
-    updatedAt: "2024-10-01",
-    author: "Creative Factory AI",
-    tags: ["navratri", "gujarati", "festival"],
-    metadata: { platform: "Instagram" },
-    vertical: "social"
-  },
-  {
-    id: "7",
-    name: "Kannada Ugadi Celebration",
-    type: "text",
-    status: "published",
-    content: "ಯುಗಾದಿ ಹಬ್ಬದ ಶುಭಾಶಯಗಳು! ವಿಶೇಷ ಕೊಡುಗೆ...",
-    language: "Kannada",
-    createdAt: "2024-04-05",
-    updatedAt: "2024-04-07",
-    author: "Authority Builder AI",
-    tags: ["ugadi", "kannada", "new-year"],
-    metadata: { platform: "LinkedIn" },
-    vertical: "linkedin"
-  },
-  {
-    id: "8",
-    name: "Malayalam Onam Festival",
-    type: "image",
-    status: "published",
-    content: "ഓണാശംസകൾ! പ്രത്യേക ഓഫർ...",
-    language: "Malayalam",
-    createdAt: "2024-08-25",
-    updatedAt: "2024-08-28",
-    author: "Creative Factory AI",
-    tags: ["onam", "malayalam", "kerala"],
-    metadata: { platform: "Facebook" },
-    vertical: "performance"
-  },
-  {
-    id: "9",
-    name: "Punjabi Baisakhi Promo",
-    type: "video",
-    status: "published",
-    content: "ਬੈਸਾਖੀ ਦੀਆਂ ਲੱਖ ਲੱਖ ਵਧਾਈਆਂ! ਵਿਸ਼ੇਸ਼ ਛੂਟ...",
-    language: "Punjabi",
-    createdAt: "2024-04-10",
-    updatedAt: "2024-04-12",
-    author: "Content Creator AI",
-    tags: ["baisakhi", "punjabi", "festival"],
-    metadata: { platform: "Instagram" },
-    vertical: "social"
-  },
-  {
-    id: "10",
-    name: "Odia Raja Festival Content",
-    type: "text",
-    status: "published",
-    content: "ରଜ ପର୍ବର ଶୁଭେଚ୍ଛା! ବିଶେଷ ଅଫର...",
-    language: "Odia",
-    createdAt: "2024-06-12",
-    updatedAt: "2024-06-14",
-    author: "Campaign Automator AI",
-    tags: ["raja", "odia", "festival"],
-    metadata: { platform: "WhatsApp" },
-    vertical: "whatsapp"
-  },
-  {
-    id: "11",
-    name: "Assamese Bihu Celebration",
-    type: "image",
-    status: "published",
-    content: "বহাগ বিহুৰ শুভেচ্ছা! বিশেষ ৰেহাই...",
-    language: "Assamese",
-    createdAt: "2024-04-12",
-    updatedAt: "2024-04-14",
-    author: "Creative Factory AI",
-    tags: ["bihu", "assamese", "festival"],
-    metadata: { platform: "Facebook" },
-    vertical: "performance"
-  },
-  {
-    id: "12",
-    name: "Product Launch Email Sequence",
-    type: "text",
-    status: "published",
-    content: "Introducing our revolutionary new product that will transform...",
-    language: "English",
-    createdAt: "2024-11-01",
-    updatedAt: "2024-11-05",
-    author: "Sales SDR Agent",
-    tags: ["email", "product-launch", "sequence"],
-    metadata: { platform: "Email" },
-    vertical: "sales"
-  },
-  {
-    id: "13",
-    name: "LinkedIn Thought Leadership Article",
-    type: "text",
-    status: "draft",
-    content: "5 Trends That Will Shape B2B Marketing in 2025...",
-    language: "English",
-    createdAt: "2024-11-20",
-    updatedAt: "2024-11-20",
-    author: "Authority Builder AI",
-    tags: ["linkedin", "thought-leadership", "B2B"],
-    metadata: { platform: "LinkedIn" },
-    vertical: "linkedin"
-  },
-  {
-    id: "14",
-    name: "WhatsApp Broadcast - Holiday Sale",
-    type: "text",
-    status: "published",
-    content: "विशेष छूट! सभी उत्पादों पर 50% की छूट...",
-    language: "Hindi",
-    createdAt: "2024-12-01",
-    updatedAt: "2024-12-01",
-    author: "Campaign Automator AI",
-    tags: ["whatsapp", "sale", "broadcast"],
-    metadata: { platform: "WhatsApp" },
-    vertical: "whatsapp"
-  },
-  {
-    id: "15",
-    name: "SEO Blog Post - AI Marketing Guide",
-    type: "text",
-    status: "published",
-    content: "The Complete Guide to AI-Powered Marketing in 2024...",
-    language: "English",
-    createdAt: "2024-11-10",
-    updatedAt: "2024-11-12",
-    author: "Content Optimizer AI",
-    tags: ["seo", "ai", "marketing", "guide"],
-    metadata: { platform: "Blog" },
-    vertical: "seo"
-  },
-  {
-    id: "16",
-    name: "Facebook Ad Creative - Summer Collection",
-    type: "image",
-    status: "published",
-    content: "Summer styles that turn heads. Shop now!",
-    language: "English",
-    createdAt: "2024-11-25",
-    updatedAt: "2024-11-28",
-    author: "Creative Factory AI",
-    tags: ["facebook", "ad", "creative"],
-    metadata: { platform: "Facebook" },
-    vertical: "performance"
-  },
-  {
-    id: "17",
-    name: "Website Hero Section Copy",
-    type: "text",
-    status: "published",
-    content: "Transform your business with AI-powered solutions...",
-    language: "English",
-    createdAt: "2024-10-05",
-    updatedAt: "2024-10-10",
-    author: "AI Page Builder",
-    tags: ["website", "hero", "copy"],
-    metadata: { platform: "Website" },
-    vertical: "web"
-  },
-  {
-    id: "18",
-    name: "Voice Message Template - Hindi Support",
-    type: "audio",
-    status: "published",
-    content: "नमस्ते, मैं आपकी कैसे सहायता कर सकता हूं?",
-    language: "Hindi",
-    createdAt: "2024-12-05",
-    updatedAt: "2024-12-05",
-    author: "Voice Agent AI",
-    tags: ["voice", "support", "template"],
-    metadata: { platform: "WhatsApp" },
-    vertical: "whatsapp"
-  },
-  {
-    id: "19",
-    name: "Tamil Customer Welcome Message",
-    type: "audio",
-    status: "published",
-    content: "வணக்கம்! நான் உங்களுக்கு எப்படி உதவ முடியும்?",
-    language: "Tamil",
-    createdAt: "2024-12-03",
-    updatedAt: "2024-12-03",
-    author: "Voice Agent AI",
-    tags: ["voice", "welcome", "tamil"],
-    metadata: { platform: "WhatsApp" },
-    vertical: "whatsapp"
-  },
-  {
-    id: "20",
-    name: "Telugu Product Demo Script",
-    type: "video",
-    status: "draft",
-    content: "మా కొత్త ఉత్పత్తి యొక్క పూర్తి గైడ్...",
-    language: "Telugu",
-    createdAt: "2024-12-01",
-    updatedAt: "2024-12-02",
-    author: "Creative Factory AI",
-    tags: ["demo", "product", "telugu"],
-    metadata: { platform: "YouTube" },
-    vertical: "web"
-  }
-];
-
 const platformIcons: Record<string, any> = {
   Instagram: Instagram,
   Twitter: Twitter,
@@ -406,6 +123,19 @@ export default function ContentLibraryPage() {
     window.location.href = `/god-mode?inspiration=${encodeURIComponent(content)}`;
   };
 
+  const { data: brandsData } = useQuery({
+    queryKey: ["/api/brands"],
+    queryFn: async () => {
+      const res = await fetch("/api/brands");
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const dynamicBrandName = brandsData && Array.isArray(brandsData) && brandsData.length > 0
+    ? brandsData[0].name
+    : "WizMark 360";
+
   const { data: apiContent, isLoading, refetch } = useQuery({
     queryKey: ["/api/content-library"],
     queryFn: async () => {
@@ -417,7 +147,7 @@ export default function ContentLibraryPage() {
     staleTime: 30000
   });
 
-  const content: ContentItem[] = apiContent?.length > 0 ? apiContent.map((item: any) => ({
+  const content: ContentItem[] = (apiContent || []).map((item: any) => ({
     id: item.id,
     name: item.name,
     type: item.type || "text",
@@ -431,7 +161,7 @@ export default function ContentLibraryPage() {
     tags: Array.isArray(item.tags) ? item.tags : [],
     metadata: item.metadata,
     vertical: item.metadata?.vertical || item.metadata?.brandId ? "social" : "general"
-  })) : sampleContent;
+  }));
 
   const filteredContent = content.filter(item => {
     const matchesSearch = (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -475,7 +205,7 @@ export default function ContentLibraryPage() {
   };
 
   return (
-    <AppShell currentBrand={{ id: 1, name: "Acme Corp" }}>
+    <AppShell currentBrand={{ id: 1, name: "Content Library" }}>
       <div className="h-full flex">
         <div className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto space-y-6">
@@ -813,7 +543,7 @@ export default function ContentLibraryPage() {
         onClose={() => setShowStockImageModal(false)}
         onSelect={handleStockImageSelect}
         brandId={1}
-        brandName="Acme Corp"
+        brandName={dynamicBrandName}
         vertical={filterVertical !== "all" ? filterVertical : undefined}
       />
 

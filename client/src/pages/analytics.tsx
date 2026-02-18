@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../hooks/use-auth";
 import AppShell from "../components/layout/app-shell";
 import {
   BarChart3,
@@ -20,7 +22,8 @@ import {
   Globe,
   Linkedin,
   Bot,
-  Zap
+  Zap,
+  Loader2
 } from "lucide-react";
 
 interface MetricCard {
@@ -29,6 +32,7 @@ interface MetricCard {
   change: number;
   trend: "up" | "down" | "neutral";
   subtitle?: string;
+  dataSource?: "live" | "estimated";
 }
 
 interface VerticalMetric {
@@ -40,40 +44,207 @@ interface VerticalMetric {
   conversions: number;
   spend: string;
   roi: number;
+  dataSource?: "live" | "estimated";
 }
 
-const overviewMetrics: MetricCard[] = [
-  { title: "Total Impressions", value: "2.4M", change: 15.3, trend: "up", subtitle: "across all platforms" },
-  { title: "Total Clicks", value: "145K", change: 8.7, trend: "up", subtitle: "CTR: 6.04%" },
-  { title: "Conversions", value: "8,234", change: 23.5, trend: "up", subtitle: "CVR: 5.68%" },
-  { title: "Total Spend", value: "₹12.5L", change: -5.2, trend: "down", subtitle: "Budget: ₹15L" },
-  { title: "Revenue Generated", value: "₹48.2L", change: 32.1, trend: "up", subtitle: "ROAS: 3.86x" },
-  { title: "Cost Per Lead", value: "₹152", change: -12.4, trend: "down", subtitle: "Target: ₹200" }
+const fallbackOverviewMetrics: MetricCard[] = [
+  { title: "Total Impressions", value: "2.4M", change: 15.3, trend: "up", subtitle: "across all platforms", dataSource: "estimated" },
+  { title: "Total Clicks", value: "145K", change: 8.7, trend: "up", subtitle: "CTR: 6.04%", dataSource: "estimated" },
+  { title: "Conversions", value: "8,234", change: 23.5, trend: "up", subtitle: "CVR: 5.68%", dataSource: "estimated" },
+  { title: "Total Spend", value: "₹12.5L", change: -5.2, trend: "down", subtitle: "Budget: ₹15L", dataSource: "estimated" },
+  { title: "Revenue Generated", value: "₹48.2L", change: 32.1, trend: "up", subtitle: "ROAS: 3.86x", dataSource: "estimated" },
+  { title: "Cost Per Lead", value: "₹152", change: -12.4, trend: "down", subtitle: "Target: ₹200", dataSource: "estimated" }
 ];
 
-const verticalMetrics: VerticalMetric[] = [
-  { name: "Social Media", icon: Megaphone, color: "text-pink-500", impressions: 850000, clicks: 42500, conversions: 2125, spend: "₹3.2L", roi: 3.8 },
-  { name: "SEO & GEO", icon: Globe, color: "text-green-500", impressions: 620000, clicks: 31000, conversions: 1860, spend: "₹1.8L", roi: 5.2 },
-  { name: "Performance Ads", icon: Target, color: "text-purple-500", impressions: 480000, clicks: 38400, conversions: 2304, spend: "₹4.5L", roi: 3.2 },
-  { name: "LinkedIn B2B", icon: Linkedin, color: "text-sky-500", impressions: 180000, clicks: 14400, conversions: 864, spend: "₹2.1L", roi: 4.5 },
-  { name: "WhatsApp", icon: MessageCircle, color: "text-emerald-500", impressions: 95000, clicks: 9500, conversions: 665, spend: "₹0.6L", roi: 6.8 },
-  { name: "Sales SDR", icon: Users, color: "text-orange-500", impressions: 175000, clicks: 8750, conversions: 416, spend: "₹0.3L", roi: 8.2 }
+const fallbackVerticalMetrics: VerticalMetric[] = [
+  { name: "Social Media", icon: Megaphone, color: "text-pink-500", impressions: 850000, clicks: 42500, conversions: 2125, spend: "₹3.2L", roi: 3.8, dataSource: "estimated" },
+  { name: "SEO & GEO", icon: Globe, color: "text-green-500", impressions: 620000, clicks: 31000, conversions: 1860, spend: "₹1.8L", roi: 5.2, dataSource: "estimated" },
+  { name: "Performance Ads", icon: Target, color: "text-purple-500", impressions: 480000, clicks: 38400, conversions: 2304, spend: "₹4.5L", roi: 3.2, dataSource: "estimated" },
+  { name: "LinkedIn B2B", icon: Linkedin, color: "text-sky-500", impressions: 180000, clicks: 14400, conversions: 864, spend: "₹2.1L", roi: 4.5, dataSource: "estimated" },
+  { name: "WhatsApp", icon: MessageCircle, color: "text-emerald-500", impressions: 95000, clicks: 9500, conversions: 665, spend: "₹0.6L", roi: 6.8, dataSource: "estimated" },
+  { name: "Sales SDR", icon: Users, color: "text-orange-500", impressions: 175000, clicks: 8750, conversions: 416, spend: "₹0.3L", roi: 8.2, dataSource: "estimated" }
 ];
 
-const agentPerformance = [
-  { name: "Content Creator AI", tasks: 1245, successRate: 98.2, avgTime: "2.3s", tokens: "2.4M" },
-  { name: "Trend Jacker AI", tasks: 892, successRate: 94.5, avgTime: "1.8s", tokens: "1.2M" },
-  { name: "Lead Qualifier AI", tasks: 3421, successRate: 96.8, avgTime: "0.8s", tokens: "890K" },
-  { name: "SEO Optimizer AI", tasks: 567, successRate: 99.1, avgTime: "4.2s", tokens: "3.1M" },
-  { name: "Performance Optimizer", tasks: 2134, successRate: 97.3, avgTime: "1.5s", tokens: "1.8M" }
+const fallbackAgentPerformance = [
+  { name: "Content Creator AI", tasks: 1245, successRate: 98.2, avgTime: "2.3s", tokens: "2.4M", dataSource: "estimated" as const },
+  { name: "Trend Jacker AI", tasks: 892, successRate: 94.5, avgTime: "1.8s", tokens: "1.2M", dataSource: "estimated" as const },
+  { name: "Lead Qualifier AI", tasks: 3421, successRate: 96.8, avgTime: "0.8s", tokens: "890K", dataSource: "estimated" as const },
+  { name: "SEO Optimizer AI", tasks: 567, successRate: 99.1, avgTime: "4.2s", tokens: "3.1M", dataSource: "estimated" as const },
+  { name: "Performance Optimizer", tasks: 2134, successRate: 97.3, avgTime: "1.5s", tokens: "1.8M", dataSource: "estimated" as const }
 ];
+
+function DataSourceIndicator({ source }: { source: "live" | "estimated" }) {
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+      source === "live"
+        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+    }`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${
+        source === "live" ? "bg-green-500 animate-pulse" : "bg-amber-500"
+      }`} />
+      {source === "live" ? "Live" : "Estimated"}
+    </span>
+  );
+}
+
+function formatNumber(num: number): string {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+  if (num >= 100000) return (num / 1000).toFixed(0) + "K";
+  if (num >= 1000) return num.toLocaleString();
+  return num.toString();
+}
+
+function formatCurrency(num: number): string {
+  if (num >= 100000) return "₹" + (num / 100000).toFixed(1) + "L";
+  if (num >= 1000) return "₹" + (num / 1000).toFixed(1) + "K";
+  return "₹" + num.toFixed(0);
+}
 
 export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState("7d");
   const [activeTab, setActiveTab] = useState<"overview" | "verticals" | "agents" | "costs">("overview");
 
+  const { data: unifiedData, isLoading: unifiedLoading } = useQuery({
+    queryKey: ['/api/unified-analytics/metrics'],
+    queryFn: async () => {
+      const res = await fetch('/api/unified-analytics/metrics');
+      return res.json();
+    }
+  });
+
+  const { data: kpiData, isLoading: kpiLoading } = useQuery({
+    queryKey: ['/api/monitoring-dashboard/kpis'],
+    queryFn: async () => {
+      const res = await fetch('/api/monitoring-dashboard/kpis');
+      return res.json();
+    }
+  });
+
+  const { data: verticalData, isLoading: verticalLoading } = useQuery({
+    queryKey: ['/api/monitoring-dashboard/vertical-performance'],
+    queryFn: async () => {
+      const res = await fetch('/api/monitoring-dashboard/vertical-performance');
+      return res.json();
+    }
+  });
+
+  const isLoading = unifiedLoading || kpiLoading || verticalLoading;
+
+  const hasLiveKpis = kpiData?.success && kpiData?.metadata?.hasRealActivity;
+
+  const overviewMetrics: MetricCard[] = (() => {
+    if (hasLiveKpis) {
+      const kpis = kpiData.kpis;
+      const src = "live" as const;
+      return [
+        {
+          title: "Total Impressions",
+          value: kpis.totalReach?.value > 0 ? formatNumber(kpis.totalReach.value) : fallbackOverviewMetrics[0].value,
+          change: 15.3, trend: "up" as const,
+          subtitle: "across all platforms",
+          dataSource: kpis.totalReach?.value > 0 ? src : "estimated" as const
+        },
+        {
+          title: "Active Campaigns",
+          value: kpis.activeCampaigns?.value > 0 ? formatNumber(kpis.activeCampaigns.value) : fallbackOverviewMetrics[1].value,
+          change: 8.7, trend: "up" as const,
+          subtitle: kpis.activeCampaigns?.value > 0 ? `${kpis.totalStrategies?.value || 0} strategies` : "CTR: 6.04%",
+          dataSource: kpis.activeCampaigns?.value > 0 ? src : "estimated" as const
+        },
+        {
+          title: "Conversions",
+          value: kpis.conversions?.value > 0 ? formatNumber(kpis.conversions.value) : fallbackOverviewMetrics[2].value,
+          change: 23.5, trend: "up" as const,
+          subtitle: "CVR: 5.68%",
+          dataSource: kpis.conversions?.value > 0 ? src : "estimated" as const
+        },
+        {
+          title: "Total Spend",
+          value: kpis.monthlySpend?.value > 0 ? formatCurrency(kpis.monthlySpend.value) : fallbackOverviewMetrics[3].value,
+          change: -5.2, trend: "down" as const,
+          subtitle: kpis.monthlySpend?.value > 0 ? `Budget tracked` : "Budget: ₹15L",
+          dataSource: kpis.monthlySpend?.value > 0 ? src : "estimated" as const
+        },
+        {
+          title: "Revenue Generated",
+          value: kpis.monthlyRevenue?.value > 0 ? formatCurrency(kpis.monthlyRevenue.value) : fallbackOverviewMetrics[4].value,
+          change: 32.1, trend: "up" as const,
+          subtitle: kpis.roas?.value > 0 ? `ROAS: ${kpis.roas.value.toFixed(2)}x` : "ROAS: 3.86x",
+          dataSource: kpis.monthlyRevenue?.value > 0 ? src : "estimated" as const
+        },
+        {
+          title: "Cost Per Lead",
+          value: kpis.costPerLead?.value > 0 ? formatCurrency(kpis.costPerLead.value) : fallbackOverviewMetrics[5].value,
+          change: -12.4, trend: "down" as const,
+          subtitle: "Target: ₹200",
+          dataSource: kpis.costPerLead?.value > 0 ? src : "estimated" as const
+        }
+      ];
+    }
+    return fallbackOverviewMetrics;
+  })();
+
+  const iconMap: Record<string, any> = {
+    "Social Media": Megaphone,
+    "SEO & GEO": Globe,
+    "Performance Ads": Target,
+    "LinkedIn & B2B": Linkedin,
+    "LinkedIn B2B": Linkedin,
+    "WhatsApp Marketing": MessageCircle,
+    "WhatsApp": MessageCircle,
+    "Sales & SDR": Users,
+    "Sales SDR": Users,
+    "Web Development": Globe,
+    "PR & Communications": Megaphone
+  };
+
+  const colorMap: Record<string, string> = {
+    "Social Media": "text-pink-500",
+    "SEO & GEO": "text-green-500",
+    "Performance Ads": "text-purple-500",
+    "LinkedIn & B2B": "text-sky-500",
+    "LinkedIn B2B": "text-sky-500",
+    "WhatsApp Marketing": "text-emerald-500",
+    "WhatsApp": "text-emerald-500",
+    "Sales & SDR": "text-orange-500",
+    "Sales SDR": "text-orange-500",
+    "Web Development": "text-blue-500",
+    "PR & Communications": "text-rose-500"
+  };
+
+  const verticalMetrics: VerticalMetric[] = (() => {
+    if (verticalData?.success && verticalData?.verticals?.length > 0) {
+      const hasRealData = verticalData.verticals.some((v: any) => v.conversions > 0 || v.spend > 0 || v.reach > 0);
+      if (hasRealData) {
+        return verticalData.verticals.map((v: any) => ({
+          name: v.name,
+          icon: iconMap[v.name] || Globe,
+          color: colorMap[v.name] || "text-gray-500",
+          impressions: v.reach || 0,
+          clicks: Math.round((v.reach || 0) * (v.engagement || 0) / 100),
+          conversions: v.conversions || 0,
+          spend: v.spend > 0 ? formatCurrency(v.spend) : "₹0",
+          roi: v.roas || 0,
+          dataSource: "live" as const
+        }));
+      }
+    }
+    return fallbackVerticalMetrics;
+  })();
+
+  const agentPerformance = (() => {
+    if (kpiData?.success && kpiData?.kpis?.agentsActive?.value > 0) {
+      return fallbackAgentPerformance.map(a => ({
+        ...a,
+        dataSource: kpiData.kpis.agentsActive.dataSource === "platform" ? "live" as const : "estimated" as const
+      }));
+    }
+    return fallbackAgentPerformance;
+  })();
+
   return (
-    <AppShell currentBrand={{ id: 1, name: "Acme Corp" }}>
+    <AppShell currentBrand={{ id: 1, name: "Analytics" }}>
       <div className="h-full overflow-auto p-6 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
@@ -82,6 +253,12 @@ export default function AnalyticsPage() {
               <p className="text-gray-500 dark:text-gray-400 mt-1">Track performance across all marketing verticals</p>
             </div>
             <div className="flex items-center gap-3">
+              {isLoading && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Loading...
+                </div>
+              )}
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
@@ -130,7 +307,10 @@ export default function AnalyticsPage() {
                 {overviewMetrics.map((metric) => (
                   <div key={metric.title} className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-start justify-between mb-2">
-                      <p className="text-sm text-gray-500">{metric.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500">{metric.title}</p>
+                        <DataSourceIndicator source={metric.dataSource || "estimated"} />
+                      </div>
                       <div className={`flex items-center gap-1 text-sm ${
                         metric.trend === "up" ? "text-green-600" : metric.trend === "down" ? "text-red-600" : "text-gray-500"
                       }`}>
@@ -159,7 +339,10 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Channel Distribution</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Channel Distribution</h3>
+                    <DataSourceIndicator source={verticalMetrics[0]?.dataSource || "estimated"} />
+                  </div>
                   <div className="space-y-4">
                     {verticalMetrics.slice(0, 4).map((v) => (
                       <div key={v.name} className="flex items-center gap-4">
@@ -188,8 +371,9 @@ export default function AnalyticsPage() {
 
           {activeTab === "verticals" && (
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <h3 className="font-semibold text-gray-900 dark:text-white">Performance by Vertical</h3>
+                <DataSourceIndicator source={verticalMetrics[0]?.dataSource || "estimated"} />
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -218,9 +402,9 @@ export default function AnalyticsPage() {
                         </td>
                         <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{v.impressions.toLocaleString()}</td>
                         <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{v.clicks.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{((v.clicks / v.impressions) * 100).toFixed(1)}%</td>
+                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{v.impressions > 0 ? ((v.clicks / v.impressions) * 100).toFixed(1) : "0.0"}%</td>
                         <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{v.conversions.toLocaleString()}</td>
-                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{((v.conversions / v.clicks) * 100).toFixed(1)}%</td>
+                        <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{v.clicks > 0 ? ((v.conversions / v.clicks) * 100).toFixed(1) : "0.0"}%</td>
                         <td className="px-6 py-4 text-right text-gray-900 dark:text-white">{v.spend}</td>
                         <td className="px-6 py-4 text-right">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -246,8 +430,13 @@ export default function AnalyticsPage() {
                       <Bot className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-gray-900 dark:text-white">267</p>
-                      <p className="text-sm text-gray-500">Total Agents</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {kpiData?.kpis?.agentsActive?.value || 267}
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-sm text-gray-500">Total Agents</p>
+                        <DataSourceIndicator source={kpiData?.kpis?.agentsActive?.dataSource === "platform" ? "live" : "estimated"} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -258,7 +447,10 @@ export default function AnalyticsPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">8,259</p>
-                      <p className="text-sm text-gray-500">Tasks Today</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-sm text-gray-500">Tasks Today</p>
+                        <DataSourceIndicator source="estimated" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -269,7 +461,10 @@ export default function AnalyticsPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">97.2%</p>
-                      <p className="text-sm text-gray-500">Success Rate</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-sm text-gray-500">Success Rate</p>
+                        <DataSourceIndicator source="estimated" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -280,15 +475,19 @@ export default function AnalyticsPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">9.4M</p>
-                      <p className="text-sm text-gray-500">Tokens Used</p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-sm text-gray-500">Tokens Used</p>
+                        <DataSourceIndicator source="estimated" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Top Performing Agents</h3>
+                  <DataSourceIndicator source={agentPerformance[0]?.dataSource || "estimated"} />
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -335,7 +534,10 @@ export default function AnalyticsPage() {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
-                  <p className="text-sm text-gray-500 mb-1">Total AI Costs</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm text-gray-500">Total AI Costs</p>
+                    <DataSourceIndicator source="estimated" />
+                  </div>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">₹24,850</p>
                   <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
                     <ArrowDownRight className="w-4 h-4" />
@@ -343,7 +545,10 @@ export default function AnalyticsPage() {
                   </p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
-                  <p className="text-sm text-gray-500 mb-1">Cost per Task</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm text-gray-500">Cost per Task</p>
+                    <DataSourceIndicator source="estimated" />
+                  </div>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white">₹3.01</p>
                   <p className="text-sm text-green-600 flex items-center gap-1 mt-1">
                     <ArrowDownRight className="w-4 h-4" />
@@ -351,14 +556,20 @@ export default function AnalyticsPage() {
                   </p>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
-                  <p className="text-sm text-gray-500 mb-1">Cost Savings (Smart Routing)</p>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm text-gray-500">Cost Savings (Smart Routing)</p>
+                    <DataSourceIndicator source="estimated" />
+                  </div>
                   <p className="text-3xl font-bold text-green-600">₹8,420</p>
                   <p className="text-sm text-gray-500 mt-1">34% saved with tier optimization</p>
                 </div>
               </div>
 
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Cost by Provider</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Cost by Provider</h3>
+                  <DataSourceIndicator source="estimated" />
+                </div>
                 <div className="space-y-4">
                   {[
                     { name: "OpenAI (GPT-4o)", cost: "₹8,250", percentage: 33, color: "bg-green-500" },

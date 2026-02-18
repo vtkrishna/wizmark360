@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../hooks/use-auth";
+import { Link } from "wouter";
 import AppShell from "../components/layout/app-shell";
 import {
   Building2,
@@ -17,7 +20,8 @@ import {
   Globe,
   Mail,
   Phone,
-  MapPin
+  MapPin,
+  Loader2
 } from "lucide-react";
 
 interface Brand {
@@ -36,80 +40,34 @@ interface Brand {
   location?: string;
 }
 
-const sampleBrands: Brand[] = [
-  {
-    id: 1,
-    name: "Acme Corp",
-    industry: "Technology",
-    status: "active",
-    campaigns: 12,
-    leads: 847,
-    revenue: "₹4.2L",
-    createdAt: "2024-01-15",
-    website: "acmecorp.com",
-    email: "contact@acmecorp.com",
-    phone: "+91 98765 43210",
-    location: "Mumbai, India"
-  },
-  {
-    id: 2,
-    name: "TechStart India",
-    industry: "SaaS",
-    status: "active",
-    campaigns: 8,
-    leads: 523,
-    revenue: "₹2.8L",
-    createdAt: "2024-02-20",
-    website: "techstart.in",
-    email: "hello@techstart.in",
-    phone: "+91 99887 76655",
-    location: "Bangalore, India"
-  },
-  {
-    id: 3,
-    name: "Global Retail Hub",
-    industry: "E-commerce",
-    status: "paused",
-    campaigns: 5,
-    leads: 312,
-    revenue: "₹1.5L",
-    createdAt: "2024-03-10",
-    website: "globalretailhub.com",
-    email: "sales@grh.com",
-    phone: "+91 88776 55443",
-    location: "Delhi, India"
-  },
-  {
-    id: 4,
-    name: "HealthCare Plus",
-    industry: "Healthcare",
-    status: "active",
-    campaigns: 15,
-    leads: 1234,
-    revenue: "₹6.8L",
-    createdAt: "2024-01-05",
-    website: "healthcareplus.in",
-    email: "info@hcplus.in",
-    phone: "+91 77665 54432",
-    location: "Chennai, India"
-  },
-  {
-    id: 5,
-    name: "EduLearn Academy",
-    industry: "Education",
-    status: "pending",
-    campaigns: 0,
-    leads: 0,
-    revenue: "₹0",
-    createdAt: "2024-12-01",
-    website: "edulearn.academy",
-    email: "admin@edulearn.academy",
-    location: "Pune, India"
-  }
-];
-
 export default function BrandsPage() {
-  const [brands] = useState<Brand[]>(sampleBrands);
+  const { user } = useAuth();
+
+  const { data: apiBrands, isLoading, error } = useQuery<any[]>({
+    queryKey: ["/api/brands"],
+    queryFn: async () => {
+      const res = await fetch("/api/brands", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch brands");
+      return res.json();
+    },
+  });
+
+  const brands: Brand[] = (apiBrands || []).map((b: any) => ({
+    id: b.id,
+    name: b.name || "Unnamed Brand",
+    industry: b.industry || "General",
+    status: b.status || "pending",
+    campaigns: b.campaigns || 0,
+    leads: b.leads || 0,
+    revenue: b.revenue || "₹0",
+    createdAt: b.createdAt ? new Date(b.createdAt).toISOString().split("T")[0] : "",
+    logo: b.logo,
+    website: b.website,
+    email: b.email,
+    phone: b.phone,
+    location: b.location,
+  }));
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -127,8 +85,36 @@ export default function BrandsPage() {
     }
   };
 
+  const brandName = brands.length > 0 ? brands[0].name : (user?.firstName ? `${user.firstName}'s Workspace` : "All Brands");
+
+  if (isLoading) {
+    return (
+      <AppShell currentBrand={{ id: 1, name: "Loading..." }}>
+        <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="text-center">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-3" />
+            <p className="text-gray-500 dark:text-gray-400">Loading brands...</p>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppShell currentBrand={{ id: 1, name: "All Brands" }}>
+        <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="text-center">
+            <p className="text-red-500 mb-2">Failed to load brands</p>
+            <p className="text-gray-400 text-sm">{(error as Error).message}</p>
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
-    <AppShell currentBrand={{ id: 1, name: "All Brands" }}>
+    <AppShell currentBrand={{ id: 1, name: brandName }}>
       <div className="h-full flex">
         <div className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto space-y-6">
@@ -137,10 +123,12 @@ export default function BrandsPage() {
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Brands & CRM</h1>
                 <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your client brands and relationships</p>
               </div>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                <Plus className="w-4 h-4" />
-                Add Brand
-              </button>
+              <Link href="/brand-onboarding">
+                <button className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                  <Plus className="w-4 h-4" />
+                  Create Brand
+                </button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -183,108 +171,122 @@ export default function BrandsPage() {
                     <DollarSign className="w-5 h-5 text-orange-600" />
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">₹15.3L</p>
-                    <p className="text-sm text-gray-500">Total Revenue</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{brands.length}</p>
+                    <p className="text-sm text-gray-500">Total Brands</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center gap-4">
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search brands..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`px-3 py-1.5 rounded text-sm ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm" : ""}`}
-                  >
-                    Grid
+            {brands.length === 0 ? (
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
+                <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No brands yet</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first brand</p>
+                <Link href="/brand-onboarding">
+                  <button className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                    <Plus className="w-4 h-4" />
+                    Create Brand
                   </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`px-3 py-1.5 rounded text-sm ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm" : ""}`}
-                  >
-                    List
-                  </button>
-                </div>
+                </Link>
               </div>
-
-              {viewMode === "grid" ? (
-                <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredBrands.map((brand) => (
-                    <div
-                      key={brand.id}
-                      onClick={() => setSelectedBrand(brand)}
-                      className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+            ) : (
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search brands..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={`px-3 py-1.5 rounded text-sm ${viewMode === "grid" ? "bg-white dark:bg-gray-600 shadow-sm" : ""}`}
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                            {brand.name.charAt(0)}
+                      Grid
+                    </button>
+                    <button
+                      onClick={() => setViewMode("list")}
+                      className={`px-3 py-1.5 rounded text-sm ${viewMode === "list" ? "bg-white dark:bg-gray-600 shadow-sm" : ""}`}
+                    >
+                      List
+                    </button>
+                  </div>
+                </div>
+
+                {viewMode === "grid" ? (
+                  <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredBrands.map((brand) => (
+                      <div
+                        key={brand.id}
+                        onClick={() => setSelectedBrand(brand)}
+                        className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                              {brand.name.charAt(0)}
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-gray-900 dark:text-white">{brand.name}</h3>
+                              <p className="text-sm text-gray-500">{brand.industry}</p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-white">{brand.name}</h3>
-                            <p className="text-sm text-gray-500">{brand.industry}</p>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(brand.status)}`}>
+                            {brand.status}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900 dark:text-white">{brand.campaigns}</p>
+                            <p className="text-xs text-gray-500">Campaigns</p>
                           </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900 dark:text-white">{brand.leads}</p>
+                            <p className="text-xs text-gray-500">Leads</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-900 dark:text-white">{brand.revenue}</p>
+                            <p className="text-xs text-gray-500">Revenue</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {filteredBrands.map((brand) => (
+                      <div
+                        key={brand.id}
+                        onClick={() => setSelectedBrand(brand)}
+                        className="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
+                      >
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
+                          {brand.name.charAt(0)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 dark:text-white">{brand.name}</h3>
+                          <p className="text-sm text-gray-500">{brand.industry}</p>
                         </div>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(brand.status)}`}>
                           {brand.status}
                         </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
-                        <div className="text-center">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">{brand.campaigns}</p>
-                          <p className="text-xs text-gray-500">Campaigns</p>
+                        <div className="text-right">
+                          <p className="font-medium text-gray-900 dark:text-white">{brand.leads} leads</p>
+                          <p className="text-sm text-gray-500">{brand.revenue}</p>
                         </div>
-                        <div className="text-center">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">{brand.leads}</p>
-                          <p className="text-xs text-gray-500">Leads</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-lg font-bold text-gray-900 dark:text-white">{brand.revenue}</p>
-                          <p className="text-xs text-gray-500">Revenue</p>
-                        </div>
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredBrands.map((brand) => (
-                    <div
-                      key={brand.id}
-                      onClick={() => setSelectedBrand(brand)}
-                      className="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
-                    >
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
-                        {brand.name.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-gray-900 dark:text-white">{brand.name}</h3>
-                        <p className="text-sm text-gray-500">{brand.industry}</p>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(brand.status)}`}>
-                        {brand.status}
-                      </span>
-                      <div className="text-right">
-                        <p className="font-medium text-gray-900 dark:text-white">{brand.leads} leads</p>
-                        <p className="text-sm text-gray-500">{brand.revenue}</p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

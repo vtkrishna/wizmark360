@@ -20,6 +20,10 @@ import OrganizationSettings from './pages/organization-settings';
 import AuditLogs from './pages/audit-logs';
 import Login from './pages/Login';
 import NotFound from './pages/not-found';
+import EnhancedAgentOrchestration from './pages/enhanced-agent-orchestration';
+import OrchestrationDashboard from './pages/orchestration-dashboard';
+import QuickStartGuide from './pages/QuickStartGuide';
+import WaiCapabilities from './pages/wai-capabilities';
 
 export default function App() {
   return (
@@ -94,6 +98,18 @@ export default function App() {
               </Route>
               <Route path="/admin/audit-logs">
                 {() => <ProtectedRoute><AuditLogs /></ProtectedRoute>}
+              </Route>
+              <Route path="/orchestration">
+                {() => <ProtectedRoute><EnhancedAgentOrchestration /></ProtectedRoute>}
+              </Route>
+              <Route path="/agent-orchestration">
+                {() => <ProtectedRoute><OrchestrationDashboard /></ProtectedRoute>}
+              </Route>
+              <Route path="/quickstart">
+                {() => <ProtectedRoute><QuickStartGuide /></ProtectedRoute>}
+              </Route>
+              <Route path="/ai-capabilities">
+                {() => <ProtectedRoute><WaiCapabilities /></ProtectedRoute>}
               </Route>
               <Route component={NotFound} />
             </Switch>

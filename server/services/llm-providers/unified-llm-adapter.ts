@@ -342,14 +342,18 @@ export abstract class UnifiedLLMAdapter extends EventEmitter {
    * Private helper methods
    */
   private startHealthMonitoring(): void {
-    // Perform health check every 5 minutes
     setInterval(async () => {
+      if (!this.apiKey || this.apiKey.trim() === '' || this.apiKey === 'undefined' || this.apiKey === 'null') {
+        this.provider.status = 'offline';
+        this.provider.healthScore = 0;
+        return;
+      }
       try {
         await this.performHealthCheck();
       } catch (error) {
         console.error(`Health monitoring error for ${this.provider.name}:`, error);
       }
-    }, 5 * 60 * 1000);
+    }, 30 * 60 * 1000);
   }
 
   private startCostTracking(): void {

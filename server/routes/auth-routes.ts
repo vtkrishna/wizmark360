@@ -329,6 +329,30 @@ router.get('/profile', async (req, res) => {
   }
 });
 
+router.put('/profile', async (req, res) => {
+  try {
+    if (!req.isAuthenticated || !req.isAuthenticated()) {
+      return res.status(401).json({ success: false, message: 'Authentication required' });
+    }
+    const userId = (req.user as any)?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not found' });
+    }
+    const { name, phone, timezone } = req.body;
+    const updateData: any = {};
+    if (name) {
+      const parts = name.split(' ');
+      updateData.firstName = parts[0];
+      updateData.lastName = parts.slice(1).join(' ') || '';
+    }
+    const { storage } = await import('../storage');
+    const updated = await storage.updateUser(userId, updateData);
+    res.json({ success: true, user: updated });
+  } catch (error) {
+    sendErrorResponse(res, 500, 'Failed to update profile', error);
+  }
+});
+
 // Get user progress - removed demo endpoint, implement real progress tracking
 router.get('/progress', async (req, res) => {
   try {

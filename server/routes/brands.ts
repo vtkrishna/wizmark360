@@ -1,3 +1,4 @@
+// TODO: Add organizationId column to brands table for tenant isolation
 import { Router, Request, Response } from "express";
 import { db } from "../db";
 import { eq, desc } from "drizzle-orm";
@@ -18,6 +19,9 @@ const router = Router();
 
 router.get("/", async (req: Request, res: Response) => {
   try {
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, filter: and(eq(brands.organizationId, orgId))
+    const orgId = (req as any).organizationId;
     const allBrands = await db.select().from(brands).orderBy(desc(brands.createdAt));
     res.json(allBrands);
   } catch (error) {
@@ -29,6 +33,9 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, filter: and(eq(brands.id, brandId), eq(brands.organizationId, orgId))
+    const orgId = (req as any).organizationId;
     const [brand] = await db.select().from(brands).where(eq(brands.id, brandId));
     
     if (!brand) {
@@ -54,6 +61,9 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/", async (req: Request, res: Response) => {
   try {
     const { brand: brandData, guidelines: guidelinesData, contacts: contactsData, servicePackage: packageData } = req.body;
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, include organizationId in insert: { ...parsedBrand, organizationId: orgId }
+    const orgId = (req as any).organizationId;
 
     const parsedBrand = insertBrandSchema.parse(brandData);
     const [newBrand] = await db.insert(brands).values(parsedBrand).returning();
@@ -97,6 +107,9 @@ router.put("/:id", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
     const updateData = req.body;
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, filter: and(eq(brands.id, brandId), eq(brands.organizationId, orgId))
+    const orgId = (req as any).organizationId;
 
     const [updatedBrand] = await db
       .update(brands)
@@ -118,6 +131,10 @@ router.put("/:id", async (req: Request, res: Response) => {
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before deleting:
+    // and(eq(brands.id, brandId), eq(brands.organizationId, orgId))
+    const orgId = (req as any).organizationId;
 
     await db.delete(brandContacts).where(eq(brandContacts.brandId, brandId));
     await db.delete(servicePackages).where(eq(servicePackages.brandId, brandId));
@@ -138,6 +155,9 @@ router.delete("/:id", async (req: Request, res: Response) => {
 router.get("/:id/guidelines", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before returning guidelines
+    const orgId = (req as any).organizationId;
     const [guidelines] = await db.select().from(brandGuidelines).where(eq(brandGuidelines.brandId, brandId));
     res.json(guidelines || null);
   } catch (error) {
@@ -150,6 +170,9 @@ router.put("/:id/guidelines", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
     const guidelinesData = req.body;
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before updating guidelines
+    const orgId = (req as any).organizationId;
 
     const [existing] = await db.select().from(brandGuidelines).where(eq(brandGuidelines.brandId, brandId));
 
@@ -174,6 +197,9 @@ router.put("/:id/guidelines", async (req: Request, res: Response) => {
 router.get("/:id/contacts", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before returning contacts
+    const orgId = (req as any).organizationId;
     const contacts = await db.select().from(brandContacts).where(eq(brandContacts.brandId, brandId));
     res.json(contacts);
   } catch (error) {
@@ -185,6 +211,9 @@ router.get("/:id/contacts", async (req: Request, res: Response) => {
 router.post("/:id/contacts", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before creating contact
+    const orgId = (req as any).organizationId;
     const parsed = insertBrandContactSchema.parse({ ...req.body, brandId });
     const [created] = await db.insert(brandContacts).values(parsed).returning();
     res.status(201).json(created);
@@ -197,6 +226,9 @@ router.post("/:id/contacts", async (req: Request, res: Response) => {
 router.post("/:id/generate-documents", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before generating documents
+    const orgId = (req as any).organizationId;
     const [brand] = await db.select().from(brands).where(eq(brands.id, brandId));
 
     if (!brand) {
@@ -246,6 +278,9 @@ router.post("/:id/generate-documents", async (req: Request, res: Response) => {
 router.get("/:id/documents", async (req: Request, res: Response) => {
   try {
     const brandId = parseInt(req.params.id);
+    // TODO: Add organizationId column to brands table for tenant isolation
+    // Once added, verify brand belongs to org before returning documents
+    const orgId = (req as any).organizationId;
     const [brand] = await db.select().from(brands).where(eq(brands.id, brandId));
 
     if (!brand) {
