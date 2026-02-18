@@ -5,7 +5,7 @@ integrations = ["javascript_openai:1.0.0", "javascript_anthropic:1.0.0", "javasc
 
 [nix]
 channel = "stable-25_05"
-packages = ["chromium", "pandoc", "texliveFull"]
+packages = ["chromium", "pandoc", "texliveFull", "unzip"]
 
 [userenv]
 

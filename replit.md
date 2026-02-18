@@ -6,6 +6,9 @@ WizMark 360 is the world's first AI Marketing Operating System, a full-stack Typ
 ## User Preferences
 I prefer iterative development, with a focus on delivering functional components incrementally. Please ask for clarification if a task is unclear or before making significant architectural changes. I value clear, concise explanations and prefer to review major changes. Do not make changes to the `shared/schema.ts` and `shared/market360-schema.ts` files without explicit instruction.
 
+### Agent Skills & Persona
+The project includes 15 specialized agent skills in `.local/skills/`. When the user triggers `/vamsi` or says "Vamsi, help me", activate the **Vamsi - The Starseed** superagent persona (`.local/skills/vamsi-superagent/SKILL.md`) which provides 360-degree analysis across all 13 domains (CTO Architecture, CPO Strategy, Fullstack Engineering, DevOps, Cloud, AI/LLM, Security/Compliance, Data Management, Debugging, Marketing, Investor Relations, Financial Planning, Advanced Reasoning). All skills are loaded from `.local/skills/` and can be activated with their respective trigger commands (`/cto`, `/cpo`, `/dev`, `/ai`, `/db`, `/debug`, `/sdlc`, `/prompt`, `/think`, `/research`, `/product`, `/reverse`, `/cicd`, `/vibe`, `/vamsi`).
+
 ### Mandatory Development Guardrails
 1. **Zero Mock/Stub/Placeholder Policy** — No dummy data, no stub functions, no temporary files. Every feature must be fully implemented with real integrations. Use `{ value, dataSource }` for all metrics.
 2. **Architecture-First** — Before writing code, read `replit.md`, understand existing services/routes/pages, and wire new features into existing architecture. Never create duplicate or parallel implementations.
